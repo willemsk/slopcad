@@ -1,0 +1,122 @@
+import { h } from 'preact';
+import {
+  projectSignal,
+  activePageSignal,
+  selectionSignal,
+  undoAction,
+  redoAction,
+  deleteSelectedAction,
+  pushCommandMessage,
+  triggerRenderSignal,
+} from '../state/app-state';
+import { saveProjectToFile, loadProjectFromFile } from '../io/file-io';
+import { downloadSVGFile } from '../io/export-svg';
+import { generateId } from '../core/entity';
+import {
+  NewIcon,
+  OpenIcon,
+  SaveIcon,
+  ExportIcon,
+  UndoIcon,
+  RedoIcon,
+  DeleteIcon,
+} from './icons';
+
+export function Menubar() {
+  const project = projectSignal.value;
+  const page = activePageSignal.value;
+  const hasSelection = selectionSignal.value.size > 0;
+
+  const handleNewProject = () => {
+    if (window.confirm('Start a new project? Any unsaved changes will be lost.')) {
+      const newPage = {
+        id: generateId(),
+        name: 'Ground Floor',
+        entities: [],
+        constraints: [],
+      };
+      projectSignal.value = {
+        name: 'New Project',
+        created: Date.now(),
+        modified: Date.now(),
+        unitSystem: 'metric',
+        scale: 100,
+        pages: [newPage],
+        activePageIndex: 0,
+      };
+      selectionSignal.value = new Set();
+      triggerRenderSignal.value = {};
+      pushCommandMessage('Command: NEW - Started new architectural drawing plan.');
+    }
+  };
+
+  const handleOpenProject = () => {
+    loadProjectFromFile();
+    pushCommandMessage('Command: OPEN - Selected plan load requested.');
+  };
+
+  const handleSaveProject = () => {
+    saveProjectToFile(projectSignal.value);
+    pushCommandMessage('Command: SAVE - Saving drawing plan state to file...');
+  };
+
+  const handleExportSVG = () => {
+    downloadSVGFile(activePageSignal.value, projectSignal.value.unitSystem);
+    pushCommandMessage(`Command: EXPORT - Exporting floor "${page.name}" as vector SVG.`);
+  };
+
+  const handleUndo = () => {
+    undoAction();
+    pushCommandMessage('Command: UNDO - Reverting last drawing operation.');
+  };
+
+  const handleRedo = () => {
+    redoAction();
+    pushCommandMessage('Command: REDO - Redoing last drawing operation.');
+  };
+
+  const handleDelete = () => {
+    deleteSelectedAction();
+    pushCommandMessage('Command: ERASE - Deleted selected drawing elements.');
+  };
+
+  return (
+    <header className="menubar">
+      <div className="qat-group">
+        <span className="qat-logo">
+          Antigravity CAD
+        </span>
+        <button className="qat-btn" onClick={handleNewProject} title="New Plan (Ctrl+N)">
+          <NewIcon />
+        </button>
+        <button className="qat-btn" onClick={handleOpenProject} title="Open Plan... (Ctrl+O)">
+          <OpenIcon />
+        </button>
+        <button className="qat-btn" onClick={handleSaveProject} title="Save Plan (Ctrl+S)">
+          <SaveIcon />
+        </button>
+        <button className="qat-btn" onClick={handleExportSVG} title="Export current floor layout to SVG">
+          <ExportIcon />
+        </button>
+
+        <div className="qat-separator" />
+
+        <button className="qat-btn" onClick={handleUndo} title="Undo last change (Ctrl+Z)">
+          <UndoIcon />
+        </button>
+        <button className="qat-btn" onClick={handleRedo} title="Redo last change (Ctrl+Y)">
+          <RedoIcon />
+        </button>
+        <button className="qat-btn" onClick={handleDelete} disabled={!hasSelection} title="Delete selected (Del)">
+          <DeleteIcon />
+        </button>
+      </div>
+
+      <div className="qat-title">
+        {project.name || 'Untitled Plan'}
+      </div>
+
+      <div className="qat-group" style={{ width: 80 }} />
+    </header>
+  );
+}

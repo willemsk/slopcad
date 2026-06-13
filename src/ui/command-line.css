@@ -1,0 +1,54 @@
+.command-line-area {
+  display: flex;
+  flex-direction: column;
+  height: 72px;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  padding: 6px 16px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.command-history {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 4px;
+  opacity: 0.8;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.command-message {
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.command-prompt-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 4px;
+}
+
+.command-prompt-label {
+  color: var(--accent);
+  font-weight: bold;
+  user-select: none;
+}
+
+.command-prompt-input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text-hover);
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+  cursor: default;
+}

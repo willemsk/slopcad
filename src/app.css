@@ -1,0 +1,165 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Colors — Dark Theme (AutoCAD charcoal + blue) */
+  --bg-primary: #1e1e1e;       /* Canvas, command line */
+  --bg-secondary: #2d2d30;     /* Panels, menubar, toolbar background */
+  --bg-tertiary: #3c3c3c;      /* Hover states, active inputs */
+  --bg-hover: #4e4e50;         /* Highlight hover state */
+  --border-color: #3f3f46;     /* UI Borders */
+  --border-focus: #007acc;     /* Selection, focus border */
+  --text-primary: #d4d4d4;     /* Main text */
+  --text-hover: #ffffff;      /* Active/hover text */
+  --text-muted: #808080;      /* Muted text/labels */
+  --accent: #007acc;          /* Autodesk Blue */
+  --accent-hover: #1c8cd9;    /* Hover Blue */
+  --danger: #f44747;
+  --success: #6a9955;
+  --warning: #cca700;
+  --canvas-bg: #212830;       /* Canvas background */
+
+  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+
+  font-family: var(--font-ui);
+  color-scheme: dark;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Basic resets */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+  font-family: var(--font-ui);
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-primary);
+  overflow: hidden;
+}
+
+.app-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--canvas-bg);
+  min-width: 0;
+}
+
+.canvas-container {
+  flex: 1;
+  cursor: crosshair; /* Crosshair cursor for CAD drawing */
+  position: relative;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Quick Access Toolbar (replaces Menubar)
+   ========================================================================== */
+.menubar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 12px;
+  z-index: 100;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.qat-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.qat-logo {
+  font-weight: 800;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  margin-right: 12px;
+  text-transform: uppercase;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.qat-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.15s;
+}
+
+.qat-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-hover);
+  border-color: var(--border-color);
+}
+
+.qat-btn:active {
+  background-color: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+.qat-btn.active {
+  color: var(--accent);
+}
+
+.qat-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.qat-separator {
+  width: 1px;
+  height: 14px;
+  background-color: var(--border-color);
+  margin: 0 6px;
+}
+
+.qat-title {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}

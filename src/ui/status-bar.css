@@ -1,0 +1,82 @@
+.status-bar {
+  height: 24px;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-size: 11px;
+  color: var(--text-muted);
+  z-index: 100;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.status-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-section.coords {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-primary);
+  display: flex;
+  gap: 8px;
+}
+
+.status-value {
+  color: var(--text-hover);
+  font-weight: 500;
+}
+
+.status-toggles {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.status-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  border-radius: 3px;
+  width: 22px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+}
+
+.status-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.status-btn.active {
+  background-color: var(--accent);
+  color: #ffffff;
+}
+
+.status-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.status-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-item {
+  border-left: 1px solid var(--border-color);
+  padding-left: 12px;
+  font-size: 10.5px;
+}

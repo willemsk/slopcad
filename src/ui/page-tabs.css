@@ -1,0 +1,123 @@
+.page-tabs-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 28px;
+  background-color: #212124;
+  border-top: 1px solid var(--border-color);
+  padding: 0 12px;
+  z-index: 50;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  height: 100%;
+  align-items: flex-end;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #2d2d30;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  padding: 3px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.15s;
+  height: 22px;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-tertiary);
+}
+
+.tab.active {
+  background-color: var(--canvas-bg);
+  border-color: var(--border-color);
+  border-bottom: 1px solid var(--canvas-bg);
+  color: var(--accent);
+  height: 24px;
+  font-weight: 600;
+  position: relative;
+  z-index: 2;
+}
+
+.tab-name {
+  white-space: nowrap;
+}
+
+.tab-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.tab-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--danger);
+}
+
+.tab-add {
+  background: none;
+  border: 1px dashed var(--border-color);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: bold;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-bottom: 2px;
+  transition: all 0.15s;
+  margin-left: 4px;
+  padding: 0;
+}
+
+.tab-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background-color: var(--bg-tertiary);
+}
+
+.overlay-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.overlay-control select {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 10px;
+  border-radius: 3px;
+  padding: 1px 4px;
+  outline: none;
+}
+.overlay-control select:focus {
+  border-color: var(--accent);
+}
