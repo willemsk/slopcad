@@ -8,6 +8,7 @@ import {
   snapshotState,
   runSolverOnActivePage,
   gridSpacingSignal,
+  isPropertiesPanelOpenSignal,
 } from '../state/app-state';
 import {
   Entity,
@@ -49,6 +50,17 @@ export function PropertiesPanel() {
     // Reset local inputs when selection changes
     setLocalVals({});
   }, [selection]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === '1') {
+        e.preventDefault();
+        isPropertiesPanelOpenSignal.value = !isPropertiesPanelOpenSignal.value;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const getVal = (key: string, defaultVal: string): string => {
     return localVals[key] !== undefined ? localVals[key] : defaultVal;
@@ -99,6 +111,12 @@ export function PropertiesPanel() {
       <aside className="properties-panel">
         <div className="properties-header">
           <h3>Properties</h3>
+          <button
+            className="properties-close-btn"
+            onClick={() => (isPropertiesPanelOpenSignal.value = false)}
+          >
+            ×
+          </button>
         </div>
 
         <div className="properties-category">
@@ -197,6 +215,12 @@ export function PropertiesPanel() {
     <aside className="properties-panel">
       <div className="properties-header">
         <h3>Properties</h3>
+        <button
+          className="properties-close-btn"
+          onClick={() => (isPropertiesPanelOpenSignal.value = false)}
+        >
+          ×
+        </button>
       </div>
 
       {/* CATEGORY: GENERAL */}

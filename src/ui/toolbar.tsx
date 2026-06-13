@@ -59,6 +59,7 @@ export function Toolbar() {
   const [activeTab, setActiveTab] = useState<
     'home' | 'annotate' | 'view' | 'constraints'
   >('home');
+  const [isRibbonCollapsed, setIsRibbonCollapsed] = useState(false);
   const activeTool = activeToolSignal.value;
   const activeToolName = activeTool?.name || 'select';
 
@@ -111,338 +112,348 @@ export function Toolbar() {
         >
           View
         </button>
+        <div style={{flex: 1}} />
+        <button
+          className="ribbon-collapse-toggle"
+          onClick={() => setIsRibbonCollapsed(!isRibbonCollapsed)}
+          title={isRibbonCollapsed ? 'Expand Ribbon' : 'Collapse Ribbon'}
+        >
+          {isRibbonCollapsed ? '▼' : '▲'}
+        </button>
       </div>
 
       {/* Ribbon Panels */}
-      <div className="ribbon-content">
-        {activeTab === 'home' && (
-          <>
-            {/* Draw Panel */}
-            <div className="ribbon-panel">
-              <div className="ribbon-panel-body">
-                <button
-                  className={`ribbon-btn-large ${activeToolName === 'select' ? 'active' : ''}`}
-                  onClick={() => selectTool('select')}
-                  title="Select & Move (Esc)"
-                >
-                  <span className="ribbon-btn-large-icon">
-                    <SelectIcon />
-                  </span>
-                  <span className="ribbon-btn-large-label">Modify</span>
-                </button>
-                <button
-                  className={`ribbon-btn-large ${activeToolName === 'wall' ? 'active' : ''}`}
-                  onClick={() => selectTool('wall')}
-                  title="Wall (W)"
-                >
-                  <span className="ribbon-btn-large-icon">
-                    <WallIcon />
-                  </span>
-                  <span className="ribbon-btn-large-label">Wall</span>
-                </button>
-                <div className="ribbon-btn-group-stacked">
+      {!isRibbonCollapsed && (
+        <div className="ribbon-content">
+          {activeTab === 'home' && (
+            <>
+              {/* Draw Panel */}
+              <div className="ribbon-panel">
+                <div className="ribbon-panel-body">
                   <button
-                    className={`ribbon-btn-small ${activeToolName === 'line' ? 'active' : ''}`}
-                    onClick={() => selectTool('line')}
-                    title="Line (L)"
+                    className={`ribbon-btn-large ${activeToolName === 'select' ? 'active' : ''}`}
+                    onClick={() => selectTool('select')}
+                    title="Select & Move (Esc)"
                   >
-                    <span className="ribbon-btn-small-icon">
-                      <LineIcon />
+                    <span className="ribbon-btn-large-icon">
+                      <SelectIcon />
                     </span>
-                    <span className="ribbon-btn-small-label">Line</span>
+                    <span className="ribbon-btn-large-label">Modify</span>
                   </button>
                   <button
-                    className={`ribbon-btn-small ${activeToolName === 'rect' ? 'active' : ''}`}
-                    onClick={() => selectTool('rect')}
-                    title="Rectangle (R)"
+                    className={`ribbon-btn-large ${activeToolName === 'wall' ? 'active' : ''}`}
+                    onClick={() => selectTool('wall')}
+                    title="Wall (W)"
                   >
-                    <span className="ribbon-btn-small-icon">
-                      <RectIcon />
+                    <span className="ribbon-btn-large-icon">
+                      <WallIcon />
                     </span>
-                    <span className="ribbon-btn-small-label">Rectangle</span>
+                    <span className="ribbon-btn-large-label">Wall</span>
+                  </button>
+                  <div className="ribbon-btn-group-stacked">
+                    <button
+                      className={`ribbon-btn-small ${activeToolName === 'line' ? 'active' : ''}`}
+                      onClick={() => selectTool('line')}
+                      title="Line (L)"
+                    >
+                      <span className="ribbon-btn-small-icon">
+                        <LineIcon />
+                      </span>
+                      <span className="ribbon-btn-small-label">Line</span>
+                    </button>
+                    <button
+                      className={`ribbon-btn-small ${activeToolName === 'rect' ? 'active' : ''}`}
+                      onClick={() => selectTool('rect')}
+                      title="Rectangle (R)"
+                    >
+                      <span className="ribbon-btn-small-icon">
+                        <RectIcon />
+                      </span>
+                      <span className="ribbon-btn-small-label">Rectangle</span>
+                    </button>
+                    <button
+                      className={`ribbon-btn-small ${activeToolName === 'circle' ? 'active' : ''}`}
+                      onClick={() => selectTool('circle')}
+                      title="Circle (C)"
+                    >
+                      <span className="ribbon-btn-small-icon">
+                        <CircleIcon />
+                      </span>
+                      <span className="ribbon-btn-small-label">Circle</span>
+                    </button>
+                  </div>
+                </div>
+                <div className="ribbon-panel-title">Draw</div>
+              </div>
+
+              {/* Architectural Panel */}
+              <div className="ribbon-panel">
+                <div className="ribbon-panel-body">
+                  <button
+                    className={`ribbon-btn-large ${activeToolName === 'door' ? 'active' : ''}`}
+                    onClick={() => selectTool('door')}
+                    title="Door (D)"
+                  >
+                    <span className="ribbon-btn-large-icon">
+                      <DoorIcon />
+                    </span>
+                    <span className="ribbon-btn-large-label">Door</span>
                   </button>
                   <button
-                    className={`ribbon-btn-small ${activeToolName === 'circle' ? 'active' : ''}`}
-                    onClick={() => selectTool('circle')}
-                    title="Circle (C)"
+                    className={`ribbon-btn-large ${activeToolName === 'window' ? 'active' : ''}`}
+                    onClick={() => selectTool('window')}
+                    title="Window (N)"
                   >
-                    <span className="ribbon-btn-small-icon">
-                      <CircleIcon />
+                    <span className="ribbon-btn-large-icon">
+                      <WindowIcon />
                     </span>
-                    <span className="ribbon-btn-small-label">Circle</span>
+                    <span className="ribbon-btn-large-label">Window</span>
+                  </button>
+                  <button
+                    className={`ribbon-btn-large ${activeToolName === 'stairs' ? 'active' : ''}`}
+                    onClick={() => selectTool('stairs')}
+                    title="Stairs (S)"
+                  >
+                    <span className="ribbon-btn-large-icon">
+                      <StairsIcon />
+                    </span>
+                    <span className="ribbon-btn-large-label">Stairs</span>
                   </button>
                 </div>
+                <div className="ribbon-panel-title">Architectural</div>
               </div>
-              <div className="ribbon-panel-title">Draw</div>
-            </div>
+            </>
+          )}
 
-            {/* Architectural Panel */}
+          {activeTab === 'annotate' && (
             <div className="ribbon-panel">
               <div className="ribbon-panel-body">
                 <button
-                  className={`ribbon-btn-large ${activeToolName === 'door' ? 'active' : ''}`}
-                  onClick={() => selectTool('door')}
-                  title="Door (D)"
-                >
-                  <span className="ribbon-btn-large-icon">
-                    <DoorIcon />
-                  </span>
-                  <span className="ribbon-btn-large-label">Door</span>
-                </button>
-                <button
-                  className={`ribbon-btn-large ${activeToolName === 'window' ? 'active' : ''}`}
-                  onClick={() => selectTool('window')}
-                  title="Window (N)"
-                >
-                  <span className="ribbon-btn-large-icon">
-                    <WindowIcon />
-                  </span>
-                  <span className="ribbon-btn-large-label">Window</span>
-                </button>
-                <button
-                  className={`ribbon-btn-large ${activeToolName === 'stairs' ? 'active' : ''}`}
-                  onClick={() => selectTool('stairs')}
-                  title="Stairs (S)"
-                >
-                  <span className="ribbon-btn-large-icon">
-                    <StairsIcon />
-                  </span>
-                  <span className="ribbon-btn-large-label">Stairs</span>
-                </button>
-              </div>
-              <div className="ribbon-panel-title">Architectural</div>
-            </div>
-          </>
-        )}
-
-        {activeTab === 'annotate' && (
-          <div className="ribbon-panel">
-            <div className="ribbon-panel-body">
-              <button
-                className={`ribbon-btn-large ${activeToolName === 'dimension' ? 'active' : ''}`}
-                onClick={() => selectTool('dimension')}
-                title="Dimension (M)"
-              >
-                <span className="ribbon-btn-large-icon">
-                  <DimensionIcon />
-                </span>
-                <span className="ribbon-btn-large-label">Dimension</span>
-              </button>
-              <button
-                className={`ribbon-btn-large ${activeToolName === 'text' ? 'active' : ''}`}
-                onClick={() => selectTool('text')}
-                title="Text (T)"
-              >
-                <span className="ribbon-btn-large-icon">
-                  <TextIcon />
-                </span>
-                <span className="ribbon-btn-large-label">Text</span>
-              </button>
-            </div>
-            <div className="ribbon-panel-title">Annotation</div>
-          </div>
-        )}
-
-        {activeTab === 'constraints' && (
-          <>
-            {/* Geometric Constraints */}
-            <div className="ribbon-panel">
-              <div className="ribbon-panel-body">
-                <div className="ribbon-btn-group-stacked">
-                  <button
-                    className="ribbon-btn-small"
-                    onClick={() => {
-                      addHorizontalConstraintAction();
-                      pushCommandMessage(
-                        'Command: CONSTRAINT - Horizontal alignment constraint applied.',
-                      );
-                    }}
-                    disabled={!hasSelection}
-                    title="Constrain Horizontal"
-                  >
-                    <span className="ribbon-btn-small-label">Horizontal</span>
-                  </button>
-                  <button
-                    className="ribbon-btn-small"
-                    onClick={() => {
-                      addVerticalConstraintAction();
-                      pushCommandMessage(
-                        'Command: CONSTRAINT - Vertical alignment constraint applied.',
-                      );
-                    }}
-                    disabled={!hasSelection}
-                    title="Constrain Vertical"
-                  >
-                    <span className="ribbon-btn-small-label">Vertical</span>
-                  </button>
-                </div>
-
-                <div className="ribbon-btn-group-stacked">
-                  <button
-                    className="ribbon-btn-small"
-                    onClick={() => {
-                      addParallelConstraintAction();
-                      pushCommandMessage(
-                        'Command: CONSTRAINT - Parallel relationship constraint applied.',
-                      );
-                    }}
-                    title="Constrain Parallel (Select 2)"
-                  >
-                    <span className="ribbon-btn-small-label">Parallel</span>
-                  </button>
-                  <button
-                    className="ribbon-btn-small"
-                    onClick={() => {
-                      addPerpendicularConstraintAction();
-                      pushCommandMessage(
-                        'Command: CONSTRAINT - Perpendicular relationship constraint applied.',
-                      );
-                    }}
-                    title="Constrain Perpendicular (Select 2)"
-                  >
-                    <span className="ribbon-btn-small-label">
-                      Perpendicular
-                    </span>
-                  </button>
-                </div>
-              </div>
-              <div className="ribbon-panel-title">Geometric</div>
-            </div>
-
-            {/* Dimensional Constraints */}
-            <div className="ribbon-panel">
-              <div className="ribbon-panel-body">
-                <button
-                  className="ribbon-btn-large"
-                  onClick={() => {
-                    addLengthConstraintAction();
-                    pushCommandMessage(
-                      'Command: CONSTRAINT - Fixed length constraint applied.',
-                    );
-                  }}
-                  disabled={!hasSelection}
-                  title="Constrain Fixed Length"
+                  className={`ribbon-btn-large ${activeToolName === 'dimension' ? 'active' : ''}`}
+                  onClick={() => selectTool('dimension')}
+                  title="Dimension (M)"
                 >
                   <span className="ribbon-btn-large-icon">
                     <DimensionIcon />
                   </span>
-                  <span className="ribbon-btn-large-label">Fix Length</span>
+                  <span className="ribbon-btn-large-label">Dimension</span>
                 </button>
-
                 <button
-                  className="ribbon-btn-large"
-                  onClick={() => {
-                    clearSelectedConstraintsAction();
-                    pushCommandMessage(
-                      'Command: CONSTRAINTDEL - All constraints removed from selection.',
-                    );
-                  }}
-                  disabled={!hasSelection}
-                  title="Remove Selected Entity Constraints"
+                  className={`ribbon-btn-large ${activeToolName === 'text' ? 'active' : ''}`}
+                  onClick={() => selectTool('text')}
+                  title="Text (T)"
                 >
                   <span className="ribbon-btn-large-icon">
                     <TextIcon />
                   </span>
-                  <span className="ribbon-btn-large-label">Clear</span>
+                  <span className="ribbon-btn-large-label">Text</span>
                 </button>
               </div>
-              <div className="ribbon-panel-title">Dimensional</div>
+              <div className="ribbon-panel-title">Annotation</div>
             </div>
-          </>
-        )}
+          )}
 
-        {activeTab === 'view' && (
-          <>
-            <div className="ribbon-panel">
-              <div className="ribbon-panel-body">
-                <button
-                  className="ribbon-btn-large"
-                  onClick={handleFitScreen}
-                  title="Fit to screen"
-                >
-                  <span className="ribbon-btn-large-icon">
-                    <FitScreenIcon />
-                  </span>
-                  <span className="ribbon-btn-large-label">Zoom Ext</span>
-                </button>
-                <div className="ribbon-btn-group-stacked">
+          {activeTab === 'constraints' && (
+            <>
+              {/* Geometric Constraints */}
+              <div className="ribbon-panel">
+                <div className="ribbon-panel-body">
+                  <div className="ribbon-btn-group-stacked">
+                    <button
+                      className="ribbon-btn-small"
+                      onClick={() => {
+                        addHorizontalConstraintAction();
+                        pushCommandMessage(
+                          'Command: CONSTRAINT - Horizontal alignment constraint applied.',
+                        );
+                      }}
+                      disabled={!hasSelection}
+                      title="Constrain Horizontal"
+                    >
+                      <span className="ribbon-btn-small-label">Horizontal</span>
+                    </button>
+                    <button
+                      className="ribbon-btn-small"
+                      onClick={() => {
+                        addVerticalConstraintAction();
+                        pushCommandMessage(
+                          'Command: CONSTRAINT - Vertical alignment constraint applied.',
+                        );
+                      }}
+                      disabled={!hasSelection}
+                      title="Constrain Vertical"
+                    >
+                      <span className="ribbon-btn-small-label">Vertical</span>
+                    </button>
+                  </div>
+
+                  <div className="ribbon-btn-group-stacked">
+                    <button
+                      className="ribbon-btn-small"
+                      onClick={() => {
+                        addParallelConstraintAction();
+                        pushCommandMessage(
+                          'Command: CONSTRAINT - Parallel relationship constraint applied.',
+                        );
+                      }}
+                      title="Constrain Parallel (Select 2)"
+                    >
+                      <span className="ribbon-btn-small-label">Parallel</span>
+                    </button>
+                    <button
+                      className="ribbon-btn-small"
+                      onClick={() => {
+                        addPerpendicularConstraintAction();
+                        pushCommandMessage(
+                          'Command: CONSTRAINT - Perpendicular relationship constraint applied.',
+                        );
+                      }}
+                      title="Constrain Perpendicular (Select 2)"
+                    >
+                      <span className="ribbon-btn-small-label">
+                        Perpendicular
+                      </span>
+                    </button>
+                  </div>
+                </div>
+                <div className="ribbon-panel-title">Geometric</div>
+              </div>
+
+              {/* Dimensional Constraints */}
+              <div className="ribbon-panel">
+                <div className="ribbon-panel-body">
                   <button
-                    className="ribbon-btn-small"
+                    className="ribbon-btn-large"
                     onClick={() => {
-                      const vp = viewportSignal.value;
-                      if (vp) {
-                        vp.zoom = vp.zoom * 1.25;
-                        triggerRenderSignal.value = {};
-                        pushCommandMessage('Command: ZOOM - In.');
-                      }
+                      addLengthConstraintAction();
+                      pushCommandMessage(
+                        'Command: CONSTRAINT - Fixed length constraint applied.',
+                      );
                     }}
-                    title="Zoom In"
+                    disabled={!hasSelection}
+                    title="Constrain Fixed Length"
                   >
-                    <span className="ribbon-btn-small-icon">
-                      <ZoomInIcon />
+                    <span className="ribbon-btn-large-icon">
+                      <DimensionIcon />
                     </span>
-                    <span className="ribbon-btn-small-label">Zoom In</span>
+                    <span className="ribbon-btn-large-label">Fix Length</span>
                   </button>
+
                   <button
-                    className="ribbon-btn-small"
+                    className="ribbon-btn-large"
                     onClick={() => {
-                      const vp = viewportSignal.value;
-                      if (vp) {
-                        vp.zoom = vp.zoom * 0.8;
-                        triggerRenderSignal.value = {};
-                        pushCommandMessage('Command: ZOOM - Out.');
-                      }
+                      clearSelectedConstraintsAction();
+                      pushCommandMessage(
+                        'Command: CONSTRAINTDEL - All constraints removed from selection.',
+                      );
                     }}
-                    title="Zoom Out"
+                    disabled={!hasSelection}
+                    title="Remove Selected Entity Constraints"
                   >
-                    <span className="ribbon-btn-small-icon">
-                      <ZoomOutIcon />
+                    <span className="ribbon-btn-large-icon">
+                      <TextIcon />
                     </span>
-                    <span className="ribbon-btn-small-label">Zoom Out</span>
+                    <span className="ribbon-btn-large-label">Clear</span>
                   </button>
                 </div>
+                <div className="ribbon-panel-title">Dimensional</div>
               </div>
-              <div className="ribbon-panel-title">Navigate</div>
-            </div>
+            </>
+          )}
 
-            <div className="ribbon-panel">
-              <div className="ribbon-panel-body">
-                <button
-                  className={`ribbon-btn-large ${gridEnabledSignal.value ? 'active' : ''}`}
-                  onClick={() => {
-                    gridEnabledSignal.value = !gridEnabledSignal.value;
-                    pushCommandMessage(
-                      `Command: GRID - Grid display ${gridEnabledSignal.value ? 'ON' : 'OFF'}.`,
-                    );
-                  }}
-                  title="Toggle Grid Display"
-                >
-                  <span className="ribbon-btn-large-icon">
-                    <GridIcon />
-                  </span>
-                  <span className="ribbon-btn-large-label">Grid</span>
-                </button>
-                <button
-                  className={`ribbon-btn-large ${snapEnabledSignal.value ? 'active' : ''}`}
-                  onClick={() => {
-                    snapEnabledSignal.value = !snapEnabledSignal.value;
-                    pushCommandMessage(
-                      `Command: SNAP - Snapping to points ${snapEnabledSignal.value ? 'ON' : 'OFF'}.`,
-                    );
-                  }}
-                  title="Toggle Snapping"
-                >
-                  <span className="ribbon-btn-large-icon">
-                    <SnapIcon />
-                  </span>
-                  <span className="ribbon-btn-large-label">Snap</span>
-                </button>
+          {activeTab === 'view' && (
+            <>
+              <div className="ribbon-panel">
+                <div className="ribbon-panel-body">
+                  <button
+                    className="ribbon-btn-large"
+                    onClick={handleFitScreen}
+                    title="Fit to screen"
+                  >
+                    <span className="ribbon-btn-large-icon">
+                      <FitScreenIcon />
+                    </span>
+                    <span className="ribbon-btn-large-label">Zoom Ext</span>
+                  </button>
+                  <div className="ribbon-btn-group-stacked">
+                    <button
+                      className="ribbon-btn-small"
+                      onClick={() => {
+                        const vp = viewportSignal.value;
+                        if (vp) {
+                          vp.zoom = vp.zoom * 1.25;
+                          triggerRenderSignal.value = {};
+                          pushCommandMessage('Command: ZOOM - In.');
+                        }
+                      }}
+                      title="Zoom In"
+                    >
+                      <span className="ribbon-btn-small-icon">
+                        <ZoomInIcon />
+                      </span>
+                      <span className="ribbon-btn-small-label">Zoom In</span>
+                    </button>
+                    <button
+                      className="ribbon-btn-small"
+                      onClick={() => {
+                        const vp = viewportSignal.value;
+                        if (vp) {
+                          vp.zoom = vp.zoom * 0.8;
+                          triggerRenderSignal.value = {};
+                          pushCommandMessage('Command: ZOOM - Out.');
+                        }
+                      }}
+                      title="Zoom Out"
+                    >
+                      <span className="ribbon-btn-small-icon">
+                        <ZoomOutIcon />
+                      </span>
+                      <span className="ribbon-btn-small-label">Zoom Out</span>
+                    </button>
+                  </div>
+                </div>
+                <div className="ribbon-panel-title">Navigate</div>
               </div>
-              <div className="ribbon-panel-title">Aids</div>
-            </div>
-          </>
-        )}
-      </div>
+
+              <div className="ribbon-panel">
+                <div className="ribbon-panel-body">
+                  <button
+                    className={`ribbon-btn-large ${gridEnabledSignal.value ? 'active' : ''}`}
+                    onClick={() => {
+                      gridEnabledSignal.value = !gridEnabledSignal.value;
+                      pushCommandMessage(
+                        `Command: GRID - Grid display ${gridEnabledSignal.value ? 'ON' : 'OFF'}.`,
+                      );
+                    }}
+                    title="Toggle Grid Display"
+                  >
+                    <span className="ribbon-btn-large-icon">
+                      <GridIcon />
+                    </span>
+                    <span className="ribbon-btn-large-label">Grid</span>
+                  </button>
+                  <button
+                    className={`ribbon-btn-large ${snapEnabledSignal.value ? 'active' : ''}`}
+                    onClick={() => {
+                      snapEnabledSignal.value = !snapEnabledSignal.value;
+                      pushCommandMessage(
+                        `Command: SNAP - Snapping to points ${snapEnabledSignal.value ? 'ON' : 'OFF'}.`,
+                      );
+                    }}
+                    title="Toggle Snapping"
+                  >
+                    <span className="ribbon-btn-large-icon">
+                      <SnapIcon />
+                    </span>
+                    <span className="ribbon-btn-large-label">Snap</span>
+                  </button>
+                </div>
+                <div className="ribbon-panel-title">Aids</div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

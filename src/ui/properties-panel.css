@@ -28,6 +28,20 @@
   letter-spacing: 0.5px;
 }
 
+.properties-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  line-height: 1;
+}
+
+.properties-close-btn:hover {
+  color: var(--text-hover);
+}
+
 /* Category groups */
 .properties-category {
   display: flex;

@@ -460,3 +460,20 @@ export const CloseIcon = () => (
     <line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
+
+export const PanIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="16"
+    height="16"
+    stroke="currentColor"
+    stroke-width="2"
+    fill="none"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M10 2.5a2.5 2.5 0 0 1 5 0v6M15 5.5a2.5 2.5 0 0 1 5 0v7a8.5 8.5 0 0 1-17 0v-4a2.5 2.5 0 0 1 5 0v3" />
+    <path d="M10 2.5v7" />
+    <path d="M15 5.5v4" />
+  </svg>
+);

@@ -7,8 +7,10 @@ import {PropertiesPanel} from './ui/properties-panel';
 import {CommandLine} from './ui/command-line';
 import {PageTabs} from './ui/page-tabs';
 import {StatusBar} from './ui/status-bar';
+import {UcsIcon} from './ui/ucs-icon';
+import {NavigationBar} from './ui/navigation-bar';
 import {setActiveToolByName} from './tools/tool-registry';
-import {uiScaleSignal} from './state/app-state';
+import {uiScaleSignal, isPropertiesPanelOpenSignal} from './state/app-state';
 import './app.css';
 
 export function App() {
@@ -17,6 +19,7 @@ export function App() {
   }, []);
 
   const uiScale = uiScaleSignal.value;
+  const isPropertiesPanelOpen = isPropertiesPanelOpenSignal.value;
 
   return (
     <div className="app-shell">
@@ -29,14 +32,21 @@ export function App() {
       <main className="app-main">
         <div className="canvas-area">
           <CanvasComponent />
+          <div style={{zoom: uiScale}}>
+            <UcsIcon />
+            <NavigationBar />
+          </div>
+          <div className="floating-command-line" style={{zoom: uiScale}}>
+            <CommandLine />
+          </div>
         </div>
-        <div style={{zoom: uiScale, display: 'flex', height: '100%'}}>
+        <div
+          className={`properties-sidebar ${isPropertiesPanelOpen ? 'open' : 'collapsed'}`}
+          style={{zoom: uiScale}}
+        >
           <PropertiesPanel />
         </div>
       </main>
-      <div style={{zoom: uiScale}}>
-        <CommandLine />
-      </div>
       <div style={{zoom: uiScale}}>
         <PageTabs />
       </div>

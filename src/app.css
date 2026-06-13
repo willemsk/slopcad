@@ -77,6 +77,41 @@ body {
   overflow: hidden;
 }
 
+.floating-command-line {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  pointer-events: none;
+}
+
+.floating-command-line > * {
+  pointer-events: auto;
+}
+
+.properties-sidebar {
+  display: flex;
+  height: 100%;
+  transition: width 0.2s ease, min-width 0.2s ease, opacity 0.2s ease, border-left-color 0.2s ease;
+  overflow: hidden;
+  border-left: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+.properties-sidebar.open {
+  width: 260px;
+  min-width: 260px;
+  opacity: 1;
+}
+
+.properties-sidebar.collapsed {
+  width: 0px;
+  min-width: 0px;
+  opacity: 0;
+  border-left-color: transparent;
+}
+
 /* ==========================================================================
    Quick Access Toolbar (replaces Menubar)
    ========================================================================== */
@@ -162,4 +197,109 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 300px;
+}
+
+/* File Menu Dropdown */
+.file-menu-container {
+  margin-left: 12px;
+  margin-right: 4px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.file-menu-btn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 4px;
+  height: 24px;
+  transition: all 0.15s;
+}
+
+.file-menu-btn:hover, .file-menu-btn.active {
+  background-color: var(--accent);
+  color: white;
+}
+
+.file-dropdown-menu {
+  position: absolute;
+  top: 32px;
+  left: 0;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.file-menu-item {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.file-menu-item:hover {
+  background-color: var(--accent);
+  color: white;
+}
+
+.file-menu-item .shortcut {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.file-menu-item:hover .shortcut {
+  color: rgba(255,255,255,0.7);
+}
+
+.file-menu-item svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.8;
+}
+
+/* Navigation Bar */
+.nav-btn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s;
+  padding: 0;
+  margin-bottom: 2px;
+}
+
+.nav-btn:hover {
+  background-color: var(--accent);
+  color: white;
+}
+
+.nav-btn:last-child {
+  margin-bottom: 0;
 }

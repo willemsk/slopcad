@@ -1,21 +1,42 @@
 .command-line-area {
   display: flex;
   flex-direction: column;
-  height: 72px;
-  background-color: var(--bg-primary);
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
+  background-color: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-primary);
-  padding: 6px 16px;
+  padding: 8px 16px 6px 16px;
   box-sizing: border-box;
-  flex-shrink: 0;
+  width: 600px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.command-line-drag-handle {
+  height: 8px;
+  width: 100%;
+  cursor: ns-resize;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.command-line-drag-handle .drag-lines {
+  width: 30px;
+  height: 2px;
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 1px;
 }
 
 .command-history {
   flex: 1;
   overflow-y: auto;
+  margin-top: 4px;
   margin-bottom: 4px;
   opacity: 0.8;
   display: flex;

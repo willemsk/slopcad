@@ -51,6 +51,9 @@ export const commandLineMessagesSignal = signal<string[]>([
   'Select a tool from the ribbon or double-click to select entities.',
 ]);
 
+export const isPropertiesPanelOpenSignal = signal<boolean>(true);
+export const isRibbonCollapsedSignal = signal<boolean>(false);
+
 export const uiScaleSignal = signal<number>(
   parseFloat(localStorage.getItem('uiScale') || '1'),
 );

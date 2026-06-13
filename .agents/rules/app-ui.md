@@ -22,10 +22,9 @@ globs: src/ui/**/*, src/app.css, src/app.tsx
 The application uses a flex-based vertical shell defined in `app.tsx`:
 1. **Quick Access Toolbar** (`menubar.tsx`)
 2. **Ribbon** (`toolbar.tsx` + `ribbon.css`)
-3. **Main Workspace** (`.app-main` holding the Canvas and the collapsible Properties Panel)
-4. **Command Line** (`command-line.tsx`)
-5. **Page Tabs** (`page-tabs.tsx`)
-6. **Status Bar** (`status-bar.tsx`)
+3. **Main Workspace** (`.app-main` holding the Canvas, the collapsible Properties Panel sidebar, and the floating Command Line)
+4. **Page Tabs** (`page-tabs.tsx`)
+5. **Status Bar** (`status-bar.tsx`)
 
 ## UI Scaling & Responsiveness
 - **Scaling Mechanism**: To support 1440p and 4K displays, UI elements are scaled using the CSS `zoom` property applied directly to the UI component wrappers in `app.tsx`.
