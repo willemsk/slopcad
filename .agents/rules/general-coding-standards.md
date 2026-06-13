@@ -1,7 +1,7 @@
 ---
-trigger: always_on
-glob: "*.ts, *.tsx, *.js, *.css"
+trigger: glob
 description: "General language-agnostic coding best practices."
+globs: **/*.ts, **/*.tsx, **/*.js, **/*.css
 ---
 
 # General Coding Standards

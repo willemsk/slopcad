@@ -1,6 +1,6 @@
 ---
 trigger: always_on
-glob: "package.json, vite.config.ts, src/**/*"
+glob: "*"
 description: "Strict technology stack constraints and rules."
 ---
 

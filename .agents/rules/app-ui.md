@@ -1,7 +1,7 @@
 ---
-trigger: always_on
-glob: "src/ui/**/*, src/app.css, src/app.tsx"
+trigger: glob
 description: "UI aesthetics, layout, and component rules."
+globs: src/ui/**/*, src/app.css, src/app.tsx
 ---
 
 # App UI Guidelines

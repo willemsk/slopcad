@@ -1,7 +1,7 @@
 ---
-trigger: always_on
-glob: "src/**/*"
+trigger: glob
 description: "Architecture, directory structure, and implementation rules."
+globs: src/**/*
 ---
 
 # App Implementation Rules

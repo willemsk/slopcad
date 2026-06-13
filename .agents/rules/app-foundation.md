@@ -1,6 +1,5 @@
 ---
 trigger: always_on
-glob: 
 description: "Core understanding of the Antigravity CAD project, domain model, and application scope."
 ---
 

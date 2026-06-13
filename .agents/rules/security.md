@@ -1,7 +1,6 @@
 ---
-trigger: always_on
-glob: "*"
-description: "Security best practices."
+trigger: model_decision
+description: Security best practices.
 ---
 
 # Security Standards

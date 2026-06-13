@@ -1,7 +1,7 @@
 ---
-trigger: always_on
-glob: "*.test.ts, *.test.tsx, src/core/**/*"
+trigger: glob
 description: "Testing best practices using Vitest."
+globs: **/*.test.ts, **/*.test.tsx, src/core/**/*, vitest.config.ts
 ---
 
 # Testing Standards
