@@ -1,4 +1,4 @@
-import {signal, computed} from '@preact/signals';
+import {signal, computed, effect} from '@preact/signals';
 import {
   Project,
   Page,
@@ -34,7 +34,17 @@ const defaultProject: Project = {
 };
 
 // Global signals
-export const projectSignal = signal<Project>(defaultProject);
+let initialProject = defaultProject;
+const saved = localStorage.getItem('antigravity_project');
+if (saved) {
+  try {
+    initialProject = JSON.parse(saved);
+  } catch (e) {
+    console.error('Failed to parse saved project', e);
+  }
+}
+
+export const projectSignal = signal<Project>(initialProject);
 export const activeToolSignal = signal<Tool | null>(null);
 export const selectionSignal = signal<Set<string>>(new Set());
 export const viewportSignal = signal<any>(null); // Viewport instance
@@ -602,3 +612,17 @@ export function addFixedAngleConstraintAction() {
   const solved = solveConstraints(page.entities, newConstraints);
   updateActivePage(solved, newConstraints);
 }
+
+// Autosave Effect
+let saveTimeout: any;
+effect(() => {
+  const project = projectSignal.value;
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    try {
+      localStorage.setItem('antigravity_project', JSON.stringify(project));
+    } catch (e) {
+      console.warn('Failed to autosave project to localStorage', e);
+    }
+  }, 1500); // 1.5s debounce
+});
