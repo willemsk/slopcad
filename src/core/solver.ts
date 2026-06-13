@@ -107,6 +107,7 @@ export function solveConstraints(
       if (!c.pointRefs || c.pointRefs.length === 0) continue;
 
       switch (c.type) {
+        case 'concentric':
         case 'coincident': {
           if (c.pointRefs.length < 2) continue;
           const refA = c.pointRefs[0];
@@ -505,6 +506,137 @@ export function solveConstraints(
                   add(midCD, scale(dirCD, targetL / 2)),
                 );
               }
+            }
+          }
+          break;
+        }
+
+        case 'collinear': {
+          if (c.pointRefs.length < 4) continue;
+          const refA = c.pointRefs[0];
+          const refB = c.pointRefs[1];
+          const refC = c.pointRefs[2];
+          const refD = c.pointRefs[3];
+          const pA = getPointValue(solvedEntities, refA);
+          const pB = getPointValue(solvedEntities, refB);
+          const pC = getPointValue(solvedEntities, refC);
+          const pD = getPointValue(solvedEntities, refD);
+          if (!pA || !pB || !pC || !pD) continue;
+
+          const vecAB = sub(pB, pA);
+          const vecCD = sub(pD, pC);
+          const dirAB = normalize(vecAB);
+
+          const vecAC = sub(pC, pA);
+          const dotAC = vecAC.x * dirAB.x + vecAC.y * dirAB.y;
+          const projC = add(pA, scale(dirAB, dotAC));
+          const errC = dist(pC, projC);
+
+          const vecAD = sub(pD, pA);
+          const dotAD = vecAD.x * dirAB.x + vecAD.y * dirAB.y;
+          const projD = add(pA, scale(dirAB, dotAD));
+          const errD = dist(pD, projD);
+
+          const angleAB = angle(vecAB);
+          const angleCD = angle(vecCD);
+          let diff = angleCD - angleAB;
+          while (diff > Math.PI / 2) diff -= Math.PI;
+          while (diff < -Math.PI / 2) diff += Math.PI;
+
+          const error = Math.abs(diff) + errC + errD;
+          maxError = Math.max(maxError, error);
+
+          if (error > 0.0001) {
+            const lockedAB = isPointLocked(refA) && isPointLocked(refB);
+            const lockedCD = isPointLocked(refC) && isPointLocked(refD);
+
+            if (lockedAB && lockedCD) continue;
+
+            const currentDot = vecAB.x * vecCD.x + vecAB.y * vecCD.y;
+
+            if (lockedAB) {
+              const lenCD = len(vecCD);
+              const centerCD = lerp(pC, pD, 0.5);
+              const vecA_CenterCD = sub(centerCD, pA);
+              const dotCenter =
+                vecA_CenterCD.x * dirAB.x + vecA_CenterCD.y * dirAB.y;
+              const newCenterCD = add(pA, scale(dirAB, dotCenter));
+              const newDirCD =
+                currentDot > 0 ? dirAB : {x: -dirAB.x, y: -dirAB.y};
+
+              setPointValue(
+                solvedEntities,
+                refC,
+                sub(newCenterCD, scale(newDirCD, lenCD / 2)),
+              );
+              setPointValue(
+                solvedEntities,
+                refD,
+                add(newCenterCD, scale(newDirCD, lenCD / 2)),
+              );
+            } else if (lockedCD) {
+              const dirCD = normalize(vecCD);
+              const lenAB = len(vecAB);
+              const centerAB = lerp(pA, pB, 0.5);
+              const vecC_CenterAB = sub(centerAB, pC);
+              const dotCenter =
+                vecC_CenterAB.x * dirCD.x + vecC_CenterAB.y * dirCD.y;
+              const newCenterAB = add(pC, scale(dirCD, dotCenter));
+              const newDirAB =
+                currentDot > 0 ? dirCD : {x: -dirCD.x, y: -dirCD.y};
+
+              setPointValue(
+                solvedEntities,
+                refA,
+                sub(newCenterAB, scale(newDirAB, lenAB / 2)),
+              );
+              setPointValue(
+                solvedEntities,
+                refB,
+                add(newCenterAB, scale(newDirAB, lenAB / 2)),
+              );
+            } else {
+              const dirCD = normalize(vecCD);
+              const dirAvg = normalize(
+                add(dirAB, currentDot > 0 ? dirCD : {x: -dirCD.x, y: -dirCD.y}),
+              );
+              const centerAB = lerp(pA, pB, 0.5);
+              const centerCD = lerp(pC, pD, 0.5);
+              const centerAll = lerp(centerAB, centerCD, 0.5);
+
+              const dotA =
+                sub(pA, centerAll).x * dirAvg.x +
+                sub(pA, centerAll).y * dirAvg.y;
+              const dotB =
+                sub(pB, centerAll).x * dirAvg.x +
+                sub(pB, centerAll).y * dirAvg.y;
+              const dotC =
+                sub(pC, centerAll).x * dirAvg.x +
+                sub(pC, centerAll).y * dirAvg.y;
+              const dotD =
+                sub(pD, centerAll).x * dirAvg.x +
+                sub(pD, centerAll).y * dirAvg.y;
+
+              setPointValue(
+                solvedEntities,
+                refA,
+                add(centerAll, scale(dirAvg, dotA)),
+              );
+              setPointValue(
+                solvedEntities,
+                refB,
+                add(centerAll, scale(dirAvg, dotB)),
+              );
+              setPointValue(
+                solvedEntities,
+                refC,
+                add(centerAll, scale(dirAvg, dotC)),
+              );
+              setPointValue(
+                solvedEntities,
+                refD,
+                add(centerAll, scale(dirAvg, dotD)),
+              );
             }
           }
           break;

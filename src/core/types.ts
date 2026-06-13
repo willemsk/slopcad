@@ -119,7 +119,9 @@ export type ConstraintType =
   | 'fixed_angle' // angle of line is locked
   | 'parallel' // two lines are parallel
   | 'perpendicular' // two lines are perpendicular
-  | 'equal_length'; // two lines have equal length
+  | 'equal_length' // two lines have equal length
+  | 'collinear' // two lines lie on the same infinite line
+  | 'concentric'; // two circles/arcs share the same center
 
 export interface PointRef {
   entityId: string;

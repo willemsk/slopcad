@@ -5,13 +5,14 @@ import {
   viewportSignal,
   snapEnabledSignal,
   gridEnabledSignal,
+  showConstraintsSignal,
   mouseCoordsSignal,
   pushCommandMessage,
   uiScaleSignal,
   setUiScale,
 } from '../state/app-state';
 import {formatLength} from '../core/units';
-import {GridIcon, SnapIcon} from './icons';
+import {GridIcon, SnapIcon, ConstraintIcon} from './icons';
 import './status-bar.css';
 
 export function StatusBar() {
@@ -38,6 +39,13 @@ export function StatusBar() {
     snapEnabledSignal.value = !snapEnabledSignal.value;
     pushCommandMessage(
       `Command: SNAP - Snapping to geometry ${snapEnabledSignal.value ? 'ON' : 'OFF'}.`,
+    );
+  };
+
+  const toggleConstraints = () => {
+    showConstraintsSignal.value = !showConstraintsSignal.value;
+    pushCommandMessage(
+      `Command: CONSTRAINTS - Display ${showConstraintsSignal.value ? 'ON' : 'OFF'}.`,
     );
   };
 
@@ -74,6 +82,13 @@ export function StatusBar() {
           title="Object Snap (S / F3)"
         >
           <SnapIcon />
+        </button>
+        <button
+          className={`status-btn ${showConstraintsSignal.value ? 'active' : ''}`}
+          onClick={toggleConstraints}
+          title="Show Constraints"
+        >
+          <ConstraintIcon />
         </button>
       </div>
 

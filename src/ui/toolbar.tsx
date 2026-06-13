@@ -31,6 +31,11 @@ import {
   addPerpendicularConstraintAction,
   addParallelConstraintAction,
   clearSelectedConstraintsAction,
+  addCoincidentConstraintAction,
+  addCollinearConstraintAction,
+  addConcentricConstraintAction,
+  addEqualLengthConstraintAction,
+  addFixedAngleConstraintAction,
   viewportSignal,
   triggerRenderSignal,
   activePageSignal,
@@ -315,6 +320,48 @@ export function Toolbar() {
                       </span>
                     </button>
                   </div>
+
+                  <div className="ribbon-btn-group-stacked">
+                    <button
+                      className="ribbon-btn-small"
+                      onClick={() => {
+                        addCollinearConstraintAction();
+                        pushCommandMessage(
+                          'Command: CONSTRAINT - Collinear constraint applied.',
+                        );
+                      }}
+                      disabled={!hasSelection}
+                      title="Constrain Collinear"
+                    >
+                      <span className="ribbon-btn-small-label">Collinear</span>
+                    </button>
+                    <button
+                      className="ribbon-btn-small"
+                      onClick={() => {
+                        addCoincidentConstraintAction();
+                        pushCommandMessage(
+                          'Command: CONSTRAINT - Coincident constraint applied.',
+                        );
+                      }}
+                      disabled={!hasSelection}
+                      title="Constrain Coincident"
+                    >
+                      <span className="ribbon-btn-small-label">Coincident</span>
+                    </button>
+                    <button
+                      className="ribbon-btn-small"
+                      onClick={() => {
+                        addConcentricConstraintAction();
+                        pushCommandMessage(
+                          'Command: CONSTRAINT - Concentric constraint applied.',
+                        );
+                      }}
+                      disabled={!hasSelection}
+                      title="Constrain Concentric"
+                    >
+                      <span className="ribbon-btn-small-label">Concentric</span>
+                    </button>
+                  </div>
                 </div>
                 <div className="ribbon-panel-title">Geometric</div>
               </div>
@@ -337,6 +384,40 @@ export function Toolbar() {
                       <DimensionIcon />
                     </span>
                     <span className="ribbon-btn-large-label">Fix Length</span>
+                  </button>
+
+                  <button
+                    className="ribbon-btn-large"
+                    onClick={() => {
+                      addEqualLengthConstraintAction();
+                      pushCommandMessage(
+                        'Command: CONSTRAINT - Equal length constraint applied.',
+                      );
+                    }}
+                    disabled={!hasSelection}
+                    title="Constrain Equal Length"
+                  >
+                    <span className="ribbon-btn-large-icon">
+                      <DimensionIcon />
+                    </span>
+                    <span className="ribbon-btn-large-label">Equal Len</span>
+                  </button>
+
+                  <button
+                    className="ribbon-btn-large"
+                    onClick={() => {
+                      addFixedAngleConstraintAction();
+                      pushCommandMessage(
+                        'Command: CONSTRAINT - Fixed angle constraint applied.',
+                      );
+                    }}
+                    disabled={!hasSelection}
+                    title="Constrain Fixed Angle"
+                  >
+                    <span className="ribbon-btn-large-icon">
+                      <DimensionIcon />
+                    </span>
+                    <span className="ribbon-btn-large-label">Fix Angle</span>
                   </button>
 
                   <button

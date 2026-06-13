@@ -1,4 +1,4 @@
-import {Entity, SnapResult, UnitSystem} from '../core/types';
+import {Entity, SnapResult, UnitSystem, Constraint} from '../core/types';
 import {Viewport} from './viewport';
 import {
   drawWall,
@@ -13,6 +13,7 @@ import {
   drawText,
   drawSelectionHandles,
   drawSnapIndicator,
+  drawConstraint,
 } from './draw-helpers';
 
 export interface RenderState {
@@ -21,9 +22,11 @@ export interface RenderState {
   height: number;
   viewport: Viewport;
   entities: Entity[];
+  constraints: Constraint[];
   selection: Set<string>;
   snapResult: SnapResult | null;
   gridEnabled: boolean;
+  showConstraints: boolean;
   gridSpacing: number; // in meters, e.g. 0.5
   unitSystem: UnitSystem;
   previewEntity: Entity | null; // Entity currently being drawn (ghost)
@@ -38,9 +41,11 @@ export function render(state: RenderState) {
     height,
     viewport,
     entities,
+    constraints,
     selection,
     snapResult,
     gridEnabled,
+    showConstraints,
     gridSpacing,
     unitSystem,
     previewEntity,
@@ -117,14 +122,22 @@ export function render(state: RenderState) {
     ctx.restore();
   }
 
-  // 6. Draw Selection Handles on Top
+  // 6. Draw Constraints (if visible)
+  if (showConstraints) {
+    for (const c of constraints) {
+      const isSelected = c.entityIds.some(id => selection.has(id));
+      drawConstraint(ctx, c, entities, isSelected, unitSystem, viewport.zoom);
+    }
+  }
+
+  // 7. Draw Selection Handles on Top
   for (const ent of entities) {
     if (selection.has(ent.id)) {
       drawSelectionHandles(ctx, ent, viewport.zoom);
     }
   }
 
-  // 7. Draw Snap Indicator
+  // 8. Draw Snap Indicator
   if (snapResult) {
     drawSnapIndicator(ctx, snapResult.point, snapResult.type, viewport.zoom);
   }
@@ -132,7 +145,7 @@ export function render(state: RenderState) {
   // Restore camera transform
   ctx.restore();
 
-  // 8. Draw Screen-Space UCS Indicator (Bottom-Left)
+  // 9. Draw Screen-Space UCS Indicator (Bottom-Left)
   ctx.save();
   ctx.translate(20, height - 20); // 20px padding from bottom-left
   ctx.lineWidth = 1.5;

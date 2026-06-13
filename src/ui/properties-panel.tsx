@@ -45,6 +45,7 @@ export function PropertiesPanel() {
   const [geometryOpen, setGeometryOpen] = useState(true);
   const [paramOpen, setParamOpen] = useState(true);
   const [pageOpen, setPageOpen] = useState(true);
+  const [constraintsOpen, setConstraintsOpen] = useState(true);
 
   useEffect(() => {
     // Reset local inputs when selection changes
@@ -910,6 +911,71 @@ export function PropertiesPanel() {
           )}
         </div>
       )}
+
+      {/* CATEGORY: CONSTRAINTS */}
+      <div className="properties-category">
+        <div
+          className="properties-category-header"
+          onClick={() => setConstraintsOpen(!constraintsOpen)}
+        >
+          {constraintsOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
+          <span className="properties-category-title">Constraints</span>
+        </div>
+
+        {constraintsOpen && (
+          <div className="properties-category-content">
+            {page.constraints
+              .filter(c => c.entityIds.includes(activeEntity.id))
+              .map(c => (
+                <div
+                  key={c.id}
+                  className="property-item"
+                  style={{justifyContent: 'space-between'}}
+                >
+                  <span
+                    className="property-label"
+                    style={{textTransform: 'capitalize'}}
+                  >
+                    {c.type.replace('_', ' ')}
+                  </span>
+                  <div className="property-value" style={{flex: 'none'}}>
+                    <button
+                      onClick={() => {
+                        snapshotState();
+                        const newConstraints = page.constraints.filter(
+                          oc => oc.id !== c.id,
+                        );
+                        updateActivePage(page.entities, newConstraints);
+                      }}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: 'var(--text-color)',
+                        cursor: 'pointer',
+                        opacity: 0.5,
+                      }}
+                      title="Delete constraint"
+                      onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                      onMouseLeave={e =>
+                        (e.currentTarget.style.opacity = '0.5')
+                      }
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              ))}
+            {page.constraints.filter(c => c.entityIds.includes(activeEntity.id))
+              .length === 0 && (
+              <div className="property-item">
+                <span className="property-label" style={{opacity: 0.5}}>
+                  No constraints
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </aside>
   );
 }

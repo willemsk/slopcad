@@ -477,3 +477,19 @@ export const PanIcon = () => (
     <path d="M15 5.5v4" />
   </svg>
 );
+
+export const ConstraintIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="16"
+    height="16"
+    stroke="currentColor"
+    stroke-width="2"
+    fill="none"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <rect x="3" y="11" width="18" height="2" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
