@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import {h} from 'preact';
 import {
   projectSignal,
   activePageSignal,
@@ -9,9 +9,9 @@ import {
   pushCommandMessage,
   triggerRenderSignal,
 } from '../state/app-state';
-import { saveProjectToFile, loadProjectFromFile } from '../io/file-io';
-import { downloadSVGFile } from '../io/export-svg';
-import { generateId } from '../core/entity';
+import {saveProjectToFile, loadProjectFromFile} from '../io/file-io';
+import {downloadSVGFile} from '../io/export-svg';
+import {generateId} from '../core/entity';
 import {
   NewIcon,
   OpenIcon,
@@ -28,7 +28,9 @@ export function Menubar() {
   const hasSelection = selectionSignal.value.size > 0;
 
   const handleNewProject = () => {
-    if (window.confirm('Start a new project? Any unsaved changes will be lost.')) {
+    if (
+      window.confirm('Start a new project? Any unsaved changes will be lost.')
+    ) {
       const newPage = {
         id: generateId(),
         name: 'Ground Floor',
@@ -46,7 +48,9 @@ export function Menubar() {
       };
       selectionSignal.value = new Set();
       triggerRenderSignal.value = {};
-      pushCommandMessage('Command: NEW - Started new architectural drawing plan.');
+      pushCommandMessage(
+        'Command: NEW - Started new architectural drawing plan.',
+      );
     }
   };
 
@@ -62,7 +66,9 @@ export function Menubar() {
 
   const handleExportSVG = () => {
     downloadSVGFile(activePageSignal.value, projectSignal.value.unitSystem);
-    pushCommandMessage(`Command: EXPORT - Exporting floor "${page.name}" as vector SVG.`);
+    pushCommandMessage(
+      `Command: EXPORT - Exporting floor "${page.name}" as vector SVG.`,
+    );
   };
 
   const handleUndo = () => {
@@ -83,40 +89,65 @@ export function Menubar() {
   return (
     <header className="menubar">
       <div className="qat-group">
-        <span className="qat-logo">
-          Antigravity CAD
-        </span>
-        <button className="qat-btn" onClick={handleNewProject} title="New Plan (Ctrl+N)">
+        <span className="qat-logo">Antigravity CAD</span>
+        <button
+          className="qat-btn"
+          onClick={handleNewProject}
+          title="New Plan (Ctrl+N)"
+        >
           <NewIcon />
         </button>
-        <button className="qat-btn" onClick={handleOpenProject} title="Open Plan... (Ctrl+O)">
+        <button
+          className="qat-btn"
+          onClick={handleOpenProject}
+          title="Open Plan... (Ctrl+O)"
+        >
           <OpenIcon />
         </button>
-        <button className="qat-btn" onClick={handleSaveProject} title="Save Plan (Ctrl+S)">
+        <button
+          className="qat-btn"
+          onClick={handleSaveProject}
+          title="Save Plan (Ctrl+S)"
+        >
           <SaveIcon />
         </button>
-        <button className="qat-btn" onClick={handleExportSVG} title="Export current floor layout to SVG">
+        <button
+          className="qat-btn"
+          onClick={handleExportSVG}
+          title="Export current floor layout to SVG"
+        >
           <ExportIcon />
         </button>
 
         <div className="qat-separator" />
 
-        <button className="qat-btn" onClick={handleUndo} title="Undo last change (Ctrl+Z)">
+        <button
+          className="qat-btn"
+          onClick={handleUndo}
+          title="Undo last change (Ctrl+Z)"
+        >
           <UndoIcon />
         </button>
-        <button className="qat-btn" onClick={handleRedo} title="Redo last change (Ctrl+Y)">
+        <button
+          className="qat-btn"
+          onClick={handleRedo}
+          title="Redo last change (Ctrl+Y)"
+        >
           <RedoIcon />
         </button>
-        <button className="qat-btn" onClick={handleDelete} disabled={!hasSelection} title="Delete selected (Del)">
+        <button
+          className="qat-btn"
+          onClick={handleDelete}
+          disabled={!hasSelection}
+          title="Delete selected (Del)"
+        >
           <DeleteIcon />
         </button>
       </div>
 
-      <div className="qat-title">
-        {project.name || 'Untitled Plan'}
-      </div>
+      <div className="qat-title">{project.name || 'Untitled Plan'}</div>
 
-      <div className="qat-group" style={{ width: 80 }} />
+      <div className="qat-group" style={{width: 80}} />
     </header>
   );
 }

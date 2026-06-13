@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "fix": "gts fix",
+    "test": "vitest run"
   },
   "dependencies": {
     "@preact/signals": "^2.9.1",
@@ -14,8 +18,10 @@
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.5",
-    "@types/node": "^24.12.3",
-    "typescript": "~6.0.2",
-    "vite": "^8.0.12"
+    "@types/node": "^22.7.5",
+    "gts": "^7.0.0",
+    "typescript": "^5.6.3",
+    "vite": "^8.0.12",
+    "vitest": "^4.1.8"
   }
 }

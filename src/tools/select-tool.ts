@@ -1,8 +1,15 @@
-import { Tool } from './tool';
-import { Vec2, SnapResult, Entity, PointRef } from '../core/types';
-import { Viewport } from '../canvas/viewport';
-import { dist, distToSegment, sub, add, normalize, scale } from '../core/geometry';
-import { solveConstraints } from '../core/solver';
+import {Tool} from './tool';
+import {Vec2, SnapResult, Entity, PointRef} from '../core/types';
+import {Viewport} from '../canvas/viewport';
+import {
+  dist,
+  distToSegment,
+  sub,
+  add,
+  normalize,
+  scale,
+} from '../core/geometry';
+import {solveConstraints} from '../core/solver';
 import {
   projectSignal,
   selectionSignal,
@@ -19,10 +26,10 @@ import {
 export class SelectTool implements Tool {
   name = 'select';
 
-  private draggingHandle: { entityId: string; pointKey: string } | null = null;
+  private draggingHandle: {entityId: string; pointKey: string} | null = null;
   private draggingEntities: Entity[] = [];
-  private dragStartPos: Vec2 = { x: 0, y: 0 };
-  private dragLastPos: Vec2 = { x: 0, y: 0 };
+  private dragStartPos: Vec2 = {x: 0, y: 0};
+  private dragLastPos: Vec2 = {x: 0, y: 0};
   private didDrag = false;
 
   // Box selection
@@ -45,9 +52,13 @@ export class SelectTool implements Tool {
     this.didDrag = false;
   }
 
-  onMouseDown(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
-    this.dragStartPos = { ...worldPos };
-    this.dragLastPos = { ...worldPos };
+  onMouseDown(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
+    this.dragStartPos = {...worldPos};
+    this.dragLastPos = {...worldPos};
     this.didDrag = false;
 
     const page = activePageSignal.value;
@@ -64,7 +75,7 @@ export class SelectTool implements Tool {
           const pt = (ent as any)[key];
           if (pt && dist(worldPos, pt) < handleRadius) {
             snapshotState(); // Save undo state before edit
-            this.draggingHandle = { entityId: ent.id, pointKey: key };
+            this.draggingHandle = {entityId: ent.id, pointKey: key};
             return;
           }
         }
@@ -88,8 +99,8 @@ export class SelectTool implements Tool {
       snapshotState(); // Save undo state before drag
       const idsToDrag = selectionSignal.value;
       this.draggingEntities = page.entities
-        .filter((e) => idsToDrag.has(e.id) && !e.locked)
-        .map((e) => JSON.parse(JSON.stringify(e))); // deep copy starting state
+        .filter(e => idsToDrag.has(e.id) && !e.locked)
+        .map(e => JSON.parse(JSON.stringify(e))); // deep copy starting state
 
       return;
     }
@@ -98,11 +109,15 @@ export class SelectTool implements Tool {
     if (!event.shiftKey) {
       clearSelection();
     }
-    this.boxStart = { ...worldPos };
-    this.boxEnd = { ...worldPos };
+    this.boxStart = {...worldPos};
+    this.boxEnd = {...worldPos};
   }
 
-  onMouseMove(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseMove(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     const deltaX = worldPos.x - this.dragLastPos.x;
     const deltaY = worldPos.y - this.dragLastPos.y;
 
@@ -116,10 +131,10 @@ export class SelectTool implements Tool {
       const targetPos = snapResult ? snapResult.point : worldPos;
 
       // Update the handle coordinate
-      const updatedEntities = page.entities.map((ent) => {
+      const updatedEntities = page.entities.map(ent => {
         if (ent.id === this.draggingHandle!.entityId) {
           const copy = JSON.parse(JSON.stringify(ent));
-          copy[this.draggingHandle!.pointKey] = { ...targetPos };
+          copy[this.draggingHandle!.pointKey] = {...targetPos};
           return copy;
         }
         return ent;
@@ -132,9 +147,11 @@ export class SelectTool implements Tool {
       };
 
       // Run solver
-      const solved = solveConstraints(updatedEntities, page.constraints, [pinnedRef]);
+      const solved = solveConstraints(updatedEntities, page.constraints, [
+        pinnedRef,
+      ]);
       updateActivePage(solved, page.constraints);
-      this.dragLastPos = { ...worldPos };
+      this.dragLastPos = {...worldPos};
       return;
     }
 
@@ -144,8 +161,8 @@ export class SelectTool implements Tool {
       const totalDelta = sub(worldPos, this.dragStartPos);
 
       // Translate all points of dragged entities
-      const updatedEntities = page.entities.map((ent) => {
-        const dragStartEnt = this.draggingEntities.find((e) => e.id === ent.id);
+      const updatedEntities = page.entities.map(ent => {
+        const dragStartEnt = this.draggingEntities.find(e => e.id === ent.id);
         if (dragStartEnt) {
           const copy = JSON.parse(JSON.stringify(ent));
           const dragStartAny = dragStartEnt as any;
@@ -156,7 +173,8 @@ export class SelectTool implements Tool {
           if (copy.p1) copy.p1 = add(dragStartAny.p1, totalDelta);
           if (copy.p2) copy.p2 = add(dragStartAny.p2, totalDelta);
           if (copy.center) copy.center = add(dragStartAny.center, totalDelta);
-          if (copy.position && copy.type === 'text') copy.position = add(dragStartAny.position, totalDelta);
+          if (copy.position && copy.type === 'text')
+            copy.position = add(dragStartAny.position, totalDelta);
 
           return copy;
         }
@@ -168,20 +186,24 @@ export class SelectTool implements Tool {
       for (const ent of this.draggingEntities) {
         const keys = this.getEntityHandleKeys(ent);
         for (const k of keys) {
-          pinnedRefs.push({ entityId: ent.id, pointKey: k as any });
+          pinnedRefs.push({entityId: ent.id, pointKey: k as any});
         }
       }
 
       // Solve constraints
-      const solved = solveConstraints(updatedEntities, page.constraints, pinnedRefs);
+      const solved = solveConstraints(
+        updatedEntities,
+        page.constraints,
+        pinnedRefs,
+      );
       updateActivePage(solved, page.constraints);
-      this.dragLastPos = { ...worldPos };
+      this.dragLastPos = {...worldPos};
       return;
     }
 
     // C. Box Selection
     if (this.boxStart) {
-      this.boxEnd = { ...worldPos };
+      this.boxEnd = {...worldPos};
       triggerRenderSignal.value = {}; // force redraw to draw box overlay
     }
   }
@@ -199,14 +221,22 @@ export class SelectTool implements Tool {
       const y1 = Math.min(this.boxStart.y, this.boxEnd.y);
       const y2 = Math.max(this.boxStart.y, this.boxEnd.y);
 
-      const withinBox = (pt: Vec2) => pt.x >= x1 && pt.x <= x2 && pt.y >= y1 && pt.y <= y2;
+      const withinBox = (pt: Vec2) =>
+        pt.x >= x1 && pt.x <= x2 && pt.y >= y1 && pt.y <= y2;
 
-      const newSelection = new Set<string>(event.shiftKey ? selectionSignal.value : []);
+      const newSelection = new Set<string>(
+        event.shiftKey ? selectionSignal.value : [],
+      );
 
       for (const ent of page.entities) {
         let matches = false;
-        if (ent.type === 'wall' || ent.type === 'line' || ent.type === 'stairs') {
-          matches = withinBox((ent as any).start) || withinBox((ent as any).end);
+        if (
+          ent.type === 'wall' ||
+          ent.type === 'line' ||
+          ent.type === 'stairs'
+        ) {
+          matches =
+            withinBox((ent as any).start) || withinBox((ent as any).end);
         } else if (ent.type === 'rect') {
           matches = withinBox((ent as any).p1) || withinBox((ent as any).p2);
         } else if (ent.type === 'circle' || ent.type === 'arc') {
@@ -229,7 +259,11 @@ export class SelectTool implements Tool {
     triggerRenderSignal.value = {};
   }
 
-  renderPreview(ctx: CanvasRenderingContext2D, viewport: Viewport, currentWorldPos: Vec2) {
+  renderPreview(
+    ctx: CanvasRenderingContext2D,
+    viewport: Viewport,
+    currentWorldPos: Vec2,
+  ) {
     // Draw Box Selection rectangle
     if (this.boxStart && this.boxEnd) {
       ctx.save();
@@ -241,7 +275,7 @@ export class SelectTool implements Tool {
         this.boxStart.x,
         this.boxStart.y,
         this.boxEnd.x - this.boxStart.x,
-        this.boxEnd.y - this.boxStart.y
+        this.boxEnd.y - this.boxStart.y,
       );
       ctx.fill();
       ctx.stroke();
@@ -250,7 +284,11 @@ export class SelectTool implements Tool {
   }
 
   // Find entity under cursor
-  private findEntityAt(pt: Vec2, entities: Entity[], hitRadius: number): Entity | null {
+  private findEntityAt(
+    pt: Vec2,
+    entities: Entity[],
+    hitRadius: number,
+  ): Entity | null {
     let bestEnt: Entity | null = null;
     let bestDist = hitRadius;
 
@@ -263,10 +301,10 @@ export class SelectTool implements Tool {
         }
       } else if (ent.type === 'rect') {
         const r = ent;
-        const d1 = distToSegment(pt, r.p1, { x: r.p2.x, y: r.p1.y });
-        const d2 = distToSegment(pt, { x: r.p2.x, y: r.p1.y }, r.p2);
-        const d3 = distToSegment(pt, r.p2, { x: r.p1.x, y: r.p2.y });
-        const d4 = distToSegment(pt, { x: r.p1.x, y: r.p2.y }, r.p1);
+        const d1 = distToSegment(pt, r.p1, {x: r.p2.x, y: r.p1.y});
+        const d2 = distToSegment(pt, {x: r.p2.x, y: r.p1.y}, r.p2);
+        const d3 = distToSegment(pt, r.p2, {x: r.p1.x, y: r.p2.y});
+        const d4 = distToSegment(pt, {x: r.p1.x, y: r.p2.y}, r.p1);
         const d = Math.min(d1, d2, d3, d4);
         if (d < bestDist) {
           bestDist = d;
@@ -282,7 +320,7 @@ export class SelectTool implements Tool {
       } else if (ent.type === 'dimension') {
         const dEnt = ent;
         const u = normalize(sub(dEnt.p2, dEnt.p1));
-        const n = { x: -u.y, y: u.x };
+        const n = {x: -u.y, y: u.x};
         const d1 = add(dEnt.p1, scale(n, dEnt.offset));
         const d2 = add(dEnt.p2, scale(n, dEnt.offset));
         const d = distToSegment(pt, d1, d2);

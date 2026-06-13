@@ -1,5 +1,5 @@
-import { Entity, SnapResult, UnitSystem } from '../core/types';
-import { Viewport } from './viewport';
+import {Entity, SnapResult, UnitSystem} from '../core/types';
+import {Viewport} from './viewport';
 import {
   drawWall,
   drawDoor,
@@ -62,7 +62,6 @@ export function render(state: RenderState) {
     drawGrid(ctx, viewport, width, height, gridSpacing);
   }
 
-
   // 3b. Draw Ghost Overlay Floor
   if (overlayEntities && overlayEntities.length > 0) {
     ctx.save();
@@ -73,10 +72,20 @@ export function render(state: RenderState) {
     ctx.restore();
   }
 
-
   // 4. Draw Entities
   // Draw order: Walls -> Lines/Rects/Circles/Arcs -> Doors/Windows -> Stairs -> Dimensions -> Text
-  const typeOrder = ['wall', 'line', 'rect', 'circle', 'arc', 'door', 'window', 'stairs', 'dimension', 'text'];
+  const typeOrder = [
+    'wall',
+    'line',
+    'rect',
+    'circle',
+    'arc',
+    'door',
+    'window',
+    'stairs',
+    'dimension',
+    'text',
+  ];
 
   const sortedEntities = [...entities].sort((a, b) => {
     return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
@@ -127,26 +136,26 @@ export function render(state: RenderState) {
   ctx.save();
   ctx.translate(20, height - 20); // 20px padding from bottom-left
   ctx.lineWidth = 1.5;
-  
+
   // X axis (red)
   ctx.strokeStyle = '#f44747';
   ctx.beginPath();
   ctx.moveTo(0, 0);
   ctx.lineTo(24, 0);
   ctx.stroke();
-  
+
   // Y axis (green)
   ctx.strokeStyle = '#6a9955';
   ctx.beginPath();
   ctx.moveTo(0, 0);
   ctx.lineTo(0, -24); // Upwards in screen space is negative Y
   ctx.stroke();
-  
+
   // Draw label X and Y
   ctx.fillStyle = '#f44747';
   ctx.font = 'bold 10px var(--font-mono)';
   ctx.fillText('X', 28, 4);
-  
+
   ctx.fillStyle = '#6a9955';
   ctx.fillText('Y', -4, -28);
   ctx.restore();
@@ -158,7 +167,7 @@ function drawEntity(
   entities: Entity[],
   isSelected: boolean,
   unitSystem: UnitSystem,
-  zoom: number
+  zoom: number,
 ) {
   switch (ent.type) {
     case 'wall':
@@ -199,10 +208,10 @@ function drawGrid(
   viewport: Viewport,
   width: number,
   height: number,
-  spacing: number
+  spacing: number,
 ) {
-  const topLeft = viewport.screenToWorld({ x: 0, y: 0 });
-  const bottomRight = viewport.screenToWorld({ x: width, y: height });
+  const topLeft = viewport.screenToWorld({x: 0, y: 0});
+  const bottomRight = viewport.screenToWorld({x: width, y: height});
 
   const startX = Math.floor(topLeft.x / spacing) * spacing;
   const endX = Math.ceil(bottomRight.x / spacing) * spacing;

@@ -1,4 +1,4 @@
-import { Project } from '../core/types';
+import {Project} from '../core/types';
 
 const SCHEMA_VERSION = '1.0.0';
 
@@ -28,7 +28,11 @@ export function deserializeProject(jsonStr: string): Project | null {
     const proj = parsed.project as Project;
 
     // Basic structure validation
-    if (!proj.name || !Array.isArray(proj.pages) || typeof proj.activePageIndex !== 'number') {
+    if (
+      !proj.name ||
+      !Array.isArray(proj.pages) ||
+      typeof proj.activePageIndex !== 'number'
+    ) {
       return null;
     }
 

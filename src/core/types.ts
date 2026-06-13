@@ -50,7 +50,7 @@ export interface WindowEntity extends BaseEntity {
 export interface StairsEntity extends BaseEntity {
   type: 'stairs';
   start: Vec2; // Start of the staircase (bottom)
-  end: Vec2;   // End of the staircase (top)
+  end: Vec2; // End of the staircase (top)
   width: number; // width of stairs in meters
   treadCount: number; // number of steps
   direction: 'up' | 'down'; // direction arrow
@@ -79,7 +79,7 @@ export interface ArcEntity extends BaseEntity {
   center: Vec2;
   radius: number;
   startAngle: number; // in radians
-  endAngle: number;   // in radians
+  endAngle: number; // in radians
 }
 
 export interface DimensionEntity extends BaseEntity {
@@ -112,14 +112,14 @@ export type Entity =
 
 // Constraint Types
 export type ConstraintType =
-  | 'coincident'     // two points are locked together
-  | 'horizontal'     // wall/line is horizontal (dy = 0)
-  | 'vertical'       // wall/line is vertical (dx = 0)
-  | 'fixed_length'   // distance between two points is locked
-  | 'fixed_angle'    // angle of line is locked
-  | 'parallel'       // two lines are parallel
-  | 'perpendicular'  // two lines are perpendicular
-  | 'equal_length';  // two lines have equal length
+  | 'coincident' // two points are locked together
+  | 'horizontal' // wall/line is horizontal (dy = 0)
+  | 'vertical' // wall/line is vertical (dx = 0)
+  | 'fixed_length' // distance between two points is locked
+  | 'fixed_angle' // angle of line is locked
+  | 'parallel' // two lines are parallel
+  | 'perpendicular' // two lines are perpendicular
+  | 'equal_length'; // two lines have equal length
 
 export interface PointRef {
   entityId: string;
@@ -155,7 +155,13 @@ export interface Project {
 
 export interface SnapResult {
   point: Vec2;
-  type: 'grid' | 'endpoint' | 'midpoint' | 'intersection' | 'perpendicular' | 'wall-align';
+  type:
+    | 'grid'
+    | 'endpoint'
+    | 'midpoint'
+    | 'intersection'
+    | 'perpendicular'
+    | 'wall-align';
   entityId?: string; // associated entity if snapped to one
   extra?: any; // e.g. snapped wall-angle for door/window alignment
 }

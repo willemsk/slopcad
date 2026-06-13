@@ -1,14 +1,14 @@
-import { Vec2, Entity } from '../core/types';
+import {Vec2, Entity} from '../core/types';
 
 export class Viewport {
   // zoom is screen pixels per world unit (meter)
   // e.g., zoom = 100 means 1 meter = 100 pixels
   zoom = 100;
-  panOffset: Vec2 = { x: 0, y: 0 }; // in screen pixels
+  panOffset: Vec2 = {x: 0, y: 0}; // in screen pixels
 
-  constructor(zoom = 100, panOffset: Vec2 = { x: 0, y: 0 }) {
+  constructor(zoom = 100, panOffset: Vec2 = {x: 0, y: 0}) {
     this.zoom = zoom;
-    this.panOffset = { ...panOffset };
+    this.panOffset = {...panOffset};
   }
 
   worldToScreen(worldPt: Vec2): Vec2 {
@@ -40,11 +40,16 @@ export class Viewport {
     this.panOffset.y = screenPt.y - worldPt.y * this.zoom;
   }
 
-  fitToContent(entities: Entity[], width: number, height: number, padding = 40) {
+  fitToContent(
+    entities: Entity[],
+    width: number,
+    height: number,
+    padding = 40,
+  ) {
     if (entities.length === 0) {
       // Reset to center
       this.zoom = 100;
-      this.panOffset = { x: width / 2, y: height / 2 };
+      this.panOffset = {x: width / 2, y: height / 2};
       return;
     }
 
@@ -72,12 +77,12 @@ export class Viewport {
         expandBBox(r.p2);
       } else if (ent.type === 'circle') {
         const c = ent;
-        expandBBox({ x: c.center.x - c.radius, y: c.center.y - c.radius });
-        expandBBox({ x: c.center.x + c.radius, y: c.center.y + c.radius });
+        expandBBox({x: c.center.x - c.radius, y: c.center.y - c.radius});
+        expandBBox({x: c.center.x + c.radius, y: c.center.y + c.radius});
       } else if (ent.type === 'arc') {
         const a = ent;
-        expandBBox({ x: a.center.x - a.radius, y: a.center.y - a.radius });
-        expandBBox({ x: a.center.x + a.radius, y: a.center.y + a.radius });
+        expandBBox({x: a.center.x - a.radius, y: a.center.y - a.radius});
+        expandBBox({x: a.center.x + a.radius, y: a.center.y + a.radius});
       } else if (ent.type === 'dimension') {
         const d = ent;
         expandBBox(d.p1);
@@ -105,8 +110,14 @@ export class Viewport {
 
     this.zoom = Math.min(zoomX, zoomY, 1000); // Caps zoom at 1000 (10px per cm)
     this.panOffset = {
-      x: padding - minX * this.zoom + (availableWidth - contentWidth * this.zoom) / 2,
-      y: padding - minY * this.zoom + (availableHeight - contentHeight * this.zoom) / 2,
+      x:
+        padding -
+        minX * this.zoom +
+        (availableWidth - contentWidth * this.zoom) / 2,
+      y:
+        padding -
+        minY * this.zoom +
+        (availableHeight - contentHeight * this.zoom) / 2,
     };
   }
 }

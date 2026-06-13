@@ -1,8 +1,8 @@
-import { Tool } from './tool';
-import { Vec2, SnapResult } from '../core/types';
-import { Viewport } from '../canvas/viewport';
-import { createRect } from '../core/entity';
-import { dist } from '../core/geometry';
+import {Tool} from './tool';
+import {Vec2, SnapResult} from '../core/types';
+import {Viewport} from '../canvas/viewport';
+import {createRect} from '../core/entity';
+import {dist} from '../core/geometry';
 import {
   activePageSignal,
   updateActivePage,
@@ -28,12 +28,16 @@ export class RectTool implements Tool {
     previewEntitySignal.value = null;
   }
 
-  onMouseDown(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseDown(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     const targetPt = snapResult ? snapResult.point : worldPos;
 
     if (this.startPt === null) {
       snapshotState();
-      this.startPt = { ...targetPt };
+      this.startPt = {...targetPt};
     } else {
       if (dist(this.startPt, targetPt) < 0.01) {
         this.reset();
@@ -50,15 +54,24 @@ export class RectTool implements Tool {
     }
   }
 
-  onMouseMove(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseMove(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     if (this.startPt) {
       const targetPt = snapResult ? snapResult.point : worldPos;
-      let finalPt = { ...targetPt };
+      const finalPt = {...targetPt};
       if (event.shiftKey) {
         // Keep rectangle square
-        const side = Math.max(Math.abs(finalPt.x - this.startPt.x), Math.abs(finalPt.y - this.startPt.y));
-        finalPt.x = this.startPt.x + Math.sign(finalPt.x - this.startPt.x) * side;
-        finalPt.y = this.startPt.y + Math.sign(finalPt.y - this.startPt.y) * side;
+        const side = Math.max(
+          Math.abs(finalPt.x - this.startPt.x),
+          Math.abs(finalPt.y - this.startPt.y),
+        );
+        finalPt.x =
+          this.startPt.x + Math.sign(finalPt.x - this.startPt.x) * side;
+        finalPt.y =
+          this.startPt.y + Math.sign(finalPt.y - this.startPt.y) * side;
       }
       previewEntitySignal.value = createRect(this.startPt, finalPt);
     }

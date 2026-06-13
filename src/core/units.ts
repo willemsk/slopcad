@@ -1,4 +1,4 @@
-import { UnitSystem } from './types';
+import {UnitSystem} from './types';
 
 // Convert meters to imperial representation (e.g., 5' 10 3/4")
 export function formatImperial(meters: number): string {
@@ -41,7 +41,11 @@ export function formatImperial(meters: number): string {
   return `${feet}' ${wholeInches} ${fractionStr}"`;
 }
 
-export function formatLength(meters: number, system: UnitSystem, precision = 2): string {
+export function formatLength(
+  meters: number,
+  system: UnitSystem,
+  precision = 2,
+): string {
   if (system === 'imperial') {
     return formatImperial(meters);
   } else {
@@ -61,7 +65,11 @@ export function parseLength(input: string, system: UnitSystem): number | null {
   if (!cleanStr) return null;
 
   // 1. Imperial check or explicit imperial units
-  const hasImperialSymbols = cleanStr.includes("'") || cleanStr.includes('"') || cleanStr.includes('ft') || cleanStr.includes('in');
+  const hasImperialSymbols =
+    cleanStr.includes("'") ||
+    cleanStr.includes('"') ||
+    cleanStr.includes('ft') ||
+    cleanStr.includes('in');
 
   if (system === 'imperial' || hasImperialSymbols) {
     return parseImperial(cleanStr);

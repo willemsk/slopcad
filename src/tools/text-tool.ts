@@ -1,7 +1,7 @@
-import { Tool } from './tool';
-import { Vec2, SnapResult } from '../core/types';
-import { Viewport } from '../canvas/viewport';
-import { createText } from '../core/entity';
+import {Tool} from './tool';
+import {Vec2, SnapResult} from '../core/types';
+import {Viewport} from '../canvas/viewport';
+import {createText} from '../core/entity';
 import {
   activePageSignal,
   updateActivePage,
@@ -17,7 +17,11 @@ export class TextTool implements Tool {
 
   deactivate() {}
 
-  onMouseDown(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseDown(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     snapshotState();
 
     const page = activePageSignal.value;
@@ -36,7 +40,11 @@ export class TextTool implements Tool {
     selectEntity(newText.id);
   }
 
-  onMouseMove(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {}
+  onMouseMove(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {}
 
   onMouseUp(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {}
 }

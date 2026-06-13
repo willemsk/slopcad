@@ -1,19 +1,37 @@
-import { Entity, Constraint, PointRef, Vec2 } from './types';
-import { dist, sub, add, scale, normalize, angle, rotate, len, lerp } from './geometry';
+import {Entity, Constraint, PointRef, Vec2} from './types';
+import {
+  dist,
+  sub,
+  add,
+  scale,
+  normalize,
+  angle,
+  rotate,
+  len,
+  lerp,
+} from './geometry';
 
 // Get coordinate reference from entity list
 export function getPointValue(entities: Entity[], ref: PointRef): Vec2 | null {
-  const entity = entities.find((e) => e.id === ref.entityId);
+  const entity = entities.find(e => e.id === ref.entityId);
   if (!entity) return null;
 
   const key = ref.pointKey;
   if (key === 'position' && entity.type === 'text') {
     return entity.position;
   }
-  if ((key === 'start' || key === 'end') && (entity.type === 'wall' || entity.type === 'line' || entity.type === 'stairs')) {
+  if (
+    (key === 'start' || key === 'end') &&
+    (entity.type === 'wall' ||
+      entity.type === 'line' ||
+      entity.type === 'stairs')
+  ) {
     return (entity as any)[key];
   }
-  if ((key === 'p1' || key === 'p2') && (entity.type === 'rect' || entity.type === 'dimension')) {
+  if (
+    (key === 'p1' || key === 'p2') &&
+    (entity.type === 'rect' || entity.type === 'dimension')
+  ) {
     return (entity as any)[key];
   }
   if (key === 'center' && (entity.type === 'circle' || entity.type === 'arc')) {
@@ -23,25 +41,37 @@ export function getPointValue(entities: Entity[], ref: PointRef): Vec2 | null {
 }
 
 // Set coordinate reference in entity list
-export function setPointValue(entities: Entity[], ref: PointRef, val: Vec2): boolean {
-  const entity = entities.find((e) => e.id === ref.entityId);
+export function setPointValue(
+  entities: Entity[],
+  ref: PointRef,
+  val: Vec2,
+): boolean {
+  const entity = entities.find(e => e.id === ref.entityId);
   if (!entity || entity.locked) return false;
 
   const key = ref.pointKey;
   if (key === 'position' && entity.type === 'text') {
-    entity.position = { ...val };
+    entity.position = {...val};
     return true;
   }
-  if ((key === 'start' || key === 'end') && (entity.type === 'wall' || entity.type === 'line' || entity.type === 'stairs')) {
-    (entity as any)[key] = { ...val };
+  if (
+    (key === 'start' || key === 'end') &&
+    (entity.type === 'wall' ||
+      entity.type === 'line' ||
+      entity.type === 'stairs')
+  ) {
+    (entity as any)[key] = {...val};
     return true;
   }
-  if ((key === 'p1' || key === 'p2') && (entity.type === 'rect' || entity.type === 'dimension')) {
-    (entity as any)[key] = { ...val };
+  if (
+    (key === 'p1' || key === 'p2') &&
+    (entity.type === 'rect' || entity.type === 'dimension')
+  ) {
+    (entity as any)[key] = {...val};
     return true;
   }
   if (key === 'center' && (entity.type === 'circle' || entity.type === 'arc')) {
-    (entity as any).center = { ...val };
+    (entity as any).center = {...val};
     return true;
   }
   return false;
@@ -55,7 +85,7 @@ export function solveConstraints(
   entities: Entity[],
   constraints: Constraint[],
   pinnedRefs: PointRef[] = [],
-  maxIterations = 50
+  maxIterations = 50,
 ): Entity[] {
   // Deep copy entities so we don't mutate state prematurely
   const solvedEntities = JSON.parse(JSON.stringify(entities)) as Entity[];
@@ -63,10 +93,10 @@ export function solveConstraints(
   // Keep track of locked points. Entity locked flag or pinnedRefs
   const isPointLocked = (ref: PointRef): boolean => {
     // Check if pinned by user drag
-    if (pinnedRefs.some((p) => isRefEqual(p, ref))) return true;
+    if (pinnedRefs.some(p => isRefEqual(p, ref))) return true;
 
     // Check if parent entity is locked
-    const ent = solvedEntities.find((e) => e.id === ref.entityId);
+    const ent = solvedEntities.find(e => e.id === ref.entityId);
     return ent ? !!ent.locked : false;
   };
 
@@ -127,7 +157,7 @@ export function solveConstraints(
 
             let dir = normalize(sub(pB, pA));
             if (len(dir) === 0) {
-              dir = { x: 1, y: 0 }; // fallback if overlapping
+              dir = {x: 1, y: 0}; // fallback if overlapping
             }
 
             if (lockedA) {
@@ -166,13 +196,13 @@ export function solveConstraints(
             if (lockedA && lockedB) continue;
 
             if (lockedA) {
-              setPointValue(solvedEntities, refB, { x: pB.x, y: pA.y });
+              setPointValue(solvedEntities, refB, {x: pB.x, y: pA.y});
             } else if (lockedB) {
-              setPointValue(solvedEntities, refA, { x: pA.x, y: pB.y });
+              setPointValue(solvedEntities, refA, {x: pA.x, y: pB.y});
             } else {
               const avgY = (pA.y + pB.y) / 2;
-              setPointValue(solvedEntities, refA, { x: pA.x, y: avgY });
-              setPointValue(solvedEntities, refB, { x: pB.x, y: avgY });
+              setPointValue(solvedEntities, refA, {x: pA.x, y: avgY});
+              setPointValue(solvedEntities, refB, {x: pB.x, y: avgY});
             }
           }
           break;
@@ -195,13 +225,13 @@ export function solveConstraints(
             if (lockedA && lockedB) continue;
 
             if (lockedA) {
-              setPointValue(solvedEntities, refB, { x: pA.x, y: pB.y });
+              setPointValue(solvedEntities, refB, {x: pA.x, y: pB.y});
             } else if (lockedB) {
-              setPointValue(solvedEntities, refA, { x: pB.x, y: pA.y });
+              setPointValue(solvedEntities, refA, {x: pB.x, y: pA.y});
             } else {
               const avgX = (pA.x + pB.x) / 2;
-              setPointValue(solvedEntities, refA, { x: avgX, y: pA.y });
-              setPointValue(solvedEntities, refB, { x: avgX, y: pB.y });
+              setPointValue(solvedEntities, refA, {x: avgX, y: pA.y});
+              setPointValue(solvedEntities, refB, {x: avgX, y: pB.y});
             }
           }
           break;
@@ -228,12 +258,23 @@ export function solveConstraints(
             const lockedB = isPointLocked(refB);
             if (lockedA && lockedB) continue;
 
-            const dir = { x: Math.cos(targetAngleRad), y: Math.sin(targetAngleRad) };
+            const dir = {
+              x: Math.cos(targetAngleRad),
+              y: Math.sin(targetAngleRad),
+            };
 
             if (lockedA) {
-              setPointValue(solvedEntities, refB, add(pA, scale(dir, currentL)));
+              setPointValue(
+                solvedEntities,
+                refB,
+                add(pA, scale(dir, currentL)),
+              );
             } else if (lockedB) {
-              setPointValue(solvedEntities, refA, sub(pB, scale(dir, currentL)));
+              setPointValue(
+                solvedEntities,
+                refA,
+                sub(pB, scale(dir, currentL)),
+              );
             } else {
               const mid = lerp(pA, pB, 0.5);
               const halfL = currentL / 2;
@@ -409,13 +450,29 @@ export function solveConstraints(
               const lockedA = isPointLocked(refA);
               const lockedB = isPointLocked(refB);
               if (lockedA) {
-                setPointValue(solvedEntities, refB, add(pA, scale(dirAB, targetL)));
+                setPointValue(
+                  solvedEntities,
+                  refB,
+                  add(pA, scale(dirAB, targetL)),
+                );
               } else if (lockedB) {
-                setPointValue(solvedEntities, refA, sub(pB, scale(dirAB, targetL)));
+                setPointValue(
+                  solvedEntities,
+                  refA,
+                  sub(pB, scale(dirAB, targetL)),
+                );
               } else {
                 const midAB = lerp(pA, pB, 0.5);
-                setPointValue(solvedEntities, refA, sub(midAB, scale(dirAB, targetL / 2)));
-                setPointValue(solvedEntities, refB, add(midAB, scale(dirAB, targetL / 2)));
+                setPointValue(
+                  solvedEntities,
+                  refA,
+                  sub(midAB, scale(dirAB, targetL / 2)),
+                );
+                setPointValue(
+                  solvedEntities,
+                  refB,
+                  add(midAB, scale(dirAB, targetL / 2)),
+                );
               }
             }
 
@@ -424,13 +481,29 @@ export function solveConstraints(
               const lockedC = isPointLocked(refC);
               const lockedD = isPointLocked(refD);
               if (lockedC) {
-                setPointValue(solvedEntities, refD, add(pC, scale(dirCD, targetL)));
+                setPointValue(
+                  solvedEntities,
+                  refD,
+                  add(pC, scale(dirCD, targetL)),
+                );
               } else if (lockedD) {
-                setPointValue(solvedEntities, refC, sub(pD, scale(dirCD, targetL)));
+                setPointValue(
+                  solvedEntities,
+                  refC,
+                  sub(pD, scale(dirCD, targetL)),
+                );
               } else {
                 const midCD = lerp(pC, pD, 0.5);
-                setPointValue(solvedEntities, refC, sub(midCD, scale(dirCD, targetL / 2)));
-                setPointValue(solvedEntities, refD, add(midCD, scale(dirCD, targetL / 2)));
+                setPointValue(
+                  solvedEntities,
+                  refC,
+                  sub(midCD, scale(dirCD, targetL / 2)),
+                );
+                setPointValue(
+                  solvedEntities,
+                  refD,
+                  add(midCD, scale(dirCD, targetL / 2)),
+                );
               }
             }
           }

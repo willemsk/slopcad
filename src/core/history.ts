@@ -1,5 +1,5 @@
-import { Entity, Constraint } from './types';
-import { cloneEntity } from './entity';
+import {Entity, Constraint} from './types';
+import {cloneEntity} from './entity';
 
 export interface PageSnapshot {
   entities: Entity[];
@@ -38,7 +38,10 @@ export class HistoryManager {
   }
 
   // Returns the previous state, or null if cannot undo
-  undo(currentEntities: Entity[], currentConstraints: Constraint[]): PageSnapshot | null {
+  undo(
+    currentEntities: Entity[],
+    currentConstraints: Constraint[],
+  ): PageSnapshot | null {
     if (this.past.length === 0) return null;
 
     const currentSnapshot: PageSnapshot = {
@@ -52,7 +55,10 @@ export class HistoryManager {
   }
 
   // Returns the next state, or null if cannot redo
-  redo(currentEntities: Entity[], currentConstraints: Constraint[]): PageSnapshot | null {
+  redo(
+    currentEntities: Entity[],
+    currentConstraints: Constraint[],
+  ): PageSnapshot | null {
     if (this.future.length === 0) return null;
 
     const currentSnapshot: PageSnapshot = {

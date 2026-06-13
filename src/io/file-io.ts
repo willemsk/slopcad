@@ -1,15 +1,20 @@
-import { Project } from '../core/types';
-import { serializeProject, deserializeProject } from './serialize';
-import { projectSignal, selectionSignal, triggerRenderSignal } from '../state/app-state';
+import {Project} from '../core/types';
+import {serializeProject, deserializeProject} from './serialize';
+import {
+  projectSignal,
+  selectionSignal,
+  triggerRenderSignal,
+} from '../state/app-state';
 
 export function saveProjectToFile(project: Project) {
   const jsonStr = serializeProject(project);
-  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const blob = new Blob([jsonStr], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement('a');
   // Format filename cleanly
-  const filename = project.name.trim().toLowerCase().replace(/\s+/g, '_') || 'plan';
+  const filename =
+    project.name.trim().toLowerCase().replace(/\s+/g, '_') || 'plan';
   a.href = url;
   a.download = `${filename}.archplan`;
   a.click();
@@ -18,17 +23,20 @@ export function saveProjectToFile(project: Project) {
   setTimeout(() => URL.revokeObjectURL(url), 100);
 }
 
-export function loadProjectFromFile(onSuccess?: () => void, onFailure?: (err: string) => void) {
+export function loadProjectFromFile(
+  onSuccess?: () => void,
+  onFailure?: (err: string) => void,
+) {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.archplan,application/json';
 
-  input.onchange = (e) => {
+  input.onchange = e => {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = event => {
       const text = event.target?.result as string;
       const loadedProject = deserializeProject(text);
 
@@ -40,7 +48,8 @@ export function loadProjectFromFile(onSuccess?: () => void, onFailure?: (err: st
 
         if (onSuccess) onSuccess();
       } else {
-        if (onFailure) onFailure('Invalid project file format. Could not parse.');
+        if (onFailure)
+          onFailure('Invalid project file format. Could not parse.');
       }
     };
 

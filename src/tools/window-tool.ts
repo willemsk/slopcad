@@ -1,7 +1,7 @@
-import { Tool } from './tool';
-import { Vec2, SnapResult } from '../core/types';
-import { Viewport } from '../canvas/viewport';
-import { createWindow } from '../core/entity';
+import {Tool} from './tool';
+import {Vec2, SnapResult} from '../core/types';
+import {Viewport} from '../canvas/viewport';
+import {createWindow} from '../core/entity';
 import {
   activePageSignal,
   updateActivePage,
@@ -12,7 +12,7 @@ import {
 export class WindowTool implements Tool {
   name = 'window';
 
-  private width = 1.20; // 1.2m default width
+  private width = 1.2; // 1.2m default width
 
   activate() {
     this.reset();
@@ -26,7 +26,11 @@ export class WindowTool implements Tool {
     previewEntitySignal.value = null;
   }
 
-  onMouseDown(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseDown(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     if (snapResult && snapResult.type === 'wall-align' && snapResult.entityId) {
       snapshotState();
 
@@ -43,7 +47,11 @@ export class WindowTool implements Tool {
     }
   }
 
-  onMouseMove(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseMove(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     this.updatePreview(snapResult);
   }
 

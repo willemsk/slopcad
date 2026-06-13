@@ -1,10 +1,18 @@
-import { signal, computed } from '@preact/signals';
-import { Project, Page, Entity, Constraint, PointRef, Vec2, UnitSystem } from '../core/types';
-import { HistoryManager } from '../core/history';
-import { solveConstraints } from '../core/solver';
-import { dist } from '../core/geometry';
-import { Tool } from '../tools/tool';
-import { generateId } from '../core/entity';
+import {signal, computed} from '@preact/signals';
+import {
+  Project,
+  Page,
+  Entity,
+  Constraint,
+  PointRef,
+  Vec2,
+  UnitSystem,
+} from '../core/types';
+import {HistoryManager} from '../core/history';
+import {solveConstraints} from '../core/solver';
+import {dist} from '../core/geometry';
+import {Tool} from '../tools/tool';
+import {generateId} from '../core/entity';
 
 // Initial default page
 const defaultPage: Page = {
@@ -37,13 +45,15 @@ export const previewEntitySignal = signal<Entity | null>(null);
 export const hoveredEntityIdSignal = signal<string | null>(null);
 export const triggerRenderSignal = signal<{}>({});
 export const overlayPageIndexSignal = signal<number | null>(null);
-export const mouseCoordsSignal = signal<Vec2>({ x: 0, y: 0 });
+export const mouseCoordsSignal = signal<Vec2>({x: 0, y: 0});
 export const commandLineMessagesSignal = signal<string[]>([
   'Antigravity CAD Redesign Initialized.',
-  'Select a tool from the ribbon or double-click to select entities.'
+  'Select a tool from the ribbon or double-click to select entities.',
 ]);
 
-export const uiScaleSignal = signal<number>(parseFloat(localStorage.getItem('uiScale') || '1'));
+export const uiScaleSignal = signal<number>(
+  parseFloat(localStorage.getItem('uiScale') || '1'),
+);
 
 export function setUiScale(scale: number) {
   uiScaleSignal.value = scale;
@@ -51,7 +61,10 @@ export function setUiScale(scale: number) {
 }
 
 export function pushCommandMessage(msg: string) {
-  commandLineMessagesSignal.value = [...commandLineMessagesSignal.value.slice(-20), msg];
+  commandLineMessagesSignal.value = [
+    ...commandLineMessagesSignal.value.slice(-20),
+    msg,
+  ];
 }
 
 // History manager instance (per active page)
@@ -96,14 +109,16 @@ export function deleteSelectedAction() {
   snapshotState(); // save history
 
   // Filter out deleted entities
-  const newEntities = page.entities.filter((e) => !selection.has(e.id));
+  const newEntities = page.entities.filter(e => !selection.has(e.id));
 
   // Filter out doors/windows attached to deleted walls
   const wallIdsDeleted = new Set(
-    page.entities.filter((e) => selection.has(e.id) && e.type === 'wall').map((e) => e.id)
+    page.entities
+      .filter(e => selection.has(e.id) && e.type === 'wall')
+      .map(e => e.id),
   );
 
-  const finalEntities = newEntities.filter((e) => {
+  const finalEntities = newEntities.filter(e => {
     if (e.type === 'door' || e.type === 'window') {
       return !wallIdsDeleted.has((e as any).wallId);
     }
@@ -111,8 +126,8 @@ export function deleteSelectedAction() {
   });
 
   // Filter out constraints associated with deleted entities
-  const newConstraints = page.constraints.filter((c) => {
-    return c.entityIds.every((id) => {
+  const newConstraints = page.constraints.filter(c => {
+    return c.entityIds.every(id => {
       const isEntityDeleted = selection.has(id) || wallIdsDeleted.has(id);
       return !isEntityDeleted;
     });
@@ -123,7 +138,10 @@ export function deleteSelectedAction() {
 }
 
 // Modify current page entities and constraints, then trigger solver
-export function updateActivePage(entities: Entity[], constraints: Constraint[]) {
+export function updateActivePage(
+  entities: Entity[],
+  constraints: Constraint[],
+) {
   const project = projectSignal.value;
   const newPages = [...project.pages];
   const idx = project.activePageIndex;
@@ -185,14 +203,16 @@ export function setUnitSystem(unit: UnitSystem) {
 export function addHorizontalConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter((e) => selection.has(e.id));
+  const selectedEntities = page.entities.filter(e => selection.has(e.id));
 
   let added = false;
   const newConstraints = [...page.constraints];
 
   for (const ent of selectedEntities) {
     if (ent.type === 'wall' || ent.type === 'line') {
-      const exists = newConstraints.some((c) => c.type === 'horizontal' && c.entityIds[0] === ent.id);
+      const exists = newConstraints.some(
+        c => c.type === 'horizontal' && c.entityIds[0] === ent.id,
+      );
       if (!exists) {
         snapshotState();
         newConstraints.push({
@@ -200,8 +220,8 @@ export function addHorizontalConstraintAction() {
           type: 'horizontal',
           entityIds: [ent.id],
           pointRefs: [
-            { entityId: ent.id, pointKey: 'start' },
-            { entityId: ent.id, pointKey: 'end' },
+            {entityId: ent.id, pointKey: 'start'},
+            {entityId: ent.id, pointKey: 'end'},
           ],
         });
         added = true;
@@ -218,14 +238,16 @@ export function addHorizontalConstraintAction() {
 export function addVerticalConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter((e) => selection.has(e.id));
+  const selectedEntities = page.entities.filter(e => selection.has(e.id));
 
   let added = false;
   const newConstraints = [...page.constraints];
 
   for (const ent of selectedEntities) {
     if (ent.type === 'wall' || ent.type === 'line') {
-      const exists = newConstraints.some((c) => c.type === 'vertical' && c.entityIds[0] === ent.id);
+      const exists = newConstraints.some(
+        c => c.type === 'vertical' && c.entityIds[0] === ent.id,
+      );
       if (!exists) {
         snapshotState();
         newConstraints.push({
@@ -233,8 +255,8 @@ export function addVerticalConstraintAction() {
           type: 'vertical',
           entityIds: [ent.id],
           pointRefs: [
-            { entityId: ent.id, pointKey: 'start' },
-            { entityId: ent.id, pointKey: 'end' },
+            {entityId: ent.id, pointKey: 'start'},
+            {entityId: ent.id, pointKey: 'end'},
           ],
         });
         added = true;
@@ -251,7 +273,7 @@ export function addVerticalConstraintAction() {
 export function addLengthConstraintAction(targetVal?: number) {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter((e) => selection.has(e.id));
+  const selectedEntities = page.entities.filter(e => selection.has(e.id));
 
   const ent = selectedEntities[0];
   if (!ent || (ent.type !== 'wall' && ent.type !== 'line')) return;
@@ -260,7 +282,10 @@ export function addLengthConstraintAction(targetVal?: number) {
   let val = targetVal;
 
   if (val === undefined) {
-    const input = window.prompt(`Enter length in meters (current: ${currentLength.toFixed(2)}m):`, currentLength.toFixed(2));
+    const input = window.prompt(
+      `Enter length in meters (current: ${currentLength.toFixed(2)}m):`,
+      currentLength.toFixed(2),
+    );
     if (input === null) return;
     val = parseFloat(input);
   }
@@ -269,7 +294,7 @@ export function addLengthConstraintAction(targetVal?: number) {
 
   snapshotState();
   const newConstraints = page.constraints.filter(
-    (c) => !(c.type === 'fixed_length' && c.entityIds[0] === ent.id)
+    c => !(c.type === 'fixed_length' && c.entityIds[0] === ent.id),
   );
 
   newConstraints.push({
@@ -278,8 +303,8 @@ export function addLengthConstraintAction(targetVal?: number) {
     entityIds: [ent.id],
     value: val,
     pointRefs: [
-      { entityId: ent.id, pointKey: 'start' },
-      { entityId: ent.id, pointKey: 'end' },
+      {entityId: ent.id, pointKey: 'start'},
+      {entityId: ent.id, pointKey: 'end'},
     ],
   });
 
@@ -291,11 +316,13 @@ export function addPerpendicularConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
   const selectedEntities = page.entities.filter(
-    (e) => selection.has(e.id) && (e.type === 'wall' || e.type === 'line')
+    e => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
   );
 
   if (selectedEntities.length !== 2) {
-    window.alert('Please select exactly 2 walls/lines to make them perpendicular.');
+    window.alert(
+      'Please select exactly 2 walls/lines to make them perpendicular.',
+    );
     return;
   }
 
@@ -309,10 +336,10 @@ export function addPerpendicularConstraintAction() {
     type: 'perpendicular',
     entityIds: [e1.id, e2.id],
     pointRefs: [
-      { entityId: e1.id, pointKey: 'start' },
-      { entityId: e1.id, pointKey: 'end' },
-      { entityId: e2.id, pointKey: 'start' },
-      { entityId: e2.id, pointKey: 'end' },
+      {entityId: e1.id, pointKey: 'start'},
+      {entityId: e1.id, pointKey: 'end'},
+      {entityId: e2.id, pointKey: 'start'},
+      {entityId: e2.id, pointKey: 'end'},
     ],
   });
 
@@ -324,7 +351,7 @@ export function addParallelConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
   const selectedEntities = page.entities.filter(
-    (e) => selection.has(e.id) && (e.type === 'wall' || e.type === 'line')
+    e => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
   );
 
   if (selectedEntities.length !== 2) {
@@ -342,10 +369,10 @@ export function addParallelConstraintAction() {
     type: 'parallel',
     entityIds: [e1.id, e2.id],
     pointRefs: [
-      { entityId: e1.id, pointKey: 'start' },
-      { entityId: e1.id, pointKey: 'end' },
-      { entityId: e2.id, pointKey: 'start' },
-      { entityId: e2.id, pointKey: 'end' },
+      {entityId: e1.id, pointKey: 'start'},
+      {entityId: e1.id, pointKey: 'end'},
+      {entityId: e2.id, pointKey: 'start'},
+      {entityId: e2.id, pointKey: 'end'},
     ],
   });
 
@@ -359,10 +386,9 @@ export function clearSelectedConstraintsAction() {
 
   snapshotState();
   const page = activePageSignal.value;
-  const newConstraints = page.constraints.filter((c) => {
-    return !c.entityIds.some((id) => selection.has(id));
+  const newConstraints = page.constraints.filter(c => {
+    return !c.entityIds.some(id => selection.has(id));
   });
 
   updateActivePage(page.entities, newConstraints);
 }
-

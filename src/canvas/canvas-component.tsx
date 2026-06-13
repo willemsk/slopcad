@@ -1,11 +1,18 @@
-import { h } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
-import { Viewport } from './viewport';
-import { render, RenderState } from './renderer';
-import { Entity, Vec2, SnapResult, PointRef } from '../core/types';
-import { getSnapPoint, SnapSettings } from '../core/snap';
-import { dist, distToSegment, normalize, sub, add, scale } from '../core/geometry';
-import { Tool } from '../tools/tool';
+import {h} from 'preact';
+import {useEffect, useRef, useState} from 'preact/hooks';
+import {Viewport} from './viewport';
+import {render, RenderState} from './renderer';
+import {Entity, Vec2, SnapResult, PointRef} from '../core/types';
+import {getSnapPoint, SnapSettings} from '../core/snap';
+import {
+  dist,
+  distToSegment,
+  normalize,
+  sub,
+  add,
+  scale,
+} from '../core/geometry';
+import {Tool} from '../tools/tool';
 import {
   projectSignal,
   activeToolSignal,
@@ -28,14 +35,14 @@ import {
 export function CanvasComponent() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [dimensions, setDimensions] = useState({width: 800, height: 600});
 
   // Viewport instance
   const viewportRef = useRef<Viewport>(new Viewport());
 
   // Mouse pan state
   const isPanningRef = useRef(false);
-  const lastMousePosRef = useRef<Vec2>({ x: 0, y: 0 });
+  const lastMousePosRef = useRef<Vec2>({x: 0, y: 0});
 
   // Snap Settings from signals
   const getSnapSettings = (): SnapSettings => ({
@@ -97,7 +104,9 @@ export function CanvasComponent() {
     // Compute snap result based on current mouse position (world space)
     const dpr = window.devicePixelRatio || 1;
     const currentMousePosScreen = lastMousePosRef.current;
-    const currentMousePosWorld = viewportRef.current.screenToWorld(currentMousePosScreen);
+    const currentMousePosWorld = viewportRef.current.screenToWorld(
+      currentMousePosScreen,
+    );
 
     let snapRes: SnapResult | null = null;
     if (snapEnabledSignal.value && activeToolSignal.value) {
@@ -109,12 +118,15 @@ export function CanvasComponent() {
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
-        activeToolSignal.value.name
+        activeToolSignal.value.name,
       );
     }
 
     const overlayIdx = overlayPageIndexSignal.value;
-    const overlayEntities = overlayIdx !== null && project.pages[overlayIdx] ? project.pages[overlayIdx].entities : undefined;
+    const overlayEntities =
+      overlayIdx !== null && project.pages[overlayIdx]
+        ? project.pages[overlayIdx].entities
+        : undefined;
 
     const renderState: RenderState = {
       ctx,
@@ -137,9 +149,16 @@ export function CanvasComponent() {
     // Also draw tool-specific SVG/overlay graphics if any
     if (activeToolSignal.value && activeToolSignal.value.renderPreview) {
       ctx.save();
-      ctx.translate(viewportRef.current.panOffset.x, viewportRef.current.panOffset.y);
+      ctx.translate(
+        viewportRef.current.panOffset.x,
+        viewportRef.current.panOffset.y,
+      );
       ctx.scale(viewportRef.current.zoom, viewportRef.current.zoom);
-      activeToolSignal.value.renderPreview(ctx, viewportRef.current, snapRes ? snapRes.point : currentMousePosWorld);
+      activeToolSignal.value.renderPreview(
+        ctx,
+        viewportRef.current,
+        snapRes ? snapRes.point : currentMousePosWorld,
+      );
       ctx.restore();
     }
   };
@@ -171,7 +190,7 @@ export function CanvasComponent() {
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const screenPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    const screenPos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
     lastMousePosRef.current = screenPos;
 
     // Middle button or Space+LeftClick pans
@@ -197,10 +216,13 @@ export function CanvasComponent() {
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
-        activeToolSignal.value?.name
+        activeToolSignal.value?.name,
       );
       targetPos = snap.point;
-      if (snap.type !== 'grid' || dist(worldPos, snap.point) < snapRadiusWorld) {
+      if (
+        snap.type !== 'grid' ||
+        dist(worldPos, snap.point) < snapRadiusWorld
+      ) {
         activeSnap = snap;
       }
     }
@@ -216,7 +238,7 @@ export function CanvasComponent() {
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const screenPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    const screenPos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
     const dx = screenPos.x - lastMousePosRef.current.x;
     const dy = screenPos.y - lastMousePosRef.current.y;
     lastMousePosRef.current = screenPos;
@@ -240,8 +262,16 @@ export function CanvasComponent() {
       let minHoverDist = hoverRadiusWorld;
 
       for (const ent of activePage.entities) {
-        if (ent.type === 'wall' || ent.type === 'line' || ent.type === 'stairs') {
-          const d = distToSegment(worldPos, (ent as any).start, (ent as any).end);
+        if (
+          ent.type === 'wall' ||
+          ent.type === 'line' ||
+          ent.type === 'stairs'
+        ) {
+          const d = distToSegment(
+            worldPos,
+            (ent as any).start,
+            (ent as any).end,
+          );
           if (d < minHoverDist) {
             minHoverDist = d;
             hoverId = ent.id;
@@ -249,10 +279,10 @@ export function CanvasComponent() {
         } else if (ent.type === 'rect') {
           const r = ent;
           // Check hover near 4 segments of rectangle
-          const d1 = distToSegment(worldPos, r.p1, { x: r.p2.x, y: r.p1.y });
-          const d2 = distToSegment(worldPos, { x: r.p2.x, y: r.p1.y }, r.p2);
-          const d3 = distToSegment(worldPos, r.p2, { x: r.p1.x, y: r.p2.y });
-          const d4 = distToSegment(worldPos, { x: r.p1.x, y: r.p2.y }, r.p1);
+          const d1 = distToSegment(worldPos, r.p1, {x: r.p2.x, y: r.p1.y});
+          const d2 = distToSegment(worldPos, {x: r.p2.x, y: r.p1.y}, r.p2);
+          const d3 = distToSegment(worldPos, r.p2, {x: r.p1.x, y: r.p2.y});
+          const d4 = distToSegment(worldPos, {x: r.p1.x, y: r.p2.y}, r.p1);
           const d = Math.min(d1, d2, d3, d4);
           if (d < minHoverDist) {
             minHoverDist = d;
@@ -275,7 +305,7 @@ export function CanvasComponent() {
         } else if (ent.type === 'dimension') {
           // Hover near the measured line
           const u = normalize(sub((ent as any).p2, (ent as any).p1));
-          const n = { x: -u.y, y: u.x };
+          const n = {x: -u.y, y: u.x};
           const offset = (ent as any).offset;
           const d1 = add((ent as any).p1, scale(n, offset));
           const d2 = add((ent as any).p2, scale(n, offset));
@@ -310,10 +340,13 @@ export function CanvasComponent() {
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
-        activeToolSignal.value?.name
+        activeToolSignal.value?.name,
       );
       targetPos = snap.point;
-      if (snap.type !== 'grid' || dist(worldPos, snap.point) < snapRadiusWorld) {
+      if (
+        snap.type !== 'grid' ||
+        dist(worldPos, snap.point) < snapRadiusWorld
+      ) {
         activeSnap = snap;
       }
     }
@@ -336,7 +369,7 @@ export function CanvasComponent() {
     }
 
     const rect = canvas.getBoundingClientRect();
-    const screenPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    const screenPos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
     const worldPos = viewportRef.current.screenToWorld(screenPos);
 
     // Apply Snapping
@@ -352,10 +385,13 @@ export function CanvasComponent() {
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
-        activeToolSignal.value?.name
+        activeToolSignal.value?.name,
       );
       targetPos = snap.point;
-      if (snap.type !== 'grid' || dist(worldPos, snap.point) < snapRadiusWorld) {
+      if (
+        snap.type !== 'grid' ||
+        dist(worldPos, snap.point) < snapRadiusWorld
+      ) {
         activeSnap = snap;
       }
     }
@@ -372,7 +408,7 @@ export function CanvasComponent() {
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const screenPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    const screenPos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
 
     const zoomFactor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
     viewportRef.current.zoomAt(screenPos, zoomFactor);
@@ -418,7 +454,9 @@ export function CanvasComponent() {
       // Delete key deletes selection
       if (e.key === 'Delete' || e.key === 'Backspace') {
         deleteSelectedAction();
-        pushCommandMessage('Command: ERASE - Deleted selected drawing elements.');
+        pushCommandMessage(
+          'Command: ERASE - Deleted selected drawing elements.',
+        );
       }
 
       // Escape cancels current tool operations or sets active tool to select
@@ -458,14 +496,23 @@ export function CanvasComponent() {
   }, []);
 
   return (
-    <div ref={containerRef} className="canvas-container" style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+    <div
+      ref={containerRef}
+      className="canvas-container"
+      style={{
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
       <canvas
         ref={canvasRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onWheel={handleWheel}
-        style={{ display: 'block' }}
+        style={{display: 'block'}}
       />
     </div>
   );

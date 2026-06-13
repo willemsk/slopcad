@@ -1,5 +1,12 @@
-import { Vec2, Entity, SnapResult } from './types';
-import { dist, closestPointOnSegment, projectPointOnLine, sub, len, normalize } from './geometry';
+import {Vec2, Entity, SnapResult} from './types';
+import {
+  dist,
+  closestPointOnSegment,
+  projectPointOnLine,
+  sub,
+  len,
+  normalize,
+} from './geometry';
 
 export interface SnapSettings {
   grid: boolean;
@@ -15,14 +22,17 @@ export function getSnapPoint(
   gridSpacing: number | null,
   settings: SnapSettings,
   snapRadiusWorld: number, // Snap radius in world coordinate units
-  activeToolType?: string
+  activeToolType?: string,
 ): SnapResult {
-  let bestSnap: SnapResult = { point: { ...mousePos }, type: 'grid' }; // default fallback
+  let bestSnap: SnapResult = {point: {...mousePos}, type: 'grid'}; // default fallback
   let bestDist = snapRadiusWorld;
 
   // 1. Special wall-align snap for Door and Window tools
   // These MUST snap to walls, so wall-align takes priority
-  if (settings.wallAlign && (activeToolType === 'door' || activeToolType === 'window')) {
+  if (
+    settings.wallAlign &&
+    (activeToolType === 'door' || activeToolType === 'window')
+  ) {
     let bestWallDist = Infinity;
     let bestWallProj: Vec2 | null = null;
     let bestWallId: string | null = null;
@@ -55,7 +65,7 @@ export function getSnapPoint(
         point: bestWallProj,
         type: 'wall-align',
         entityId: bestWallId,
-        extra: { t: bestT },
+        extra: {t: bestT},
       };
     }
   }
@@ -69,7 +79,12 @@ export function getSnapPoint(
         endpoints.push((ent as any).start, (ent as any).end);
       } else if (ent.type === 'rect') {
         const r = ent;
-        endpoints.push(r.p1, r.p2, { x: r.p1.x, y: r.p2.y }, { x: r.p2.x, y: r.p1.y });
+        endpoints.push(
+          r.p1,
+          r.p2,
+          {x: r.p1.x, y: r.p2.y},
+          {x: r.p2.x, y: r.p1.y},
+        );
       } else if (ent.type === 'circle' || ent.type === 'arc') {
         endpoints.push((ent as any).center);
       }
@@ -78,7 +93,7 @@ export function getSnapPoint(
         const d = dist(mousePos, pt);
         if (d < bestDist) {
           bestDist = d;
-          bestSnap = { point: { ...pt }, type: 'endpoint', entityId: ent.id };
+          bestSnap = {point: {...pt}, type: 'endpoint', entityId: ent.id};
         }
       }
     }
@@ -89,14 +104,14 @@ export function getSnapPoint(
       if (ent.type === 'wall' || ent.type === 'line' || ent.type === 'stairs') {
         const start = (ent as any).start;
         const end = (ent as any).end;
-        midpoints.push({ x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 });
+        midpoints.push({x: (start.x + end.x) / 2, y: (start.y + end.y) / 2});
       } else if (ent.type === 'rect') {
         const r = ent;
         midpoints.push(
-          { x: (r.p1.x + r.p2.x) / 2, y: r.p1.y },
-          { x: (r.p1.x + r.p2.x) / 2, y: r.p2.y },
-          { x: r.p1.x, y: (r.p1.y + r.p2.y) / 2 },
-          { x: r.p2.x, y: (r.p1.y + r.p2.y) / 2 }
+          {x: (r.p1.x + r.p2.x) / 2, y: r.p1.y},
+          {x: (r.p1.x + r.p2.x) / 2, y: r.p2.y},
+          {x: r.p1.x, y: (r.p1.y + r.p2.y) / 2},
+          {x: r.p2.x, y: (r.p1.y + r.p2.y) / 2},
         );
       }
 
@@ -104,21 +119,26 @@ export function getSnapPoint(
         const d = dist(mousePos, pt);
         if (d < bestDist) {
           bestDist = d;
-          bestSnap = { point: { ...pt }, type: 'midpoint', entityId: ent.id };
+          bestSnap = {point: {...pt}, type: 'midpoint', entityId: ent.id};
         }
       }
     }
   }
 
   // 3. Grid Snapping
-  if (settings.grid && gridSpacing !== null && gridSpacing > 0 && bestDist === snapRadiusWorld) {
+  if (
+    settings.grid &&
+    gridSpacing !== null &&
+    gridSpacing > 0 &&
+    bestDist === snapRadiusWorld
+  ) {
     const snapX = Math.round(mousePos.x / gridSpacing) * gridSpacing;
     const snapY = Math.round(mousePos.y / gridSpacing) * gridSpacing;
-    const gridPt = { x: snapX, y: snapY };
+    const gridPt = {x: snapX, y: snapY};
     const d = dist(mousePos, gridPt);
     if (d < snapRadiusWorld) {
       bestDist = d;
-      bestSnap = { point: gridPt, type: 'grid' };
+      bestSnap = {point: gridPt, type: 'grid'};
     }
   }
 

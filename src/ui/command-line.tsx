@@ -1,6 +1,6 @@
-import { h } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
-import { commandLineMessagesSignal } from '../state/app-state';
+import {h} from 'preact';
+import {useEffect, useRef} from 'preact/hooks';
+import {commandLineMessagesSignal} from '../state/app-state';
 import './command-line.css';
 
 export function CommandLine() {
@@ -17,7 +17,9 @@ export function CommandLine() {
     <div className="command-line-area">
       <div className="command-history" ref={containerRef}>
         {messages.map((msg, i) => (
-          <div key={i} className="command-message">{msg}</div>
+          <div key={i} className="command-message">
+            {msg}
+          </div>
         ))}
       </div>
       <div className="command-prompt-bar">

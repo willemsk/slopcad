@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import {h} from 'preact';
 import {
   projectSignal,
   activePageSignal,
@@ -10,8 +10,8 @@ import {
   uiScaleSignal,
   setUiScale,
 } from '../state/app-state';
-import { formatLength } from '../core/units';
-import { GridIcon, SnapIcon } from './icons';
+import {formatLength} from '../core/units';
+import {GridIcon, SnapIcon} from './icons';
 import './status-bar.css';
 
 export function StatusBar() {
@@ -29,12 +29,16 @@ export function StatusBar() {
 
   const toggleGrid = () => {
     gridEnabledSignal.value = !gridEnabledSignal.value;
-    pushCommandMessage(`Command: GRID - Grid display ${gridEnabledSignal.value ? 'ON' : 'OFF'}.`);
+    pushCommandMessage(
+      `Command: GRID - Grid display ${gridEnabledSignal.value ? 'ON' : 'OFF'}.`,
+    );
   };
 
   const toggleSnap = () => {
     snapEnabledSignal.value = !snapEnabledSignal.value;
-    pushCommandMessage(`Command: SNAP - Snapping to geometry ${snapEnabledSignal.value ? 'ON' : 'OFF'}.`);
+    pushCommandMessage(
+      `Command: SNAP - Snapping to geometry ${snapEnabledSignal.value ? 'ON' : 'OFF'}.`,
+    );
   };
 
   const cycleUiScale = () => {
@@ -43,7 +47,9 @@ export function StatusBar() {
     if (currentIndex === -1) currentIndex = 0;
     const nextScale = scales[(currentIndex + 1) % scales.length];
     setUiScale(nextScale);
-    pushCommandMessage(`Command: UI SCALE - Set to ${Math.round(nextScale * 100)}%.`);
+    pushCommandMessage(
+      `Command: UI SCALE - Set to ${Math.round(nextScale * 100)}%.`,
+    );
   };
 
   return (
@@ -82,10 +88,30 @@ export function StatusBar() {
           Constraints: <span className="status-value">{constraintCount}</span>
         </span>
         <span className="status-item">
-          Units: <span className="status-value">{project.unitSystem === 'metric' ? 'METRIC' : 'IMPERIAL'}</span>
+          Units:{' '}
+          <span className="status-value">
+            {project.unitSystem === 'metric' ? 'METRIC' : 'IMPERIAL'}
+          </span>
         </span>
-        <button className="status-item" onClick={cycleUiScale} style={{ background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', fontFamily: 'inherit', fontSize: 'inherit' }} title="Cycle UI Scale">
-          UI Scale: <span className="status-value">{Math.round(uiScaleSignal.value * 100)}%</span>
+        <button
+          className="status-item"
+          onClick={cycleUiScale}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'inherit',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            fontFamily: 'inherit',
+            fontSize: 'inherit',
+          }}
+          title="Cycle UI Scale"
+        >
+          UI Scale:{' '}
+          <span className="status-value">
+            {Math.round(uiScaleSignal.value * 100)}%
+          </span>
         </button>
       </div>
     </div>

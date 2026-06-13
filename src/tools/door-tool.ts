@@ -1,7 +1,7 @@
-import { Tool } from './tool';
-import { Vec2, SnapResult, DoorEntity } from '../core/types';
-import { Viewport } from '../canvas/viewport';
-import { createDoor } from '../core/entity';
+import {Tool} from './tool';
+import {Vec2, SnapResult, DoorEntity} from '../core/types';
+import {Viewport} from '../canvas/viewport';
+import {createDoor} from '../core/entity';
 import {
   activePageSignal,
   updateActivePage,
@@ -14,7 +14,7 @@ export class DoorTool implements Tool {
 
   private hingeSide: 'left' | 'right' = 'left';
   private openSide: 'in' | 'out' = 'in';
-  private width = 0.90; // 90cm default width
+  private width = 0.9; // 90cm default width
 
   activate() {
     this.reset();
@@ -28,7 +28,11 @@ export class DoorTool implements Tool {
     previewEntitySignal.value = null;
   }
 
-  onMouseDown(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseDown(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     if (snapResult && snapResult.type === 'wall-align' && snapResult.entityId) {
       snapshotState();
 
@@ -40,7 +44,7 @@ export class DoorTool implements Tool {
         t,
         this.width,
         this.hingeSide,
-        this.openSide
+        this.openSide,
       );
 
       const newEntities = [...page.entities, newDoor];
@@ -51,7 +55,11 @@ export class DoorTool implements Tool {
     }
   }
 
-  onMouseMove(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseMove(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     this.updatePreview(snapResult);
   }
 
@@ -81,14 +89,17 @@ export class DoorTool implements Tool {
         t,
         this.width,
         this.hingeSide,
-        this.openSide
+        this.openSide,
       );
       // Give ghost a temporary ID
       ghost.id = 'door-preview';
       previewEntitySignal.value = ghost;
-    } else if (previewEntitySignal.value && previewEntitySignal.value.type === 'door') {
+    } else if (
+      previewEntitySignal.value &&
+      previewEntitySignal.value.type === 'door'
+    ) {
       // Update existing preview properties
-      const copy = { ...(previewEntitySignal.value as DoorEntity) };
+      const copy = {...(previewEntitySignal.value as DoorEntity)};
       copy.hingeSide = this.hingeSide;
       copy.openSide = this.openSide;
       previewEntitySignal.value = copy;

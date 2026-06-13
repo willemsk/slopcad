@@ -13,22 +13,36 @@ import {
   TextEntity,
   UnitSystem,
 } from '../core/types';
-import { dist, sub, add, scale, normalize, rotate, lerp, angle } from '../core/geometry';
-import { formatLength } from '../core/units';
+import {
+  dist,
+  sub,
+  add,
+  scale,
+  normalize,
+  rotate,
+  lerp,
+  angle,
+} from '../core/geometry';
+import {formatLength} from '../core/units';
 
 // Simple check to find wall by ID
 function findWall(entities: Entity[], wallId: string): WallEntity | null {
-  const ent = entities.find((e) => e.id === wallId);
+  const ent = entities.find(e => e.id === wallId);
   return ent && ent.type === 'wall' ? (ent as WallEntity) : null;
 }
 
-export function drawWall(ctx: CanvasRenderingContext2D, wall: WallEntity, isSelected: boolean, zoom: number) {
-  const { start, end, thickness } = wall;
+export function drawWall(
+  ctx: CanvasRenderingContext2D,
+  wall: WallEntity,
+  isSelected: boolean,
+  zoom: number,
+) {
+  const {start, end, thickness} = wall;
   const d = dist(start, end);
   if (d === 0) return;
 
   const u = normalize(sub(end, start));
-  const n = { x: -u.y, y: u.x }; // Perpendicular
+  const n = {x: -u.y, y: u.x}; // Perpendicular
 
   const halfThickness = thickness / 2;
 
@@ -46,7 +60,9 @@ export function drawWall(ctx: CanvasRenderingContext2D, wall: WallEntity, isSele
   ctx.closePath();
 
   // Styling
-  ctx.fillStyle = isSelected ? 'rgba(34, 211, 238, 0.2)' : 'rgba(200, 202, 212, 0.15)';
+  ctx.fillStyle = isSelected
+    ? 'rgba(34, 211, 238, 0.2)'
+    : 'rgba(200, 202, 212, 0.15)';
   ctx.fill();
 
   ctx.strokeStyle = isSelected ? '#22d3ee' : '#c8cad4';
@@ -69,14 +85,14 @@ export function drawDoor(
   door: DoorEntity,
   entities: Entity[],
   isSelected: boolean,
-  zoom: number
+  zoom: number,
 ) {
   const wall = findWall(entities, door.wallId);
   if (!wall) return;
 
-  const { start, end, thickness } = wall;
+  const {start, end, thickness} = wall;
   const u = normalize(sub(end, start));
-  const n = { x: -u.y, y: u.x };
+  const n = {x: -u.y, y: u.x};
 
   // Door center point on wall
   const c = lerp(start, end, door.position);
@@ -141,9 +157,11 @@ export function drawDoor(
 
   ctx.beginPath();
   // Ensure arc goes in correct direction
-  const counterClockwise = (swingDir * hingeSign) < 0;
+  const counterClockwise = swingDir * hingeSign < 0;
   ctx.arc(hinge.x, hinge.y, radius, startAng, endAng, counterClockwise);
-  ctx.strokeStyle = isSelected ? 'rgba(34, 211, 238, 0.5)' : 'rgba(148, 163, 184, 0.4)';
+  ctx.strokeStyle = isSelected
+    ? 'rgba(34, 211, 238, 0.5)'
+    : 'rgba(148, 163, 184, 0.4)';
   ctx.lineWidth = 1 / zoom;
   ctx.setLineDash([0.05, 0.05]);
   ctx.stroke();
@@ -155,14 +173,14 @@ export function drawWindow(
   windowEnt: WindowEntity,
   entities: Entity[],
   isSelected: boolean,
-  zoom: number
+  zoom: number,
 ) {
   const wall = findWall(entities, windowEnt.wallId);
   if (!wall) return;
 
-  const { start, end, thickness } = wall;
+  const {start, end, thickness} = wall;
   const u = normalize(sub(end, start));
-  const n = { x: -u.y, y: u.x };
+  const n = {x: -u.y, y: u.x};
 
   const c = lerp(start, end, windowEnt.position);
   const w = windowEnt.width;
@@ -223,14 +241,14 @@ export function drawStairs(
   ctx: CanvasRenderingContext2D,
   stairs: StairsEntity,
   isSelected: boolean,
-  zoom: number
+  zoom: number,
 ) {
-  const { start, end, width, treadCount, direction } = stairs;
+  const {start, end, width, treadCount, direction} = stairs;
   const d = dist(start, end);
   if (d === 0) return;
 
   const u = normalize(sub(end, start));
-  const n = { x: -u.y, y: u.x };
+  const n = {x: -u.y, y: u.x};
 
   const halfWidth = width / 2;
 
@@ -253,7 +271,9 @@ export function drawStairs(
 
   // Treads
   ctx.lineWidth = 1 / zoom;
-  ctx.strokeStyle = isSelected ? 'rgba(34, 211, 238, 0.7)' : 'rgba(148, 163, 184, 0.6)';
+  ctx.strokeStyle = isSelected
+    ? 'rgba(34, 211, 238, 0.7)'
+    : 'rgba(148, 163, 184, 0.6)';
   for (let i = 1; i < treadCount; i++) {
     const t = i / treadCount;
     const pt = lerp(start, end, t);
@@ -307,13 +327,19 @@ export function drawStairs(
   ctx.translate(center.x + n.x * 0.3, center.y + n.y * 0.3); // offset to side
   const ang = angle(u);
   // Keep text right-side up
-  const textAngle = (ang > Math.PI / 2 || ang < -Math.PI / 2) ? ang + Math.PI : ang;
+  const textAngle =
+    ang > Math.PI / 2 || ang < -Math.PI / 2 ? ang + Math.PI : ang;
   ctx.rotate(textAngle);
   ctx.fillText(direction === 'up' ? 'UP' : 'DN', 0, 0);
   ctx.restore();
 }
 
-export function drawLine(ctx: CanvasRenderingContext2D, line: LineEntity, isSelected: boolean, zoom: number) {
+export function drawLine(
+  ctx: CanvasRenderingContext2D,
+  line: LineEntity,
+  isSelected: boolean,
+  zoom: number,
+) {
   ctx.beginPath();
   ctx.moveTo(line.start.x, line.start.y);
   ctx.lineTo(line.end.x, line.end.y);
@@ -323,8 +349,13 @@ export function drawLine(ctx: CanvasRenderingContext2D, line: LineEntity, isSele
   ctx.stroke();
 }
 
-export function drawRect(ctx: CanvasRenderingContext2D, rect: RectEntity, isSelected: boolean, zoom: number) {
-  const { p1, p2 } = rect;
+export function drawRect(
+  ctx: CanvasRenderingContext2D,
+  rect: RectEntity,
+  isSelected: boolean,
+  zoom: number,
+) {
+  const {p1, p2} = rect;
   ctx.beginPath();
   ctx.rect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
 
@@ -336,7 +367,12 @@ export function drawRect(ctx: CanvasRenderingContext2D, rect: RectEntity, isSele
   ctx.fill();
 }
 
-export function drawCircle(ctx: CanvasRenderingContext2D, circle: CircleEntity, isSelected: boolean, zoom: number) {
+export function drawCircle(
+  ctx: CanvasRenderingContext2D,
+  circle: CircleEntity,
+  isSelected: boolean,
+  zoom: number,
+) {
   ctx.beginPath();
   ctx.arc(circle.center.x, circle.center.y, circle.radius, 0, Math.PI * 2);
 
@@ -348,7 +384,12 @@ export function drawCircle(ctx: CanvasRenderingContext2D, circle: CircleEntity, 
   ctx.fill();
 }
 
-export function drawArc(ctx: CanvasRenderingContext2D, arc: ArcEntity, isSelected: boolean, zoom: number) {
+export function drawArc(
+  ctx: CanvasRenderingContext2D,
+  arc: ArcEntity,
+  isSelected: boolean,
+  zoom: number,
+) {
   ctx.beginPath();
   ctx.arc(arc.center.x, arc.center.y, arc.radius, arc.startAngle, arc.endAngle);
 
@@ -362,14 +403,14 @@ export function drawDimension(
   dim: DimensionEntity,
   isSelected: boolean,
   unitSystem: UnitSystem,
-  zoom: number
+  zoom: number,
 ) {
-  const { p1, p2, offset, label, valueOverride } = dim;
+  const {p1, p2, offset, label, valueOverride} = dim;
   const d = dist(p1, p2);
   if (d === 0) return;
 
   const u = normalize(sub(p2, p1));
-  const n = { x: -u.y, y: u.x }; // Perpendicular
+  const n = {x: -u.y, y: u.x}; // Perpendicular
 
   // Dimension line endpoints (offset from actual points)
   const d1 = add(p1, scale(n, offset));
@@ -401,7 +442,7 @@ export function drawDimension(
 
   // 3. Draw ticks/slashes or arrows at ends (standard architectural tick: 45 degree slash)
   const tickLength = 0.1;
-  const slashDir = normalize({ x: u.x + n.x, y: u.y + n.y }); // 45 deg
+  const slashDir = normalize({x: u.x + n.x, y: u.y + n.y}); // 45 deg
 
   ctx.beginPath();
   ctx.moveTo(d1.x - slashDir.x * tickLength, d1.y - slashDir.y * tickLength);
@@ -423,7 +464,8 @@ export function drawDimension(
   // Rotate text to match line angle
   const ang = angle(u);
   // Keep text right-side up
-  const textAngle = (ang > Math.PI / 2 || ang < -Math.PI / 2) ? ang + Math.PI : ang;
+  const textAngle =
+    ang > Math.PI / 2 || ang < -Math.PI / 2 ? ang + Math.PI : ang;
   ctx.rotate(textAngle);
 
   // Draw background mask for text so dimension line doesn't cross it
@@ -441,7 +483,12 @@ export function drawDimension(
   ctx.restore();
 }
 
-export function drawText(ctx: CanvasRenderingContext2D, textEnt: TextEntity, isSelected: boolean, zoom: number) {
+export function drawText(
+  ctx: CanvasRenderingContext2D,
+  textEnt: TextEntity,
+  isSelected: boolean,
+  zoom: number,
+) {
   ctx.save();
   ctx.font = `${textEnt.fontSize}px Inter, sans-serif`;
   ctx.fillStyle = isSelected ? '#22d3ee' : '#f8fafc';
@@ -455,7 +502,12 @@ export function drawText(ctx: CanvasRenderingContext2D, textEnt: TextEntity, isS
     ctx.strokeStyle = 'rgba(34, 211, 238, 0.5)';
     ctx.lineWidth = 1 / zoom;
     ctx.beginPath();
-    ctx.rect(textEnt.position.x - 0.05, textEnt.position.y - 0.05, textWidth + 0.1, textEnt.fontSize + 0.1);
+    ctx.rect(
+      textEnt.position.x - 0.05,
+      textEnt.position.y - 0.05,
+      textWidth + 0.1,
+      textEnt.fontSize + 0.1,
+    );
     ctx.stroke();
   }
   ctx.restore();
@@ -464,19 +516,27 @@ export function drawText(ctx: CanvasRenderingContext2D, textEnt: TextEntity, isS
 export function drawSelectionHandles(
   ctx: CanvasRenderingContext2D,
   entity: Entity,
-  zoom: number
+  zoom: number,
 ) {
   const pts: Vec2[] = [];
-  if (entity.type === 'wall' || entity.type === 'line' || entity.type === 'stairs' || entity.type === 'dimension') {
-    pts.push((entity as any).start || (entity as any).p1, (entity as any).end || (entity as any).p2);
+  if (
+    entity.type === 'wall' ||
+    entity.type === 'line' ||
+    entity.type === 'stairs' ||
+    entity.type === 'dimension'
+  ) {
+    pts.push(
+      (entity as any).start || (entity as any).p1,
+      (entity as any).end || (entity as any).p2,
+    );
   } else if (entity.type === 'rect') {
     const r = entity;
-    pts.push(r.p1, r.p2, { x: r.p1.x, y: r.p2.y }, { x: r.p2.x, y: r.p1.y });
+    pts.push(r.p1, r.p2, {x: r.p1.x, y: r.p2.y}, {x: r.p2.x, y: r.p1.y});
   } else if (entity.type === 'circle' || entity.type === 'arc') {
     pts.push((entity as any).center);
     if (entity.type === 'circle') {
       const c = entity;
-      pts.push({ x: c.center.x + c.radius, y: c.center.y });
+      pts.push({x: c.center.x + c.radius, y: c.center.y});
     }
   } else if (entity.type === 'text') {
     pts.push(entity.position);
@@ -490,7 +550,12 @@ export function drawSelectionHandles(
 
   for (const pt of pts) {
     ctx.beginPath();
-    ctx.rect(pt.x - handleSize / 2, pt.y - handleSize / 2, handleSize, handleSize);
+    ctx.rect(
+      pt.x - handleSize / 2,
+      pt.y - handleSize / 2,
+      handleSize,
+      handleSize,
+    );
     ctx.fill();
     ctx.stroke();
   }
@@ -500,7 +565,7 @@ export function drawSnapIndicator(
   ctx: CanvasRenderingContext2D,
   pt: Vec2,
   type: string,
-  zoom: number
+  zoom: number,
 ) {
   ctx.save();
   ctx.strokeStyle = '#f59e0b'; // Amber

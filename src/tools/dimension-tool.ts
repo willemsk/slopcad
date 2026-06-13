@@ -1,8 +1,8 @@
-import { Tool } from './tool';
-import { Vec2, SnapResult, DimensionEntity } from '../core/types';
-import { Viewport } from '../canvas/viewport';
-import { createDimension } from '../core/entity';
-import { dist, sub, dot, normalize } from '../core/geometry';
+import {Tool} from './tool';
+import {Vec2, SnapResult, DimensionEntity} from '../core/types';
+import {Viewport} from '../canvas/viewport';
+import {createDimension} from '../core/entity';
+import {dist, sub, dot, normalize} from '../core/geometry';
 import {
   activePageSignal,
   updateActivePage,
@@ -30,17 +30,21 @@ export class DimensionTool implements Tool {
     previewEntitySignal.value = null;
   }
 
-  onMouseDown(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseDown(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     const targetPt = snapResult ? snapResult.point : worldPos;
 
     if (this.p1 === null) {
-      this.p1 = { ...targetPt };
+      this.p1 = {...targetPt};
     } else if (this.p2 === null) {
       if (dist(this.p1, targetPt) < 0.01) {
         this.reset();
         return;
       }
-      this.p2 = { ...targetPt };
+      this.p2 = {...targetPt};
     } else {
       // Third click: place the dimension
       snapshotState();
@@ -56,7 +60,11 @@ export class DimensionTool implements Tool {
     }
   }
 
-  onMouseMove(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseMove(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     const targetPt = snapResult ? snapResult.point : worldPos;
 
     if (this.p1 && !this.p2) {
@@ -85,7 +93,7 @@ export class DimensionTool implements Tool {
     if (!this.p1 || !this.p2) return 0.3;
 
     const u = normalize(sub(this.p2, this.p1));
-    const n = { x: -u.y, y: u.x }; // Perpendicular vector
+    const n = {x: -u.y, y: u.x}; // Perpendicular vector
     const v = sub(mousePos, this.p1);
 
     const offsetVal = dot(v, n);

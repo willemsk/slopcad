@@ -1,15 +1,20 @@
-import { Tool } from './tool';
-import { SelectTool } from './select-tool';
-import { WallTool } from './wall-tool';
-import { DoorTool } from './door-tool';
-import { WindowTool } from './window-tool';
-import { StairsTool } from './stairs-tool';
-import { LineTool } from './line-tool';
-import { RectTool } from './rect-tool';
-import { CircleTool } from './circle-tool';
-import { DimensionTool } from './dimension-tool';
-import { TextTool } from './text-tool';
-import { activeToolSignal, previewEntitySignal, clearSelection, triggerRenderSignal } from '../state/app-state';
+import {Tool} from './tool';
+import {SelectTool} from './select-tool';
+import {WallTool} from './wall-tool';
+import {DoorTool} from './door-tool';
+import {WindowTool} from './window-tool';
+import {StairsTool} from './stairs-tool';
+import {LineTool} from './line-tool';
+import {RectTool} from './rect-tool';
+import {CircleTool} from './circle-tool';
+import {DimensionTool} from './dimension-tool';
+import {TextTool} from './text-tool';
+import {
+  activeToolSignal,
+  previewEntitySignal,
+  clearSelection,
+  triggerRenderSignal,
+} from '../state/app-state';
 
 // Single instances of tools
 export const selectTool = new SelectTool();

@@ -1,17 +1,25 @@
-import { h } from 'preact';
-import { projectSignal, selectionSignal, triggerRenderSignal, overlayPageIndexSignal, pushCommandMessage } from '../state/app-state';
-import { generateId } from '../core/entity';
+import {h} from 'preact';
+import {
+  projectSignal,
+  selectionSignal,
+  triggerRenderSignal,
+  overlayPageIndexSignal,
+  pushCommandMessage,
+} from '../state/app-state';
+import {generateId} from '../core/entity';
 import './page-tabs.css';
 
 export function PageTabs() {
   const project = projectSignal.value;
 
   const handleSelectPage = (index: number) => {
-    projectSignal.value = { ...project, activePageIndex: index };
+    projectSignal.value = {...project, activePageIndex: index};
     selectionSignal.value = new Set();
     triggerRenderSignal.value = {};
     const pageName = project.pages[index].name;
-    pushCommandMessage(`Command: LAYOUT - Switched to floor layout "${pageName}".`);
+    pushCommandMessage(
+      `Command: LAYOUT - Switched to floor layout "${pageName}".`,
+    );
   };
 
   const handleAddPage = () => {
@@ -19,12 +27,23 @@ export function PageTabs() {
     const name = window.prompt('Enter new floor name:', defaultName);
     if (name === null) return;
     const cleanName = name.trim() || defaultName;
-    const newPage = { id: generateId(), name: cleanName, entities: [], constraints: [] };
+    const newPage = {
+      id: generateId(),
+      name: cleanName,
+      entities: [],
+      constraints: [],
+    };
     const newPages = [...project.pages, newPage];
-    projectSignal.value = { ...project, pages: newPages, activePageIndex: newPages.length - 1 };
+    projectSignal.value = {
+      ...project,
+      pages: newPages,
+      activePageIndex: newPages.length - 1,
+    };
     selectionSignal.value = new Set();
     triggerRenderSignal.value = {};
-    pushCommandMessage(`Command: LAYOUTNEW - Floor layout "${cleanName}" created.`);
+    pushCommandMessage(
+      `Command: LAYOUTNEW - Floor layout "${cleanName}" created.`,
+    );
   };
 
   const handleRenamePage = (index: number) => {
@@ -35,10 +54,12 @@ export function PageTabs() {
     if (!cleanName) return;
     const oldName = page.name;
     const newPages = [...project.pages];
-    newPages[index] = { ...newPages[index], name: cleanName };
-    projectSignal.value = { ...project, pages: newPages };
+    newPages[index] = {...newPages[index], name: cleanName};
+    projectSignal.value = {...project, pages: newPages};
     triggerRenderSignal.value = {};
-    pushCommandMessage(`Command: RENAME - Floor "${oldName}" renamed to "${cleanName}".`);
+    pushCommandMessage(
+      `Command: RENAME - Floor "${oldName}" renamed to "${cleanName}".`,
+    );
   };
 
   const handleDeletePage = (index: number) => {
@@ -47,15 +68,27 @@ export function PageTabs() {
       return;
     }
     const page = project.pages[index];
-    if (window.confirm(`Delete floor "${page.name}"? This action cannot be undone.`)) {
+    if (
+      window.confirm(
+        `Delete floor "${page.name}"? This action cannot be undone.`,
+      )
+    ) {
       const newPages = project.pages.filter((_, i) => i !== index);
       let newActiveIndex = project.activePageIndex;
-      if (newActiveIndex >= newPages.length) newActiveIndex = newPages.length - 1;
-      projectSignal.value = { ...project, pages: newPages, activePageIndex: newActiveIndex };
+      if (newActiveIndex >= newPages.length)
+        newActiveIndex = newPages.length - 1;
+      projectSignal.value = {
+        ...project,
+        pages: newPages,
+        activePageIndex: newActiveIndex,
+      };
       selectionSignal.value = new Set();
       if (overlayPageIndexSignal.value === index) {
         overlayPageIndexSignal.value = null;
-      } else if (overlayPageIndexSignal.value !== null && overlayPageIndexSignal.value > index) {
+      } else if (
+        overlayPageIndexSignal.value !== null &&
+        overlayPageIndexSignal.value > index
+      ) {
         overlayPageIndexSignal.value -= 1;
       }
       triggerRenderSignal.value = {};
@@ -80,7 +113,10 @@ export function PageTabs() {
               {project.pages.length > 1 && (
                 <button
                   className="tab-close"
-                  onClick={(e) => { e.stopPropagation(); handleDeletePage(idx); }}
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleDeletePage(idx);
+                  }}
                   title="Delete floor"
                 >
                   ×
@@ -89,7 +125,11 @@ export function PageTabs() {
             </div>
           );
         })}
-        <button className="tab-add" onClick={handleAddPage} title="Add new floor">
+        <button
+          className="tab-add"
+          onClick={handleAddPage}
+          title="Add new floor"
+        >
           +
         </button>
       </div>
@@ -99,8 +139,12 @@ export function PageTabs() {
         <label htmlFor="overlay-select">Ghost Overlay:</label>
         <select
           id="overlay-select"
-          value={overlayPageIndexSignal.value === null ? 'none' : overlayPageIndexSignal.value.toString()}
-          onChange={(e) => {
+          value={
+            overlayPageIndexSignal.value === null
+              ? 'none'
+              : overlayPageIndexSignal.value.toString()
+          }
+          onChange={e => {
             const val = e.currentTarget.value;
             if (val === 'none') {
               overlayPageIndexSignal.value = null;
@@ -108,7 +152,9 @@ export function PageTabs() {
             } else {
               overlayPageIndexSignal.value = parseInt(val, 10);
               const name = project.pages[parseInt(val, 10)].name;
-              pushCommandMessage(`Command: OVERLAY - Displaying "${name}" as background overlay.`);
+              pushCommandMessage(
+                `Command: OVERLAY - Displaying "${name}" as background overlay.`,
+              );
             }
             triggerRenderSignal.value = {};
           }}

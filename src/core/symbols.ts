@@ -12,7 +12,8 @@ export class SymbolRegistry {
     {
       name: 'Chair',
       category: 'furniture',
-      svgPath: 'M -0.2 -0.2 L 0.2 -0.2 L 0.2 0.2 L -0.2 0.2 Z M -0.15 -0.15 L 0.15 -0.15 L 0.15 0.15 L -0.15 0.15 Z',
+      svgPath:
+        'M -0.2 -0.2 L 0.2 -0.2 L 0.2 0.2 L -0.2 0.2 Z M -0.15 -0.15 L 0.15 -0.15 L 0.15 0.15 L -0.15 0.15 Z',
       defaultWidth: 0.45,
       defaultHeight: 0.45,
     },
@@ -22,7 +23,7 @@ export class SymbolRegistry {
       svgPath: 'M -0.4 -0.6 L 0.4 -0.6 L 0.4 0.6 L -0.4 0.6 Z',
       defaultWidth: 0.8,
       defaultHeight: 1.2,
-    }
+    },
   ];
 
   static register(sym: SymbolDefinition) {
@@ -30,11 +31,11 @@ export class SymbolRegistry {
   }
 
   static getByCategory(category: string): SymbolDefinition[] {
-    return this.symbols.filter((s) => s.category === category);
+    return this.symbols.filter(s => s.category === category);
   }
 
   static getByName(name: string): SymbolDefinition | undefined {
-    return this.symbols.find((s) => s.name.toLowerCase() === name.toLowerCase());
+    return this.symbols.find(s => s.name.toLowerCase() === name.toLowerCase());
   }
 
   static getAll(): SymbolDefinition[] {

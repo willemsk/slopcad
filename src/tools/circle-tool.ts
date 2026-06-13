@@ -1,8 +1,8 @@
-import { Tool } from './tool';
-import { Vec2, SnapResult } from '../core/types';
-import { Viewport } from '../canvas/viewport';
-import { createCircle } from '../core/entity';
-import { dist } from '../core/geometry';
+import {Tool} from './tool';
+import {Vec2, SnapResult} from '../core/types';
+import {Viewport} from '../canvas/viewport';
+import {createCircle} from '../core/entity';
+import {dist} from '../core/geometry';
 import {
   activePageSignal,
   updateActivePage,
@@ -28,12 +28,16 @@ export class CircleTool implements Tool {
     previewEntitySignal.value = null;
   }
 
-  onMouseDown(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseDown(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     const targetPt = snapResult ? snapResult.point : worldPos;
 
     if (this.centerPt === null) {
       snapshotState();
-      this.centerPt = { ...targetPt };
+      this.centerPt = {...targetPt};
     } else {
       const radius = dist(this.centerPt, targetPt);
       if (radius < 0.01) {
@@ -51,7 +55,11 @@ export class CircleTool implements Tool {
     }
   }
 
-  onMouseMove(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {
+  onMouseMove(
+    worldPos: Vec2,
+    event: MouseEvent,
+    snapResult: SnapResult | null,
+  ) {
     if (this.centerPt) {
       const targetPt = snapResult ? snapResult.point : worldPos;
       const radius = dist(this.centerPt, targetPt);
