@@ -133,10 +133,24 @@ export function drawWalls(
           const leftOfOut = isStart ? ptR : ptL;
           const rightOfOut = isStart ? ptL : ptR;
 
-          const newLeftOfOut =
-            infiniteLineIntersection(leftOfOut, uOut, L2, u2Out) || leftOfOut;
-          const newRightOfOut =
-            infiniteLineIntersection(rightOfOut, uOut, R2, u2Out) || rightOfOut;
+          const crossProd = uOut.x * u2Out.y - uOut.y * u2Out.x;
+
+          let newLeftOfOut: Vec2;
+          let newRightOfOut: Vec2;
+
+          if (crossProd > 0) {
+            newLeftOfOut =
+              infiniteLineIntersection(leftOfOut, uOut, L2, u2Out) || leftOfOut;
+            newRightOfOut =
+              infiniteLineIntersection(rightOfOut, uOut, R2, u2Out) ||
+              rightOfOut;
+          } else {
+            newLeftOfOut =
+              infiniteLineIntersection(leftOfOut, uOut, R2, u2Out) || leftOfOut;
+            newRightOfOut =
+              infiniteLineIntersection(rightOfOut, uOut, L2, u2Out) ||
+              rightOfOut;
+          }
 
           if (isStart) {
             pStartR = newLeftOfOut;
@@ -160,13 +174,13 @@ export function drawWalls(
           const iR_L2 = infiniteLineIntersection(ptR, uOut, L2, u2);
           const iR_R2 = infiniteLineIntersection(ptR, uOut, R2, u2);
 
-          const tL_L2 = iL_L2 ? dot(sub(iL_L2, ptL), uOut) : Infinity;
-          const tL_R2 = iL_R2 ? dot(sub(iL_R2, ptL), uOut) : Infinity;
-          const iL = tL_L2 < tL_R2 ? iL_L2 : iL_R2;
+          const tL_L2 = iL_L2 ? dot(sub(iL_L2, ptL), uOut) : -Infinity;
+          const tL_R2 = iL_R2 ? dot(sub(iL_R2, ptL), uOut) : -Infinity;
+          const iL = tL_L2 > tL_R2 ? iL_L2 : iL_R2;
 
-          const tR_L2 = iR_L2 ? dot(sub(iR_L2, ptR), uOut) : Infinity;
-          const tR_R2 = iR_R2 ? dot(sub(iR_R2, ptR), uOut) : Infinity;
-          const iR = tR_L2 < tR_R2 ? iR_L2 : iR_R2;
+          const tR_L2 = iR_L2 ? dot(sub(iR_L2, ptR), uOut) : -Infinity;
+          const tR_R2 = iR_R2 ? dot(sub(iR_R2, ptR), uOut) : -Infinity;
+          const iR = tR_L2 > tR_R2 ? iR_L2 : iR_R2;
 
           if (isStart) {
             pStartL = iL || ptL;

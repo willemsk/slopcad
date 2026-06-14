@@ -35,7 +35,7 @@ describe('WallTool', () => {
     previewEntitySignal.value = null;
     selectionSignal.value.clear();
   });
-  
+
   afterEach(() => {
     vi.useRealTimers();
   });
@@ -53,7 +53,7 @@ describe('WallTool', () => {
   it('creates a wall and starts a new chain on second click', () => {
     tool.onMouseDown({x: 0, y: 0}, createMouseEvent(), null);
     tool.onMouseMove({x: 10, y: 0}, createMouseEvent(), null); // Move to set preview end
-    
+
     vi.advanceTimersByTime(500); // Advance time past 300ms double click threshold
     tool.onMouseDown({x: 10, y: 0}, createMouseEvent(), null);
 
@@ -83,7 +83,7 @@ describe('WallTool', () => {
     tool.onMouseDown({x: 0, y: 0}, createMouseEvent(), null);
     tool.onMouseMove({x: 10, y: 0}, createMouseEvent(), null);
     expect(previewEntitySignal.value).not.toBeNull();
-    
+
     tool.deactivate();
     expect(previewEntitySignal.value).toBeNull();
   });

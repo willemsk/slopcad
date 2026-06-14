@@ -58,7 +58,7 @@ describe('RectTool', () => {
 
   it('forces square aspect ratio with shift key', () => {
     tool.onMouseDown({x: 0, y: 0}, createMouseEvent(), null);
-    
+
     // dx=10, dy=5 -> side length should be max(10, 5) = 10
     tool.onMouseMove({x: 10, y: 5}, createMouseEvent(0, true), null);
     const preview = previewEntitySignal.value as RectEntity;

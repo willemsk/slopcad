@@ -36,7 +36,7 @@ describe('LineTool', () => {
 
   it('sets start point on first click', () => {
     tool.onMouseDown({x: 0, y: 0}, createMouseEvent(), null);
-    
+
     // Line tool sets preview on mouse move, not down
     expect(previewEntitySignal.value).toBeNull();
   });
@@ -68,7 +68,7 @@ describe('LineTool', () => {
 
   it('snaps to orthogonal angles with shift key', () => {
     tool.onMouseDown({x: 0, y: 0}, createMouseEvent(), null);
-    
+
     // dx=10, dy=5 -> should snap to x-axis
     tool.onMouseMove({x: 10, y: 5}, createMouseEvent(0, true), null);
     let preview = previewEntitySignal.value as LineEntity;
