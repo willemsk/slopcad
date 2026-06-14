@@ -176,7 +176,7 @@ export function render(state: RenderState) {
   // 7. Draw Selection Handles on Top
   for (const ent of entities) {
     if (selection.has(ent.id)) {
-      drawSelectionHandles(ctx, ent, viewport.zoom);
+      drawSelectionHandles(ctx, ent, viewport.zoom, entities);
     }
   }
 

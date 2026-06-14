@@ -152,9 +152,8 @@ function parseImperial(str: string): number | null {
     } else if (parts.length === 1) {
       const val = parseFloat(parts[0]);
       if (!isNaN(val)) {
-        // Single number: if it's imperial system and no symbol, treat as feet?
-        // Or if it contains decimals, treat as feet. Let's assume feet.
-        feet = val;
+        // Single number: if it's imperial system and no symbol, treat as inches.
+        inches = val;
       }
     }
   }

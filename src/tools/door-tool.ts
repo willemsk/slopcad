@@ -13,8 +13,8 @@ import {
 export class DoorTool implements Tool {
   name = 'door';
 
-  private hingeSide: 'left' | 'right' = 'left';
-  private openSide: 'in' | 'out' = 'in';
+  private flipX = false;
+  private flipY = false;
   private width = 0.9; // 90cm default width
 
   activate() {
@@ -38,17 +38,25 @@ export class DoorTool implements Tool {
       snapshotState();
 
       const page = activePageSignal.value;
-      const t = snapResult.extra?.t ?? 0.5;
+      let t = snapResult.extra?.t ?? 0.5;
+      const wall = page.entities.find(e => e.id === snapResult.entityId) as any;
+      if (wall) {
+        const length = Math.hypot(
+          wall.end.x - wall.start.x,
+          wall.end.y - wall.start.y,
+        );
+        if (length > 0) {
+          const minT = this.width / 2 / length;
+          const maxT = 1 - minT;
+          t = Math.max(minT, Math.min(maxT, t));
+        }
+      }
 
       const layerId = projectSignal.value.activeLayerId;
-      const newDoor = createDoor(
-        snapResult.entityId,
-        t,
-        this.width,
-        this.hingeSide,
-        this.openSide,
-        layerId,
-      );
+      const newDoor = createDoor(snapResult.entityId, t, this.width, layerId);
+      newDoor.flipX = this.flipX;
+      newDoor.flipY = this.flipY;
+      newDoor.openingAngle = 90;
 
       const newEntities = [...page.entities, newDoor];
       updateActivePage(newEntities, page.constraints);
@@ -69,16 +77,16 @@ export class DoorTool implements Tool {
   onMouseUp(worldPos: Vec2, event: MouseEvent, snapResult: SnapResult | null) {}
 
   onKeyDown(event: KeyboardEvent) {
-    // Tab flips hinge side
+    // Tab flips X
     if (event.key === 'Tab') {
       event.preventDefault();
-      this.hingeSide = this.hingeSide === 'left' ? 'right' : 'left';
+      this.flipX = !this.flipX;
       this.updatePreview(null); // Force refresh
     }
-    // 'F' or 'f' flips open side (in/out)
+    // 'F' or 'f' flips Y
     if (event.key.toLowerCase() === 'f') {
       event.preventDefault();
-      this.openSide = this.openSide === 'in' ? 'out' : 'in';
+      this.flipY = !this.flipY;
       this.updatePreview(null); // Force refresh
     }
   }
@@ -86,16 +94,26 @@ export class DoorTool implements Tool {
   private updatePreview(snapResult: SnapResult | null) {
     // If no snapResult is provided, we try to use the last active preview wallId and position
     if (snapResult && snapResult.type === 'wall-align' && snapResult.entityId) {
-      const t = snapResult.extra?.t ?? 0.5;
+      let t = snapResult.extra?.t ?? 0.5;
+      const page = activePageSignal.value;
+      const wall = page.entities.find(e => e.id === snapResult.entityId) as any;
+      if (wall) {
+        const length = Math.hypot(
+          wall.end.x - wall.start.x,
+          wall.end.y - wall.start.y,
+        );
+        if (length > 0) {
+          const minT = this.width / 2 / length;
+          const maxT = 1 - minT;
+          t = Math.max(minT, Math.min(maxT, t));
+        }
+      }
+
       const layerId = projectSignal.value.activeLayerId;
-      const ghost = createDoor(
-        snapResult.entityId,
-        t,
-        this.width,
-        this.hingeSide,
-        this.openSide,
-        layerId,
-      );
+      const ghost = createDoor(snapResult.entityId, t, this.width, layerId);
+      ghost.flipX = this.flipX;
+      ghost.flipY = this.flipY;
+      ghost.openingAngle = 90;
       // Give ghost a temporary ID
       ghost.id = 'door-preview';
       previewEntitySignal.value = ghost;
@@ -105,8 +123,8 @@ export class DoorTool implements Tool {
     ) {
       // Update existing preview properties
       const copy = {...(previewEntitySignal.value as DoorEntity)};
-      copy.hingeSide = this.hingeSide;
-      copy.openSide = this.openSide;
+      copy.flipX = this.flipX;
+      copy.flipY = this.flipY;
       previewEntitySignal.value = copy;
     } else {
       previewEntitySignal.value = null;

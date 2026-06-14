@@ -47,6 +47,9 @@ export function PropertiesPanel() {
   const [pageOpen, setPageOpen] = useState(true);
   const [constraintsOpen, setConstraintsOpen] = useState(true);
 
+  // Door/Window distance toggle
+  const [distFromStart, setDistFromStart] = useState(true);
+
   useEffect(() => {
     // Reset local inputs when selection changes
     setLocalVals({});
@@ -86,6 +89,13 @@ export function PropertiesPanel() {
 
     updateActivePage(newEntities, page.constraints);
     runSolverOnActivePage();
+    setLocalVals({});
+  };
+
+  const handleKeyDownCommit = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      (e.target as HTMLInputElement).blur();
+    }
   };
 
   const handleToggleLock = () => {
@@ -143,6 +153,8 @@ export function PropertiesPanel() {
                         (e.target as HTMLInputElement).value,
                       )
                     }
+                    onFocus={e => (e.target as HTMLInputElement).select()}
+                    onKeyDown={handleKeyDownCommit}
                     onBlur={e =>
                       handlePageNameChange((e.target as HTMLInputElement).value)
                     }
@@ -353,7 +365,10 @@ export function PropertiesPanel() {
                         type="text"
                         value={getVal(
                           'thickness',
-                          (activeEntity as WallEntity).thickness.toString(),
+                          formatLength(
+                            (activeEntity as WallEntity).thickness,
+                            unitSystem,
+                          ),
                         )}
                         onInput={e =>
                           handleInputChange(
@@ -361,6 +376,8 @@ export function PropertiesPanel() {
                             (e.target as HTMLInputElement).value,
                           )
                         }
+                        onFocus={e => (e.target as HTMLInputElement).select()}
+                        onKeyDown={handleKeyDownCommit}
                         onBlur={e => {
                           const m = parseLength(
                             (e.target as HTMLInputElement).value,
@@ -400,6 +417,8 @@ export function PropertiesPanel() {
                           (e.target as HTMLInputElement).value,
                         )
                       }
+                      onFocus={e => (e.target as HTMLInputElement).select()}
+                      onKeyDown={handleKeyDownCommit}
                       onBlur={e => {
                         const m = parseLength(
                           (e.target as HTMLInputElement).value,
@@ -456,6 +475,8 @@ export function PropertiesPanel() {
                           (e.target as HTMLInputElement).value,
                         )
                       }
+                      onFocus={e => (e.target as HTMLInputElement).select()}
+                      onKeyDown={handleKeyDownCommit}
                       onBlur={e => {
                         const m = parseLength(
                           (e.target as HTMLInputElement).value,
@@ -496,6 +517,8 @@ export function PropertiesPanel() {
                           (e.target as HTMLInputElement).value,
                         )
                       }
+                      onFocus={e => (e.target as HTMLInputElement).select()}
+                      onKeyDown={handleKeyDownCommit}
                       onBlur={e => {
                         const m = parseLength(
                           (e.target as HTMLInputElement).value,
@@ -537,6 +560,8 @@ export function PropertiesPanel() {
                         (e.target as HTMLInputElement).value,
                       )
                     }
+                    onFocus={e => (e.target as HTMLInputElement).select()}
+                    onKeyDown={handleKeyDownCommit}
                     onBlur={e => {
                       const m = parseLength(
                         (e.target as HTMLInputElement).value,
@@ -581,6 +606,8 @@ export function PropertiesPanel() {
                           (e.target as HTMLInputElement).value,
                         )
                       }
+                      onFocus={e => (e.target as HTMLInputElement).select()}
+                      onKeyDown={handleKeyDownCommit}
                       onBlur={e => {
                         const m = parseLength(
                           (e.target as HTMLInputElement).value,
@@ -644,85 +671,150 @@ export function PropertiesPanel() {
                 activeEntity.type === 'window') && (
                 <div>
                   <div className="property-item">
-                    <span className="property-label">Position (%)</span>
-                    <div
-                      className="property-value"
-                      style={{display: 'flex', gap: 6, alignItems: 'center'}}
-                    >
-                      <input
-                        type="range"
-                        min="0.05"
-                        max="0.95"
-                        step="0.01"
-                        value={(activeEntity as any).position}
-                        onInput={e => {
-                          const val = parseFloat(
-                            (e.target as HTMLInputElement).value,
-                          );
-                          const newEntities = page.entities.map(ent => {
-                            if (ent.id === activeEntity.id) {
-                              const copy = {...ent};
-                              (copy as any).position = val;
-                              return copy;
-                            }
-                            return ent;
-                          });
-                          updateActivePage(newEntities, page.constraints);
+                    <span className="property-label">
+                      Distance from{' '}
+                      <span
+                        style={{
+                          cursor: 'pointer',
+                          textDecoration: 'underline',
+                          fontWeight: 'bold',
                         }}
-                        onChange={e => {
-                          const val = parseFloat(
+                        onClick={() => setDistFromStart(!distFromStart)}
+                      >
+                        {distFromStart ? 'Start' : 'End'}
+                      </span>
+                    </span>
+                    <div className="property-value">
+                      <input
+                        type="text"
+                        value={getVal(
+                          'posDist',
+                          (() => {
+                            const wall = page.entities.find(
+                              e => e.id === (activeEntity as any).wallId,
+                            ) as any;
+                            const wallLength = wall
+                              ? dist(wall.start, wall.end)
+                              : 0;
+                            const pos = (activeEntity as any).position;
+                            const currentDist = distFromStart
+                              ? pos * wallLength
+                              : (1 - pos) * wallLength;
+                            return formatLength(currentDist, unitSystem);
+                          })(),
+                        )}
+                        onInput={e =>
+                          handleInputChange(
+                            'posDist',
                             (e.target as HTMLInputElement).value,
+                          )
+                        }
+                        onFocus={e => (e.target as HTMLInputElement).select()}
+                        onKeyDown={handleKeyDownCommit}
+                        onBlur={e => {
+                          const m = parseLength(
+                            (e.target as HTMLInputElement).value,
+                            unitSystem,
                           );
-                          commitProperty(ent => {
-                            (ent as any).position = val;
-                          });
+                          const wall = page.entities.find(
+                            w => w.id === (activeEntity as any).wallId,
+                          ) as any;
+                          const wallLength = wall
+                            ? dist(wall.start, wall.end)
+                            : 0;
+
+                          if (m !== null && wallLength > 0) {
+                            let newPos = distFromStart
+                              ? m / wallLength
+                              : 1 - m / wallLength;
+                            const minT =
+                              (activeEntity as any).width / 2 / wallLength;
+                            const maxT = 1 - minT;
+                            newPos = Math.max(minT, Math.min(maxT, newPos));
+
+                            commitProperty(ent => {
+                              (ent as any).position = newPos;
+                            });
+                          } else {
+                            setLocalVals({});
+                          }
                         }}
                       />
-                      <span
-                        style={{fontSize: 10, width: 30, textAlign: 'right'}}
-                      >
-                        {Math.round((activeEntity as any).position * 100)}%
-                      </span>
                     </div>
                   </div>
 
                   {activeEntity.type === 'door' && (
                     <div>
                       <div className="property-item">
-                        <span className="property-label">Hinge Side</span>
+                        <span className="property-label">Flip Left/Right</span>
                         <div className="property-value">
-                          <select
-                            value={(activeEntity as DoorEntity).hingeSide}
+                          <input
+                            type="checkbox"
+                            checked={!!(activeEntity as DoorEntity).flipX}
                             onChange={e => {
                               commitProperty(ent => {
-                                (ent as DoorEntity).hingeSide = (
-                                  e.target as HTMLSelectElement
-                                ).value as any;
+                                (ent as DoorEntity).flipX = (
+                                  e.target as HTMLInputElement
+                                ).checked;
                               });
                             }}
-                          >
-                            <option value="left">Left Hinge</option>
-                            <option value="right">Right Hinge</option>
-                          </select>
+                          />
                         </div>
                       </div>
 
                       <div className="property-item">
-                        <span className="property-label">Swing Direction</span>
+                        <span className="property-label">Flip In/Out</span>
                         <div className="property-value">
-                          <select
-                            value={(activeEntity as DoorEntity).openSide}
+                          <input
+                            type="checkbox"
+                            checked={!!(activeEntity as DoorEntity).flipY}
                             onChange={e => {
                               commitProperty(ent => {
-                                (ent as DoorEntity).openSide = (
-                                  e.target as HTMLSelectElement
-                                ).value as any;
+                                (ent as DoorEntity).flipY = (
+                                  e.target as HTMLInputElement
+                                ).checked;
                               });
                             }}
-                          >
-                            <option value="in">Inward Swing</option>
-                            <option value="out">Outward Swing</option>
-                          </select>
+                          />
+                        </div>
+                      </div>
+
+                      <div className="property-item">
+                        <span className="property-label">Opening Angle</span>
+                        <div className="property-value">
+                          <input
+                            type="number"
+                            min="0"
+                            max="180"
+                            value={getVal(
+                              'openingAngle',
+                              (
+                                (activeEntity as DoorEntity).openingAngle ?? 90
+                              ).toString(),
+                            )}
+                            onInput={e =>
+                              handleInputChange(
+                                'openingAngle',
+                                (e.target as HTMLInputElement).value,
+                              )
+                            }
+                            onFocus={e =>
+                              (e.target as HTMLInputElement).select()
+                            }
+                            onKeyDown={handleKeyDownCommit}
+                            onBlur={e => {
+                              const val = parseFloat(
+                                (e.target as HTMLInputElement).value,
+                              );
+                              if (!isNaN(val)) {
+                                commitProperty(ent => {
+                                  (ent as DoorEntity).openingAngle = val;
+                                });
+                              } else {
+                                setLocalVals({});
+                              }
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -750,6 +842,8 @@ export function PropertiesPanel() {
                             (e.target as HTMLInputElement).value,
                           )
                         }
+                        onFocus={e => (e.target as HTMLInputElement).select()}
+                        onKeyDown={handleKeyDownCommit}
                         onBlur={e => {
                           const val = parseInt(
                             (e.target as HTMLInputElement).value,
@@ -806,6 +900,8 @@ export function PropertiesPanel() {
                             (e.target as HTMLInputElement).value,
                           )
                         }
+                        onFocus={e => (e.target as HTMLInputElement).select()}
+                        onKeyDown={handleKeyDownCommit}
                         onBlur={e => {
                           commitProperty(ent => {
                             (ent as DimensionEntity).label =
@@ -835,6 +931,8 @@ export function PropertiesPanel() {
                             (e.target as HTMLInputElement).value,
                           )
                         }
+                        onFocus={e => (e.target as HTMLInputElement).select()}
+                        onKeyDown={handleKeyDownCommit}
                         onBlur={e => {
                           const valStr = (
                             e.target as HTMLInputElement
@@ -879,6 +977,8 @@ export function PropertiesPanel() {
                             (e.target as HTMLTextAreaElement).value,
                           )
                         }
+                        onFocus={e => (e.target as HTMLInputElement).select()}
+                        onKeyDown={handleKeyDownCommit}
                         onBlur={e => {
                           commitProperty(ent => {
                             (ent as TextEntity).text = (
@@ -909,6 +1009,8 @@ export function PropertiesPanel() {
                             (e.target as HTMLInputElement).value,
                           )
                         }
+                        onFocus={e => (e.target as HTMLInputElement).select()}
+                        onKeyDown={handleKeyDownCommit}
                         onBlur={e => {
                           const m = parseLength(
                             (e.target as HTMLInputElement).value,

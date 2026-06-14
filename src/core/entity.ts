@@ -42,21 +42,18 @@ export function createDoor(
   wallId: string,
   position = 0.5,
   width = 0.9,
-  hingeSide: 'left' | 'right' = 'left',
-  openSide: 'in' | 'out' = 'in',
   layerId = '0',
 ): DoorEntity {
   return {
     id: generateId(),
     type: 'door',
-    layerId,
     wallId,
     position,
     width,
-    hingeSide,
-    openSide,
-    swingAngle: 90,
-    locked: false,
+    layerId,
+    flipX: false,
+    flipY: false,
+    openingAngle: 90,
   };
 }
 

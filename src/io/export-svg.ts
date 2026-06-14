@@ -146,13 +146,15 @@ export function exportPageToSVG(page: Page, unitSystem: UnitSystem): string {
       );
 
       // Swing leaf & arc
-      const hinge = door.hingeSide === 'left' ? d1 : d2;
-      const latch = door.hingeSide === 'left' ? d2 : d1;
-      const swingDir = door.openSide === 'in' ? 1 : -1;
+      const hinge = door.flipX ? d2 : d1;
+      const latch = door.flipX ? d1 : d2;
+      const swingDir = door.flipY ? 1 : -1;
       const hingeToLatch = sub(latch, hinge);
-      const hingeSign = door.hingeSide === 'left' ? 1 : -1;
-      const openAngle = swingDir * hingeSign * (Math.PI / 2);
-      const leafVector = rotate(hingeToLatch, openAngle);
+      const hingeSign = door.flipX ? -1 : 1;
+      const openAngleDeg = door.openingAngle ?? 90;
+      const openAngleRad =
+        swingDir * hingeSign * ((openAngleDeg * Math.PI) / 180);
+      const leafVector = rotate(hingeToLatch, openAngleRad);
       const leafEnd = add(hinge, leafVector);
 
       // Leaf line

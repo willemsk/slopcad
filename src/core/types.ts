@@ -44,9 +44,9 @@ export interface DoorEntity extends BaseEntity {
   wallId: string; // Refers to the WallEntity it belongs to
   position: number; // 0 to 1 along the wall segment
   width: number; // in meters
-  hingeSide: 'left' | 'right';
-  openSide: 'in' | 'out';
-  swingAngle: number; // degrees, default 90
+  flipX?: boolean; // flips the door left/right relative to its center on the wall
+  flipY?: boolean; // flips the door inside/outside relative to the wall normal
+  openingAngle?: number; // door swing angle in degrees (default 90)
 }
 
 export interface WindowEntity extends BaseEntity {

@@ -63,7 +63,9 @@ function mergeIntervals(intervals: [number, number][]): [number, number][] {
 }
 
 function findWall(entities: Entity[], id: string): WallEntity | undefined {
-  return entities.find(e => e.id === id && e.type === 'wall') as WallEntity | undefined;
+  return entities.find(e => e.id === id && e.type === 'wall') as
+    | WallEntity
+    | undefined;
 }
 
 export function drawWalls(
@@ -386,17 +388,17 @@ export function drawDoor(
   ctx.stroke();
 
   // 2. Draw Door swing
-  // Calculate hinge point based on hingeSide
-  const hinge = door.hingeSide === 'left' ? d1 : d2;
-  const latch = door.hingeSide === 'left' ? d2 : d1;
-  const swingDir = door.openSide === 'in' ? 1 : -1;
+  // Calculate hinge point based on flipX
+  const hinge = door.flipX ? d2 : d1;
+  const latch = door.flipX ? d1 : d2;
+  const swingDir = door.flipY ? 1 : -1;
   const hingeToLatch = sub(latch, hinge);
 
-  // Rotation angle for door leaf (90 deg open)
-  // Left hinge opens clockwise, right hinge opens counter-clockwise
-  const hingeSign = door.hingeSide === 'left' ? 1 : -1;
-  const openAngle = swingDir * hingeSign * (Math.PI / 2);
-  const leafVector = rotate(hingeToLatch, openAngle);
+  // Rotation angle for door leaf
+  const hingeSign = door.flipX ? -1 : 1;
+  const openAngleDeg = door.openingAngle ?? 90;
+  const openAngleRad = swingDir * hingeSign * ((openAngleDeg * Math.PI) / 180);
+  const leafVector = rotate(hingeToLatch, openAngleRad);
   const leafEnd = add(hinge, leafVector);
 
   // Draw door leaf
@@ -780,6 +782,7 @@ export function drawSelectionHandles(
   ctx: CanvasRenderingContext2D,
   entity: Entity,
   zoom: number,
+  entities: Entity[] = [],
 ) {
   const pts: Vec2[] = [];
   if (
@@ -803,6 +806,11 @@ export function drawSelectionHandles(
     }
   } else if (entity.type === 'text') {
     pts.push(entity.position);
+  } else if (entity.type === 'door' || entity.type === 'window') {
+    const wall = entities.find(e => e.id === (entity as any).wallId) as any;
+    if (wall) {
+      pts.push(lerp(wall.start, wall.end, (entity as any).position));
+    }
   }
 
   // Draw handles as squares

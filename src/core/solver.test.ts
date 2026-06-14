@@ -14,7 +14,10 @@ describe('solveConstraints', () => {
 
     const constraints: Constraint[] = [
       {
-        id: 'C1', type: 'horizontal', entityIds: ['L1'], pointRefs: [
+        id: 'C1',
+        type: 'horizontal',
+        entityIds: ['L1'],
+        pointRefs: [
           {entityId: 'L1', pointKey: 'start'},
           {entityId: 'L1', pointKey: 'end'},
         ],
@@ -42,7 +45,10 @@ describe('solveConstraints', () => {
 
     const constraints: Constraint[] = [
       {
-        id: 'C1', type: 'vertical', entityIds: ['L1'], pointRefs: [
+        id: 'C1',
+        type: 'vertical',
+        entityIds: ['L1'],
+        pointRefs: [
           {entityId: 'L1', pointKey: 'start'},
           {entityId: 'L1', pointKey: 'end'},
         ],
@@ -77,7 +83,10 @@ describe('solveConstraints', () => {
 
     const constraints: Constraint[] = [
       {
-        id: 'C1', type: 'parallel', entityIds: ['L1', 'L2'], pointRefs: [
+        id: 'C1',
+        type: 'parallel',
+        entityIds: ['L1', 'L2'],
+        pointRefs: [
           {entityId: 'L1', pointKey: 'start'},
           {entityId: 'L1', pointKey: 'end'},
           {entityId: 'L2', pointKey: 'start'},
@@ -109,7 +118,10 @@ describe('solveConstraints', () => {
 
     const constraints: Constraint[] = [
       {
-        id: 'C1', type: 'fixed_length', entityIds: ['L1'], pointRefs: [
+        id: 'C1',
+        type: 'fixed_length',
+        entityIds: ['L1'],
+        pointRefs: [
           {entityId: 'L1', pointKey: 'start'},
           {entityId: 'L1', pointKey: 'end'},
         ],
@@ -145,7 +157,10 @@ describe('solveConstraints', () => {
 
     const constraints: Constraint[] = [
       {
-        id: 'C1', type: 'coincident', entityIds: ['L1', 'L2'], pointRefs: [
+        id: 'C1',
+        type: 'coincident',
+        entityIds: ['L1', 'L2'],
+        pointRefs: [
           {entityId: 'L1', pointKey: 'end'},
           {entityId: 'L2', pointKey: 'start'},
         ],
