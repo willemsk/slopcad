@@ -7,7 +7,7 @@ import {
   updateActivePage,
   selectEntity,
   snapshotState,
-  activeToolSignal,
+  requestPrompt,
 } from '../state/app-state';
 
 export class TextTool implements Tool {
@@ -17,7 +17,7 @@ export class TextTool implements Tool {
 
   deactivate() {}
 
-  onMouseDown(
+  async onMouseDown(
     worldPos: Vec2,
     event: MouseEvent,
     snapResult: SnapResult | null,
@@ -25,7 +25,10 @@ export class TextTool implements Tool {
     snapshotState();
 
     const page = activePageSignal.value;
-    const textVal = window.prompt('Enter annotation text:', 'Text Annotation');
+    const textVal = await requestPrompt('Text:', 'Text Annotation', {
+      x: event.clientX,
+      y: event.clientY,
+    });
     if (textVal === null) return; // cancelled
 
     const cleanText = textVal.trim() || 'Text';

@@ -26,59 +26,305 @@ import {
 } from '../core/geometry';
 import {formatLength} from '../core/units';
 
-// Simple check to find wall by ID
-function findWall(entities: Entity[], wallId: string): WallEntity | null {
-  const ent = entities.find(e => e.id === wallId);
-  return ent && ent.type === 'wall' ? (ent as WallEntity) : null;
+import {
+  distToSegment,
+  projectPointT,
+  infiniteLineIntersection,
+  dot,
+} from '../core/geometry';
+
+interface WallRenderData {
+  wall: WallEntity;
+  pStartL: Vec2;
+  pStartR: Vec2;
+  pEndL: Vec2;
+  pEndR: Vec2;
+  skipStartCap: boolean;
+  skipEndCap: boolean;
+  leftGaps: [number, number][];
+  rightGaps: [number, number][];
 }
 
-export function drawWall(
+function mergeIntervals(intervals: [number, number][]): [number, number][] {
+  if (intervals.length === 0) return [];
+  intervals.sort((a, b) => a[0] - b[0]);
+  const res = [[...intervals[0]] as [number, number]];
+  for (let i = 1; i < intervals.length; i++) {
+    const last = res[res.length - 1];
+    const curr = intervals[i];
+    if (curr[0] <= last[1] + 1e-6) {
+      last[1] = Math.max(last[1], curr[1]);
+    } else {
+      res.push([...curr] as [number, number]);
+    }
+  }
+  return res;
+}
+
+export function drawWalls(
   ctx: CanvasRenderingContext2D,
-  wall: WallEntity,
-  isSelected: boolean,
+  walls: WallEntity[],
+  selectedIds: Set<string>,
   zoom: number,
 ) {
-  const {start, end, thickness} = wall;
-  const d = dist(start, end);
-  if (d === 0) return;
+  const renderData: WallRenderData[] = [];
 
-  const u = normalize(sub(end, start));
-  const n = {x: -u.y, y: u.x}; // Perpendicular
+  // Phase 1: Compute polygons
+  for (const wall of walls) {
+    const {start, end, thickness} = wall;
+    const d = dist(start, end);
+    if (d === 0) continue;
 
-  const halfThickness = thickness / 2;
+    const u = normalize(sub(end, start));
+    const n = {x: -u.y, y: u.x};
+    const halfThick = thickness / 2;
 
-  // Compute 4 corners
-  const c1 = add(start, scale(n, halfThickness));
-  const c2 = add(end, scale(n, halfThickness));
-  const c3 = sub(end, scale(n, halfThickness));
-  const c4 = sub(start, scale(n, halfThickness));
+    let pStartL = add(start, scale(n, halfThick));
+    let pStartR = sub(start, scale(n, halfThick));
+    let pEndL = add(end, scale(n, halfThick));
+    let pEndR = sub(end, scale(n, halfThick));
 
-  ctx.beginPath();
-  ctx.moveTo(c1.x, c1.y);
-  ctx.lineTo(c2.x, c2.y);
-  ctx.lineTo(c3.x, c3.y);
-  ctx.lineTo(c4.x, c4.y);
-  ctx.closePath();
+    let skipStartCap = false;
+    let skipEndCap = false;
 
-  // Styling
-  ctx.fillStyle = isSelected
-    ? 'rgba(34, 211, 238, 0.2)'
-    : 'rgba(200, 202, 212, 0.15)';
-  ctx.fill();
+    // Helper to process an endpoint
+    const processEndpoint = (isStart: boolean) => {
+      const pt = isStart ? start : end;
+      const uOut = isStart ? scale(u, -1) : u; // vector pointing AWAY from the wall center
 
-  ctx.strokeStyle = isSelected ? '#22d3ee' : '#c8cad4';
-  ctx.lineWidth = (isSelected ? 3 : 2) / zoom;
-  ctx.stroke();
+      const ptL = isStart ? pStartL : pEndL;
+      const ptR = isStart ? pStartR : pEndR;
 
-  // Draw end caps/lines
-  ctx.beginPath();
-  ctx.moveTo(start.x, start.y);
-  ctx.lineTo(end.x, end.y);
-  ctx.strokeStyle = 'rgba(200, 202, 212, 0.25)';
-  ctx.lineWidth = 1 / zoom;
-  ctx.setLineDash([0.05, 0.05]); // Dotted center line
-  ctx.stroke();
-  ctx.setLineDash([]); // Reset
+      const touchingWalls = walls.filter(w => {
+        if (w.id === wall.id) return false;
+        // Corner touch
+        if (dist(w.start, pt) < 1e-4 || dist(w.end, pt) < 1e-4) return true;
+        // T-junction touch
+        if (distToSegment(pt, w.start, w.end) < 1e-4) return true;
+        return false;
+      });
+
+      if (touchingWalls.length === 1) {
+        const w2 = touchingWalls[0];
+        const isCorner = dist(w2.start, pt) < 1e-4 || dist(w2.end, pt) < 1e-4;
+
+        if (isCorner) {
+          if (isStart) skipStartCap = true;
+          else skipEndCap = true;
+
+          const pt2 = dist(w2.start, pt) < 1e-4 ? w2.start : w2.end;
+          const w2Other = dist(w2.start, pt) < 1e-4 ? w2.end : w2.start;
+
+          const u2Out = normalize(sub(w2Other, pt2));
+          const n2Out = {x: -u2Out.y, y: u2Out.x};
+          const halfThick2 = w2.thickness / 2;
+
+          const L2 = add(pt2, scale(n2Out, halfThick2));
+          const R2 = sub(pt2, scale(n2Out, halfThick2));
+
+          const leftOfOut = isStart ? ptR : ptL;
+          const rightOfOut = isStart ? ptL : ptR;
+
+          const newLeftOfOut =
+            infiniteLineIntersection(leftOfOut, uOut, L2, u2Out) || leftOfOut;
+          const newRightOfOut =
+            infiniteLineIntersection(rightOfOut, uOut, R2, u2Out) || rightOfOut;
+
+          if (isStart) {
+            pStartR = newLeftOfOut;
+            pStartL = newRightOfOut;
+          } else {
+            pEndL = newLeftOfOut;
+            pEndR = newRightOfOut;
+          }
+        } else {
+          // T-Junction (wall ends on w2)
+          if (isStart) skipStartCap = true;
+          else skipEndCap = true;
+
+          const u2 = normalize(sub(w2.end, w2.start));
+          const n2 = {x: -u2.y, y: u2.x};
+          const L2 = add(w2.start, scale(n2, w2.thickness / 2));
+          const R2 = sub(w2.start, scale(n2, w2.thickness / 2));
+
+          const iL_L2 = infiniteLineIntersection(ptL, uOut, L2, u2);
+          const iL_R2 = infiniteLineIntersection(ptL, uOut, R2, u2);
+          const iR_L2 = infiniteLineIntersection(ptR, uOut, L2, u2);
+          const iR_R2 = infiniteLineIntersection(ptR, uOut, R2, u2);
+
+          const tL_L2 = iL_L2 ? dot(sub(iL_L2, ptL), uOut) : Infinity;
+          const tL_R2 = iL_R2 ? dot(sub(iL_R2, ptL), uOut) : Infinity;
+          const iL = tL_L2 < tL_R2 ? iL_L2 : iL_R2;
+
+          const tR_L2 = iR_L2 ? dot(sub(iR_L2, ptR), uOut) : Infinity;
+          const tR_R2 = iR_R2 ? dot(sub(iR_R2, ptR), uOut) : Infinity;
+          const iR = tR_L2 < tR_R2 ? iR_L2 : iR_R2;
+
+          if (isStart) {
+            pStartL = iL || ptL;
+            pStartR = iR || ptR;
+          } else {
+            pEndL = iL || ptL;
+            pEndR = iR || ptR;
+          }
+        }
+      }
+    };
+
+    processEndpoint(true);
+    processEndpoint(false);
+
+    renderData.push({
+      wall,
+      pStartL,
+      pStartR,
+      pEndL,
+      pEndR,
+      skipStartCap,
+      skipEndCap,
+      leftGaps: [],
+      rightGaps: [],
+    });
+  }
+
+  // Phase 2: Compute T-Junction gaps on main walls
+  for (const data of renderData) {
+    const w = data.wall;
+    const u = normalize(sub(w.end, w.start));
+
+    // Find walls that T-junction into w
+    const tWalls = renderData.filter(other => {
+      if (other.wall.id === w.id) return false;
+      return (
+        distToSegment(other.wall.start, w.start, w.end) < 1e-4 ||
+        distToSegment(other.wall.end, w.start, w.end) < 1e-4
+      );
+    });
+
+    for (const tData of tWalls) {
+      const pt =
+        distToSegment(tData.wall.start, w.start, w.end) < 1e-4
+          ? tData.wall.start
+          : tData.wall.end;
+      // The corners of the T-wall intersecting us are:
+      const p1 =
+        dist(pt, tData.wall.start) < 1e-4 ? tData.pStartL : tData.pEndL;
+      const p2 =
+        dist(pt, tData.wall.start) < 1e-4 ? tData.pStartR : tData.pEndR;
+
+      // Check which side of w they fall on
+      const t1L = projectPointT(p1, data.pStartL, data.pEndL);
+      const t2L = projectPointT(p2, data.pStartL, data.pEndL);
+      if (
+        t1L >= -0.01 &&
+        t1L <= 1.01 &&
+        distToSegment(p1, data.pStartL, data.pEndL) < 1e-4
+      ) {
+        data.leftGaps.push([Math.min(t1L, t2L), Math.max(t1L, t2L)]);
+      }
+
+      const t1R = projectPointT(p1, data.pStartR, data.pEndR);
+      const t2R = projectPointT(p2, data.pStartR, data.pEndR);
+      if (
+        t1R >= -0.01 &&
+        t1R <= 1.01 &&
+        distToSegment(p1, data.pStartR, data.pEndR) < 1e-4
+      ) {
+        data.rightGaps.push([Math.min(t1R, t2R), Math.max(t1R, t2R)]);
+      }
+    }
+
+    data.leftGaps = mergeIntervals(data.leftGaps);
+    data.rightGaps = mergeIntervals(data.rightGaps);
+  }
+
+  // Phase 3: Draw Fills
+  for (const data of renderData) {
+    const isSelected = selectedIds.has(data.wall.id);
+    ctx.beginPath();
+    ctx.moveTo(data.pStartL.x, data.pStartL.y);
+    ctx.lineTo(data.pEndL.x, data.pEndL.y);
+    ctx.lineTo(data.pEndR.x, data.pEndR.y);
+    ctx.lineTo(data.pStartR.x, data.pStartR.y);
+    ctx.closePath();
+    ctx.fillStyle = isSelected
+      ? 'rgba(34, 211, 238, 0.2)'
+      : 'rgba(200, 202, 212, 0.15)';
+    ctx.fill();
+  }
+
+  // Phase 4: Draw Strokes
+  for (const data of renderData) {
+    const isSelected = selectedIds.has(data.wall.id);
+    ctx.strokeStyle = isSelected ? '#22d3ee' : '#c8cad4';
+    ctx.lineWidth = (isSelected ? 3 : 2) / zoom;
+
+    // Draw left boundary
+    let currT = 0;
+    for (const gap of data.leftGaps) {
+      if (gap[0] > currT) {
+        ctx.beginPath();
+        const startP = lerp(data.pStartL, data.pEndL, currT);
+        const endP = lerp(data.pStartL, data.pEndL, gap[0]);
+        ctx.moveTo(startP.x, startP.y);
+        ctx.lineTo(endP.x, endP.y);
+        ctx.stroke();
+      }
+      currT = Math.max(currT, gap[1]);
+    }
+    if (currT < 1) {
+      ctx.beginPath();
+      const startP = lerp(data.pStartL, data.pEndL, currT);
+      ctx.moveTo(startP.x, startP.y);
+      ctx.lineTo(data.pEndL.x, data.pEndL.y);
+      ctx.stroke();
+    }
+
+    // Draw right boundary
+    currT = 0;
+    for (const gap of data.rightGaps) {
+      if (gap[0] > currT) {
+        ctx.beginPath();
+        const startP = lerp(data.pStartR, data.pEndR, currT);
+        const endP = lerp(data.pStartR, data.pEndR, gap[0]);
+        ctx.moveTo(startP.x, startP.y);
+        ctx.lineTo(endP.x, endP.y);
+        ctx.stroke();
+      }
+      currT = Math.max(currT, gap[1]);
+    }
+    if (currT < 1) {
+      ctx.beginPath();
+      const startP = lerp(data.pStartR, data.pEndR, currT);
+      ctx.moveTo(startP.x, startP.y);
+      ctx.lineTo(data.pEndR.x, data.pEndR.y);
+      ctx.stroke();
+    }
+
+    // Draw caps
+    if (!data.skipStartCap) {
+      ctx.beginPath();
+      ctx.moveTo(data.pStartL.x, data.pStartL.y);
+      ctx.lineTo(data.pStartR.x, data.pStartR.y);
+      ctx.stroke();
+    }
+    if (!data.skipEndCap) {
+      ctx.beginPath();
+      ctx.moveTo(data.pEndL.x, data.pEndL.y);
+      ctx.lineTo(data.pEndR.x, data.pEndR.y);
+      ctx.stroke();
+    }
+
+    // Draw center line
+    ctx.beginPath();
+    ctx.moveTo(data.wall.start.x, data.wall.start.y);
+    ctx.lineTo(data.wall.end.x, data.wall.end.y);
+    ctx.strokeStyle = 'rgba(200, 202, 212, 0.25)';
+    ctx.lineWidth = 1 / zoom;
+    ctx.setLineDash([0.05, 0.05]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
 }
 
 export function drawDoor(
@@ -711,20 +957,34 @@ export function drawConstraint(
   if (!text) return;
 
   ctx.save();
-  ctx.translate(centerPt.x, centerPt.y);
+
+  const offsetX = 0.2;
+  const offsetY = -0.2;
+
+  // Draw faint connecting line
+  ctx.strokeStyle = isSelected
+    ? 'rgba(232, 121, 249, 0.6)'
+    : 'rgba(192, 132, 252, 0.4)';
+  ctx.lineWidth = 1 / zoom;
+  ctx.beginPath();
+  ctx.moveTo(centerPt.x, centerPt.y);
+  ctx.lineTo(centerPt.x + offsetX, centerPt.y + offsetY);
+  ctx.stroke();
+
+  ctx.translate(centerPt.x + offsetX, centerPt.y + offsetY);
 
   ctx.fillStyle = '#1e2028';
   ctx.strokeStyle = cColor;
-  ctx.lineWidth = 1.5 / zoom;
+  ctx.lineWidth = 1.0 / zoom;
 
-  const badgeSize = 0.25;
+  const badgeSize = 0.16;
   ctx.beginPath();
   ctx.rect(-badgeSize / 2, -badgeSize / 2, badgeSize, badgeSize);
   ctx.fill();
   ctx.stroke();
 
   ctx.fillStyle = cColor;
-  ctx.font = 'bold 0.14px Inter, sans-serif';
+  ctx.font = 'bold 0.11px Inter, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(text, 0, 0);

@@ -10,12 +10,42 @@ import {StatusBar} from './ui/status-bar';
 import {UcsIcon} from './ui/ucs-icon';
 import {NavigationBar} from './ui/navigation-bar';
 import {setActiveToolByName} from './tools/tool-registry';
-import {uiScaleSignal, isPropertiesPanelOpenSignal} from './state/app-state';
+import {
+  uiScaleSignal,
+  isPropertiesPanelOpenSignal,
+  clearSelection,
+  deleteSelectedAction,
+  activePromptSignal,
+} from './state/app-state';
+import {DynamicPrompt} from './ui/dynamic-prompt';
 import './app.css';
 
 export function App() {
   useEffect(() => {
     setActiveToolByName('select');
+
+    const handleGlobalShortcuts = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input/textarea
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable ||
+        activePromptSignal.value !== null
+      ) {
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        setActiveToolByName('select');
+        clearSelection();
+      } else if (e.key === 'Delete' || e.key === 'Backspace') {
+        deleteSelectedAction();
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalShortcuts);
+    return () => window.removeEventListener('keydown', handleGlobalShortcuts);
   }, []);
 
   const uiScale = uiScaleSignal.value;
@@ -53,6 +83,7 @@ export function App() {
       <div style={{zoom: uiScale}}>
         <StatusBar />
       </div>
+      <DynamicPrompt />
     </div>
   );
 }

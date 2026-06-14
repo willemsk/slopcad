@@ -57,6 +57,33 @@ export const hoveredEntityIdSignal = signal<string | null>(null);
 export const triggerRenderSignal = signal<{}>({});
 export const overlayPageIndexSignal = signal<number | null>(null);
 export const mouseCoordsSignal = signal<Vec2>({x: 0, y: 0});
+
+export interface UIPrompt {
+  message: string;
+  initialValue: string;
+  position?: Vec2;
+  resolve: (value: string | null) => void;
+}
+export const activePromptSignal = signal<UIPrompt | null>(null);
+
+export function requestPrompt(
+  message: string,
+  initialValue: string,
+  position?: Vec2,
+): Promise<string | null> {
+  return new Promise(resolve => {
+    activePromptSignal.value = {
+      message,
+      initialValue,
+      position,
+      resolve: val => {
+        activePromptSignal.value = null;
+        resolve(val);
+      },
+    };
+  });
+}
+
 export const commandLineMessagesSignal = signal<string[]>([
   'Antigravity CAD Redesign Initialized.',
   'Select a tool from the ribbon or double-click to select entities.',
@@ -284,7 +311,7 @@ export function addVerticalConstraintAction() {
   }
 }
 
-export function addLengthConstraintAction(targetVal?: number) {
+export async function addLengthConstraintAction(targetVal?: number) {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
   const selectedEntities = page.entities.filter(e => selection.has(e.id));
@@ -296,9 +323,17 @@ export function addLengthConstraintAction(targetVal?: number) {
   let val = targetVal;
 
   if (val === undefined) {
-    const input = window.prompt(
-      `Enter length in meters (current: ${currentLength.toFixed(2)}m):`,
+    let screenPos: Vec2 | undefined;
+    if (viewportSignal.value) {
+      const midX = ((ent as any).start.x + (ent as any).end.x) / 2;
+      const midY = ((ent as any).start.y + (ent as any).end.y) / 2;
+      screenPos = viewportSignal.value.worldToScreen({x: midX, y: midY});
+    }
+
+    const input = await requestPrompt(
+      'Length in meters:',
       currentLength.toFixed(2),
+      screenPos,
     );
     if (input === null) return;
     val = parseFloat(input);
@@ -566,7 +601,7 @@ export function addEqualLengthConstraintAction() {
   updateActivePage(solved, newConstraints);
 }
 
-export function addFixedAngleConstraintAction() {
+export async function addFixedAngleConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
   const selectedEntities = page.entities.filter(
@@ -585,9 +620,17 @@ export function addFixedAngleConstraintAction() {
   );
   const currentAngleDeg = (currentAngleRad * 180) / Math.PI;
 
-  const input = window.prompt(
-    `Enter fixed angle in degrees (current: ${currentAngleDeg.toFixed(2)}):`,
+  let screenPos: Vec2 | undefined;
+  if (viewportSignal.value) {
+    const midX = (ent.start.x + ent.end.x) / 2;
+    const midY = (ent.start.y + ent.end.y) / 2;
+    screenPos = viewportSignal.value.worldToScreen({x: midX, y: midY});
+  }
+
+  const input = await requestPrompt(
+    'Angle (degrees):',
     currentAngleDeg.toFixed(2),
+    screenPos,
   );
   if (input === null) return;
   const val = parseFloat(input);

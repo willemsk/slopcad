@@ -371,8 +371,8 @@ export function Toolbar() {
                 <div className="ribbon-panel-body">
                   <button
                     className="ribbon-btn-large"
-                    onClick={() => {
-                      addLengthConstraintAction();
+                    onClick={async () => {
+                      await addLengthConstraintAction();
                       pushCommandMessage(
                         'Command: CONSTRAINT - Fixed length constraint applied.',
                       );
@@ -405,8 +405,8 @@ export function Toolbar() {
 
                   <button
                     className="ribbon-btn-large"
-                    onClick={() => {
-                      addFixedAngleConstraintAction();
+                    onClick={async () => {
+                      await addFixedAngleConstraintAction();
                       pushCommandMessage(
                         'Command: CONSTRAINT - Fixed angle constraint applied.',
                       );

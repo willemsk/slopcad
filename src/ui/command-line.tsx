@@ -1,13 +1,20 @@
 import {h} from 'preact';
 import {useEffect, useRef, useState} from 'preact/hooks';
-import {commandLineMessagesSignal} from '../state/app-state';
+import {
+  commandLineMessagesSignal,
+  pushCommandMessage,
+  activePromptSignal,
+} from '../state/app-state';
+import {dispatchCommand} from '../core/commands';
 import './command-line.css';
 
 export function CommandLine() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const messages = commandLineMessagesSignal.value;
   const [height, setHeight] = useState(72);
   const [isDragging, setIsDragging] = useState(false);
+  const [inputValue, setInputValue] = useState('');
   const dragRef = useRef({startY: 0, startHeight: 72});
 
   useEffect(() => {
@@ -15,6 +22,31 @@ export function CommandLine() {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [messages, height]);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept if user is typing in a different input/textarea
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable ||
+        activePromptSignal.value !== null
+      ) {
+        return;
+      }
+
+      // If it's a single printable character and no modifiers
+      if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
 
   const handlePointerDown = (e: PointerEvent) => {
     setIsDragging(true);
@@ -31,6 +63,23 @@ export function CommandLine() {
   const handlePointerUp = (e: PointerEvent) => {
     setIsDragging(false);
     (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      // Prevent spacebar from adding a space if we are executing
+      e.preventDefault();
+
+      const val = inputValue.trim();
+      if (val) {
+        dispatchCommand(val);
+        setInputValue('');
+      }
+      // Yield focus back to document
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
+    }
   };
 
   return (
@@ -54,10 +103,14 @@ export function CommandLine() {
       <div className="command-prompt-bar">
         <span className="command-prompt-label">Command:</span>
         <input
+          ref={inputRef}
+          id="command-line-input"
           type="text"
           className="command-prompt-input"
-          placeholder="Use tools from the ribbon, double-click or drag on the canvas..."
-          readOnly
+          placeholder="Type a command or press a shortcut..."
+          value={inputValue}
+          onInput={e => setInputValue(e.currentTarget.value)}
+          onKeyDown={handleKeyDown}
         />
       </div>
     </div>

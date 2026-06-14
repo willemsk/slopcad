@@ -1,7 +1,7 @@
 import {Entity, SnapResult, UnitSystem, Constraint} from '../core/types';
 import {Viewport} from './viewport';
 import {
-  drawWall,
+  drawWalls,
   drawDoor,
   drawWindow,
   drawStairs,
@@ -80,7 +80,6 @@ export function render(state: RenderState) {
   // 4. Draw Entities
   // Draw order: Walls -> Lines/Rects/Circles/Arcs -> Doors/Windows -> Stairs -> Dimensions -> Text
   const typeOrder = [
-    'wall',
     'line',
     'rect',
     'circle',
@@ -96,7 +95,15 @@ export function render(state: RenderState) {
     return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
   });
 
+  // Group and draw all walls together using the new cleaned-up routine
+  const walls = entities.filter(e => e.type === 'wall') as any[];
+  if (walls.length > 0) {
+    drawWalls(ctx, walls, selection, viewport.zoom);
+  }
+
   for (const ent of sortedEntities) {
+    if (ent.type === 'wall') continue; // walls drawn collectively above
+
     const isSelected = selection.has(ent.id);
     const isHovered = ent.id === hoveredEntityId;
 
@@ -184,7 +191,9 @@ function drawEntity(
 ) {
   switch (ent.type) {
     case 'wall':
-      drawWall(ctx, ent, isSelected, zoom);
+      // Walls are drawn collectively in the main render loop using drawWalls.
+      // But if drawEntity is called specifically for a preview wall:
+      drawWalls(ctx, [ent as any], new Set(isSelected ? [ent.id] : []), zoom);
       break;
     case 'door':
       drawDoor(ctx, ent, entities, isSelected, zoom);

@@ -19,7 +19,7 @@ If the user says "Start the dev server", execute this workflow immediately.
 
 ### 1. Launch the Server
 Execute the `run_command` tool with the following parameters:
-- `CommandLine`: `$env:PATH = "C:\Program Files\nodejs;" + $env:PATH; npm run dev`
+- `CommandLine`: `npm run dev`
 - `Cwd`: The project root directory.
 - `WaitMsBeforeAsync`: `3000` (Give it 3 seconds to either start or fail immediately).
 
@@ -32,5 +32,5 @@ Check the output returned by the `run_command` tool.
 Inform the user that the development server has been started and is available at `http://localhost:5173/`. 
 
 ## Common Mistakes
-- **Forgetting the Path**: Do not run `npm run dev` by itself, as the Windows environment may lack the `npm` binary in the default PATH. Always prepend `$env:PATH = "C:\Program Files\nodejs;" + $env:PATH;`.
-- **Blocking the Agent**: Do not use a high `WaitMsBeforeAsync` or try to read the log indefinitely. Once the command is pushed to the background, your job is done.
+- **Assuming Synchronous Execution**: The server command will NOT exit. Make sure `WaitMsBeforeAsync` is populated so it transitions to the background.
+- **Ignoring Output**: Keep an eye on the output stream. If the dev server port clashes, Vite will tell you it's starting on a different port. Update your notification accordingly. Once the command is pushed to the background, your job is done.

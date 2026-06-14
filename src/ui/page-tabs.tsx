@@ -5,6 +5,7 @@ import {
   triggerRenderSignal,
   overlayPageIndexSignal,
   pushCommandMessage,
+  requestPrompt,
 } from '../state/app-state';
 import {generateId} from '../core/entity';
 import './page-tabs.css';
@@ -22,9 +23,9 @@ export function PageTabs() {
     );
   };
 
-  const handleAddPage = () => {
+  const handleAddPage = async () => {
     const defaultName = `Floor ${project.pages.length}`;
-    const name = window.prompt('Enter new floor name:', defaultName);
+    const name = await requestPrompt('Floor name:', defaultName);
     if (name === null) return;
     const cleanName = name.trim() || defaultName;
     const newPage = {
@@ -46,9 +47,9 @@ export function PageTabs() {
     );
   };
 
-  const handleRenamePage = (index: number) => {
+  const handleRenamePage = async (index: number) => {
     const page = project.pages[index];
-    const name = window.prompt(`Rename floor "${page.name}":`, page.name);
+    const name = await requestPrompt(`Rename floor "${page.name}":`, page.name);
     if (name === null) return;
     const cleanName = name.trim();
     if (!cleanName) return;

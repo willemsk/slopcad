@@ -107,6 +107,26 @@ export function lineIntersection(
   return null;
 }
 
+export function infiniteLineIntersection(
+  p1: Vec2,
+  d1: Vec2,
+  p2: Vec2,
+  d2: Vec2,
+): Vec2 | null {
+  const cross = d1.x * d2.y - d1.y * d2.x;
+  if (Math.abs(cross) < 1e-6) return null; // parallel
+  const t1 = ((p2.x - p1.x) * d2.y - (p2.y - p1.y) * d2.x) / cross;
+  return {x: p1.x + t1 * d1.x, y: p1.y + t1 * d1.y};
+}
+
+export function projectPointT(p: Vec2, lineStart: Vec2, lineEnd: Vec2): number {
+  const ab = sub(lineEnd, lineStart);
+  const ap = sub(p, lineStart);
+  const abLen2 = dot(ab, ab);
+  if (abLen2 === 0) return 0;
+  return dot(ap, ab) / abLen2;
+}
+
 export function lerp(p1: Vec2, p2: Vec2, t: number): Vec2 {
   return {
     x: p1.x + t * (p2.x - p1.x),
