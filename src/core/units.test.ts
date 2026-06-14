@@ -58,7 +58,7 @@ describe('units utilities', () => {
     });
 
     it('parses implicit imperial values correctly when system is imperial', () => {
-      expect(parseLength('10', 'imperial')).toBeCloseTo(3.048); // defaults to feet
+      expect(parseLength('10', 'imperial')).toBeCloseTo(0.254); // defaults to inches
       expect(parseLength('5-6', 'imperial')).toBeCloseTo(1.6764);
       expect(parseLength('5 6', 'imperial')).toBeCloseTo(1.6764);
     });

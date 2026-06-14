@@ -1,0 +1,384 @@
+import {h} from 'preact';
+import {useState} from 'preact/hooks';
+import {
+  Entity,
+  WallEntity,
+  RectEntity,
+  CircleEntity,
+  StairsEntity,
+} from '../../core/types';
+import {dist, sub} from '../../core/geometry';
+import {formatLength, parseLength} from '../../core/units';
+import {ChevronDownIcon, ChevronRightIcon} from '../icons';
+
+interface Props {
+  activeEntity: Entity;
+  unitSystem: 'metric' | 'imperial';
+  localVals: Record<string, string>;
+  setLocalVals: (vals: Record<string, string>) => void;
+  getVal: (key: string, defaultVal: string) => string;
+  handleInputChange: (key: string, val: string) => void;
+  commitProperty: (updater: (ent: Entity) => void) => void;
+  handleKeyDownCommit: (e: KeyboardEvent) => void;
+}
+
+export function GeometryProperties({
+  activeEntity,
+  unitSystem,
+  localVals,
+  setLocalVals,
+  getVal,
+  handleInputChange,
+  commitProperty,
+  handleKeyDownCommit,
+}: Props) {
+  const [geometryOpen, setGeometryOpen] = useState(true);
+
+  const fmt = (v: number) => formatLength(v, unitSystem);
+
+  return (
+    <div className="properties-category">
+      <div
+        className="properties-category-header"
+        onClick={() => setGeometryOpen(!geometryOpen)}
+      >
+        {geometryOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
+        <span className="properties-category-title">Geometry</span>
+      </div>
+
+      {geometryOpen && (
+        <div className="properties-category-content">
+          {/* WALL & LINE GEOMETRY */}
+          {(activeEntity.type === 'wall' || activeEntity.type === 'line') && (
+            <div>
+              <div className="property-item">
+                <span className="property-label">Start X</span>
+                <div className="property-value">
+                  <span className="property-value-text">
+                    {fmt((activeEntity as any).start.x)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="property-item">
+                <span className="property-label">Start Y</span>
+                <div className="property-value">
+                  <span className="property-value-text">
+                    {fmt((activeEntity as any).start.y)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="property-item">
+                <span className="property-label">End X</span>
+                <div className="property-value">
+                  <span className="property-value-text">
+                    {fmt((activeEntity as any).end.x)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="property-item">
+                <span className="property-label">End Y</span>
+                <div className="property-value">
+                  <span className="property-value-text">
+                    {fmt((activeEntity as any).end.y)}
+                  </span>
+                </div>
+              </div>
+
+              {activeEntity.type === 'wall' && (
+                <div className="property-item">
+                  <span className="property-label">Thickness</span>
+                  <div className="property-value">
+                    <input
+                      type="text"
+                      value={getVal(
+                        'thickness',
+                        formatLength(
+                          (activeEntity as WallEntity).thickness,
+                          unitSystem,
+                        ),
+                      )}
+                      onInput={e =>
+                        handleInputChange(
+                          'thickness',
+                          (e.target as HTMLInputElement).value,
+                        )
+                      }
+                      onFocus={e => (e.target as HTMLInputElement).select()}
+                      onKeyDown={handleKeyDownCommit}
+                      onBlur={e => {
+                        const m = parseLength(
+                          (e.target as HTMLInputElement).value,
+                          unitSystem,
+                        );
+                        if (m !== null && m > 0) {
+                          commitProperty(ent => {
+                            (ent as WallEntity).thickness = m;
+                          });
+                        } else {
+                          setLocalVals({});
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="property-item">
+                <span className="property-label">Length</span>
+                <div className="property-value">
+                  <input
+                    type="text"
+                    value={getVal(
+                      'length',
+                      formatLength(
+                        dist(
+                          (activeEntity as any).start,
+                          (activeEntity as any).end,
+                        ),
+                        unitSystem,
+                      ),
+                    )}
+                    onInput={e =>
+                      handleInputChange(
+                        'length',
+                        (e.target as HTMLInputElement).value,
+                      )
+                    }
+                    onFocus={e => (e.target as HTMLInputElement).select()}
+                    onKeyDown={handleKeyDownCommit}
+                    onBlur={e => {
+                      const m = parseLength(
+                        (e.target as HTMLInputElement).value,
+                        unitSystem,
+                      );
+                      if (m !== null && m > 0) {
+                        commitProperty(ent => {
+                          const start = (ent as any).start;
+                          const end = (ent as any).end;
+                          const dir = sub(end, start);
+                          const currentL = dist(start, end);
+                          if (currentL > 0) {
+                            const u = {
+                              x: dir.x / currentL,
+                              y: dir.y / currentL,
+                            };
+                            (ent as any).end = {
+                              x: start.x + u.x * m,
+                              y: start.y + u.y * m,
+                            };
+                          }
+                        });
+                      } else {
+                        setLocalVals({});
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* RECTANGLE GEOMETRY */}
+          {activeEntity.type === 'rect' && (
+            <div>
+              <div className="property-item">
+                <span className="property-label">Width</span>
+                <div className="property-value">
+                  <input
+                    type="text"
+                    value={getVal(
+                      'w',
+                      formatLength(
+                        Math.abs(
+                          (activeEntity as RectEntity).p2.x -
+                            (activeEntity as RectEntity).p1.x,
+                        ),
+                        unitSystem,
+                      ),
+                    )}
+                    onInput={e =>
+                      handleInputChange(
+                        'w',
+                        (e.target as HTMLInputElement).value,
+                      )
+                    }
+                    onFocus={e => (e.target as HTMLInputElement).select()}
+                    onKeyDown={handleKeyDownCommit}
+                    onBlur={e => {
+                      const m = parseLength(
+                        (e.target as HTMLInputElement).value,
+                        unitSystem,
+                      );
+                      if (m !== null && m > 0) {
+                        commitProperty(ent => {
+                          const r = ent as RectEntity;
+                          const sign = Math.sign(r.p2.x - r.p1.x) || 1;
+                          r.p2.x = r.p1.x + sign * m;
+                        });
+                      } else {
+                        setLocalVals({});
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="property-item">
+                <span className="property-label">Height</span>
+                <div className="property-value">
+                  <input
+                    type="text"
+                    value={getVal(
+                      'h',
+                      formatLength(
+                        Math.abs(
+                          (activeEntity as RectEntity).p2.y -
+                            (activeEntity as RectEntity).p1.y,
+                        ),
+                        unitSystem,
+                      ),
+                    )}
+                    onInput={e =>
+                      handleInputChange(
+                        'h',
+                        (e.target as HTMLInputElement).value,
+                      )
+                    }
+                    onFocus={e => (e.target as HTMLInputElement).select()}
+                    onKeyDown={handleKeyDownCommit}
+                    onBlur={e => {
+                      const m = parseLength(
+                        (e.target as HTMLInputElement).value,
+                        unitSystem,
+                      );
+                      if (m !== null && m > 0) {
+                        commitProperty(ent => {
+                          const r = ent as RectEntity;
+                          const sign = Math.sign(r.p2.y - r.p1.y) || 1;
+                          r.p2.y = r.p1.y + sign * m;
+                        });
+                      } else {
+                        setLocalVals({});
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CIRCLE GEOMETRY */}
+          {activeEntity.type === 'circle' && (
+            <div className="property-item">
+              <span className="property-label">Radius</span>
+              <div className="property-value">
+                <input
+                  type="text"
+                  value={getVal(
+                    'radius',
+                    formatLength(
+                      (activeEntity as CircleEntity).radius,
+                      unitSystem,
+                    ),
+                  )}
+                  onInput={e =>
+                    handleInputChange(
+                      'radius',
+                      (e.target as HTMLInputElement).value,
+                    )
+                  }
+                  onFocus={e => (e.target as HTMLInputElement).select()}
+                  onKeyDown={handleKeyDownCommit}
+                  onBlur={e => {
+                    const m = parseLength(
+                      (e.target as HTMLInputElement).value,
+                      unitSystem,
+                    );
+                    if (m !== null && m > 0) {
+                      commitProperty(ent => {
+                        (ent as CircleEntity).radius = m;
+                      });
+                    } else {
+                      setLocalVals({});
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* DOOR / WINDOW / STAIRS / DIMENSION GEOMETRY */}
+          {(activeEntity.type === 'door' ||
+            activeEntity.type === 'window' ||
+            activeEntity.type === 'stairs' ||
+            activeEntity.type === 'dimension') && (
+            <div>
+              <div className="property-item">
+                <span className="property-label">Width</span>
+                <div className="property-value">
+                  <input
+                    type="text"
+                    value={getVal(
+                      'width',
+                      formatLength(
+                        (activeEntity as any).width ||
+                          (activeEntity as any).measuredLength ||
+                          0,
+                        unitSystem,
+                      ),
+                    )}
+                    onInput={e =>
+                      handleInputChange(
+                        'width',
+                        (e.target as HTMLInputElement).value,
+                      )
+                    }
+                    onFocus={e => (e.target as HTMLInputElement).select()}
+                    onKeyDown={handleKeyDownCommit}
+                    onBlur={e => {
+                      const m = parseLength(
+                        (e.target as HTMLInputElement).value,
+                        unitSystem,
+                      );
+                      if (
+                        m !== null &&
+                        m > 0 &&
+                        activeEntity.type !== 'dimension'
+                      ) {
+                        commitProperty(ent => {
+                          (ent as any).width = m;
+                        });
+                      } else {
+                        setLocalVals({});
+                      }
+                    }}
+                    readOnly={activeEntity.type === 'dimension'}
+                  />
+                </div>
+              </div>
+
+              {activeEntity.type === 'stairs' && (
+                <div className="property-item">
+                  <span className="property-label">Stair Length</span>
+                  <div className="property-value">
+                    <span className="property-value-text">
+                      {fmt(
+                        dist(
+                          (activeEntity as StairsEntity).start,
+                          (activeEntity as StairsEntity).end,
+                        ),
+                      )}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

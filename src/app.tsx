@@ -3,7 +3,7 @@ import {useEffect} from 'preact/hooks';
 import {Menubar} from './ui/menubar';
 import {Toolbar} from './ui/toolbar';
 import {CanvasComponent} from './canvas/canvas-component';
-import {PropertiesPanel} from './ui/properties-panel';
+import {PropertiesPanel} from './ui/properties/PropertiesPanel';
 import {CommandLine} from './ui/command-line';
 import {PageTabs} from './ui/page-tabs';
 import {StatusBar} from './ui/status-bar';

@@ -249,6 +249,27 @@ export class SelectTool implements Tool {
     this.draggingHandle = null;
     this.draggingEntities = [];
 
+    // Handle selection click that didn't result in a drag
+    if (!this.didDrag && !this.boxStart) {
+      const page = activePageSignal.value;
+      const zoom = viewportSignal.value?.zoom || 100;
+      const handleRadius = 8 / zoom;
+      const clickedEnt = this.findEntityAt(worldPos, page.entities, handleRadius);
+
+      if (clickedEnt) {
+        const isSelected = selectionSignal.value.has(clickedEnt.id);
+        if (isSelected && event.shiftKey) {
+          // Toggle off
+          const newSet = new Set(selectionSignal.value);
+          newSet.delete(clickedEnt.id);
+          selectionSignal.value = newSet;
+        } else if (isSelected && !event.shiftKey && selectionSignal.value.size > 1) {
+          // Clicked a single item within a multi-selection without dragging -> select only this
+          selectEntity(clickedEnt.id, false);
+        }
+      }
+    }
+
     // End Box select
     if (this.boxStart && this.boxEnd) {
       const page = activePageSignal.value;
