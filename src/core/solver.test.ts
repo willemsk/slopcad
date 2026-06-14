@@ -9,14 +9,12 @@ describe('solveConstraints', () => {
       type: 'line',
       start: {x: 0, y: 0},
       end: {x: 10, y: 5}, // Not horizontal
-      layer: '0',
+      layerId: '0',
     };
 
     const constraints: Constraint[] = [
       {
-        id: 'C1',
-        type: 'horizontal',
-        pointRefs: [
+        id: 'C1', type: 'horizontal', entityIds: ['L1'], pointRefs: [
           {entityId: 'L1', pointKey: 'start'},
           {entityId: 'L1', pointKey: 'end'},
         ],
@@ -28,9 +26,9 @@ describe('solveConstraints', () => {
     ]);
 
     const solvedLine = solved.find(e => e.id === 'L1')!;
-    expect(solvedLine.start).toEqual({x: 0, y: 0}); // Locked
-    expect(solvedLine.end?.y).toBeCloseTo(0); // Y moved to match start
-    expect(solvedLine.end?.x).toBeCloseTo(10); // X untouched by Gauss-Seidel for horizontal
+    expect((solvedLine as any).start).toEqual({x: 0, y: 0}); // Locked
+    expect((solvedLine as any).end?.y).toBeCloseTo(0); // Y moved to match start
+    expect((solvedLine as any).end?.x).toBeCloseTo(10); // X untouched by Gauss-Seidel for horizontal
   });
 
   it('solves vertical constraint', () => {
@@ -39,14 +37,12 @@ describe('solveConstraints', () => {
       type: 'line',
       start: {x: 0, y: 0},
       end: {x: 5, y: 10}, // Not vertical
-      layer: '0',
+      layerId: '0',
     };
 
     const constraints: Constraint[] = [
       {
-        id: 'C1',
-        type: 'vertical',
-        pointRefs: [
+        id: 'C1', type: 'vertical', entityIds: ['L1'], pointRefs: [
           {entityId: 'L1', pointKey: 'start'},
           {entityId: 'L1', pointKey: 'end'},
         ],
@@ -58,9 +54,9 @@ describe('solveConstraints', () => {
     ]);
 
     const solvedLine = solved.find(e => e.id === 'L1')!;
-    expect(solvedLine.start).toEqual({x: 0, y: 0});
-    expect(solvedLine.end?.x).toBeCloseTo(0);
-    expect(solvedLine.end?.y).toBeCloseTo(10);
+    expect((solvedLine as any).start).toEqual({x: 0, y: 0});
+    expect((solvedLine as any).end?.x).toBeCloseTo(0);
+    expect((solvedLine as any).end?.y).toBeCloseTo(10);
   });
 
   it('solves parallel constraint', () => {
@@ -69,21 +65,19 @@ describe('solveConstraints', () => {
       type: 'line',
       start: {x: 0, y: 0},
       end: {x: 10, y: 0}, // Horizontal
-      layer: '0',
+      layerId: '0',
     };
     const line2: Entity = {
       id: 'L2',
       type: 'line',
       start: {x: 0, y: 5},
       end: {x: 10, y: 15}, // Diagonal
-      layer: '0',
+      layerId: '0',
     };
 
     const constraints: Constraint[] = [
       {
-        id: 'C1',
-        type: 'parallel',
-        pointRefs: [
+        id: 'C1', type: 'parallel', entityIds: ['L1', 'L2'], pointRefs: [
           {entityId: 'L1', pointKey: 'start'},
           {entityId: 'L1', pointKey: 'end'},
           {entityId: 'L2', pointKey: 'start'},
@@ -99,8 +93,8 @@ describe('solveConstraints', () => {
 
     const solvedLine2 = solved.find(e => e.id === 'L2')!;
     // L2 should become horizontal. Its midpoint shouldn't change ideally, or one of its points changes to align.
-    const p1 = solvedLine2.start!;
-    const p2 = solvedLine2.end!;
+    const p1 = (solvedLine2 as any).start!;
+    const p2 = (solvedLine2 as any).end!;
     expect(Math.abs(p1.y - p2.y)).toBeCloseTo(0);
   });
 
@@ -110,14 +104,12 @@ describe('solveConstraints', () => {
       type: 'line',
       start: {x: 0, y: 0},
       end: {x: 5, y: 0}, // Length 5
-      layer: '0',
+      layerId: '0',
     };
 
     const constraints: Constraint[] = [
       {
-        id: 'C1',
-        type: 'fixed_length',
-        pointRefs: [
+        id: 'C1', type: 'fixed_length', entityIds: ['L1'], pointRefs: [
           {entityId: 'L1', pointKey: 'start'},
           {entityId: 'L1', pointKey: 'end'},
         ],
@@ -130,9 +122,9 @@ describe('solveConstraints', () => {
     ]);
 
     const solvedLine = solved.find(e => e.id === 'L1')!;
-    expect(solvedLine.start).toEqual({x: 0, y: 0});
-    expect(solvedLine.end?.x).toBeCloseTo(10);
-    expect(solvedLine.end?.y).toBeCloseTo(0);
+    expect((solvedLine as any).start).toEqual({x: 0, y: 0});
+    expect((solvedLine as any).end?.x).toBeCloseTo(10);
+    expect((solvedLine as any).end?.y).toBeCloseTo(0);
   });
 
   it('solves coincident constraint', () => {
@@ -141,21 +133,19 @@ describe('solveConstraints', () => {
       type: 'line',
       start: {x: 0, y: 0},
       end: {x: 10, y: 0},
-      layer: '0',
+      layerId: '0',
     };
     const line2: Entity = {
       id: 'L2',
       type: 'line',
       start: {x: 10, y: 5}, // Off by 5 in y
       end: {x: 20, y: 5},
-      layer: '0',
+      layerId: '0',
     };
 
     const constraints: Constraint[] = [
       {
-        id: 'C1',
-        type: 'coincident',
-        pointRefs: [
+        id: 'C1', type: 'coincident', entityIds: ['L1', 'L2'], pointRefs: [
           {entityId: 'L1', pointKey: 'end'},
           {entityId: 'L2', pointKey: 'start'},
         ],
@@ -168,6 +158,6 @@ describe('solveConstraints', () => {
     ]);
 
     const solvedLine2 = solved.find(e => e.id === 'L2')!;
-    expect(solvedLine2.start).toEqual({x: 10, y: 0});
+    expect((solvedLine2 as any).start).toEqual({x: 10, y: 0});
   });
 });

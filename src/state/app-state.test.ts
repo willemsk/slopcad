@@ -27,7 +27,7 @@ describe('App State', () => {
       type: 'line',
       start: {x: 0, y: 0},
       end: {x: 10, y: 10},
-      layer: '0',
+      layerId: '0',
     };
     const page = activePageSignal.value;
     page.entities.push(e);
@@ -49,14 +49,14 @@ describe('App State', () => {
       type: 'line',
       start: {x: 0, y: 0},
       end: {x: 10, y: 10},
-      layer: '0',
+      layerId: '0',
     };
     const e2: Entity = {
       id: 'L2',
       type: 'line',
       start: {x: 0, y: 0},
       end: {x: 5, y: 5},
-      layer: '0',
+      layerId: '0',
     };
 
     const page = activePageSignal.value;
@@ -77,7 +77,7 @@ describe('App State', () => {
       type: 'line',
       start: {x: 0, y: 0},
       end: {x: 10, y: 5},
-      layer: '0',
+      layerId: '0',
     };
 
     const page = activePageSignal.value;
@@ -92,6 +92,6 @@ describe('App State', () => {
 
     // The solver should have run, modifying L1 to be horizontal
     const line = activePageSignal.value.entities[0];
-    expect(line.start?.y).toBeCloseTo(line.end?.y as number);
+    expect((line as any).start?.y).toBeCloseTo((line as any).end?.y as number);
   });
 });

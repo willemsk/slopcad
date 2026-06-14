@@ -7,6 +7,7 @@ import {
   PointRef,
   Vec2,
   UnitSystem,
+  Layer,
 } from '../core/types';
 import {HistoryManager} from '../core/history';
 import {solveConstraints} from '../core/solver';
@@ -22,6 +23,15 @@ const defaultPage: Page = {
   constraints: [],
 };
 
+// Initial default layer
+const defaultLayer: Layer = {
+  id: '0',
+  name: '0',
+  color: '#ffffff',
+  visible: true,
+  locked: false,
+};
+
 // Initial default project
 const defaultProject: Project = {
   name: 'Architectural Plan',
@@ -29,6 +39,8 @@ const defaultProject: Project = {
   modified: Date.now(),
   unitSystem: 'metric',
   scale: 100, // 1:100
+  layers: [defaultLayer],
+  activeLayerId: '0',
   pages: [defaultPage],
   activePageIndex: 0,
 };
@@ -39,6 +51,21 @@ const saved = localStorage.getItem('antigravity_project');
 if (saved) {
   try {
     initialProject = JSON.parse(saved);
+    // Backward compatibility for old saves
+    if (!initialProject.layers) {
+      initialProject.layers = [
+        {
+          id: '0',
+          name: '0',
+          color: '#ffffff',
+          visible: true,
+          locked: false,
+        },
+      ];
+    }
+    if (!initialProject.activeLayerId) {
+      initialProject.activeLayerId = '0';
+    }
   } catch (e) {
     console.error('Failed to parse saved project', e);
   }
@@ -91,6 +118,7 @@ export const commandLineMessagesSignal = signal<string[]>([
 
 export const isPropertiesPanelOpenSignal = signal<boolean>(true);
 export const isRibbonCollapsedSignal = signal<boolean>(false);
+export const isLayerModalOpenSignal = signal<boolean>(false);
 
 export const uiScaleSignal = signal<number>(
   parseFloat(localStorage.getItem('uiScale') || '1'),
@@ -238,6 +266,75 @@ export function setUnitSystem(unit: UnitSystem) {
     unitSystem: unit,
   };
   triggerRenderSignal.value = {};
+}
+
+// Layer actions
+export function addLayerAction(name: string, color: string) {
+  const project = projectSignal.value;
+  const newLayer: Layer = {
+    id: generateId(),
+    name,
+    color,
+    visible: true,
+    locked: false,
+  };
+  projectSignal.value = {
+    ...project,
+    layers: [...project.layers, newLayer],
+    modified: Date.now(),
+  };
+  triggerRenderSignal.value = {};
+}
+
+export function updateLayerAction(id: string, updates: Partial<Layer>) {
+  const project = projectSignal.value;
+  const newLayers = project.layers.map(layer =>
+    layer.id === id ? {...layer, ...updates} : layer,
+  );
+  projectSignal.value = {
+    ...project,
+    layers: newLayers,
+    modified: Date.now(),
+  };
+  triggerRenderSignal.value = {};
+}
+
+export function deleteLayerAction(id: string) {
+  const project = projectSignal.value;
+  if (id === '0' || project.layers.length <= 1) return; // Cannot delete default layer or last layer
+
+  const newLayers = project.layers.filter(layer => layer.id !== id);
+  let newActiveLayerId = project.activeLayerId;
+  if (newActiveLayerId === id) {
+    newActiveLayerId = '0';
+  }
+
+  // Update entities to fallback layer '0'
+  const newPages = project.pages.map(page => ({
+    ...page,
+    entities: page.entities.map(e =>
+      e.layerId === id ? {...e, layerId: '0'} : e,
+    ),
+  }));
+
+  projectSignal.value = {
+    ...project,
+    layers: newLayers,
+    activeLayerId: newActiveLayerId,
+    pages: newPages,
+    modified: Date.now(),
+  };
+  triggerRenderSignal.value = {};
+}
+
+export function setActiveLayerAction(id: string) {
+  const project = projectSignal.value;
+  if (project.layers.some(l => l.id === id)) {
+    projectSignal.value = {
+      ...project,
+      activeLayerId: id,
+    };
+  }
 }
 
 // Constraint actions
@@ -491,8 +588,8 @@ export function addCoincidentConstraintAction() {
     type: 'coincident',
     entityIds: [e1.id, e2.id],
     pointRefs: [
-      {entityId: e1.id, pointKey: best.p1.key},
-      {entityId: e2.id, pointKey: best.p2.key},
+      {entityId: e1.id, pointKey: best.p1.key as any},
+      {entityId: e2.id, pointKey: best.p2.key as any},
     ],
   });
 

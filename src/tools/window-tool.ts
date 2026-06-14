@@ -7,6 +7,7 @@ import {
   updateActivePage,
   previewEntitySignal,
   snapshotState,
+  projectSignal,
 } from '../state/app-state';
 
 export class WindowTool implements Tool {
@@ -37,7 +38,13 @@ export class WindowTool implements Tool {
       const page = activePageSignal.value;
       const t = snapResult.extra?.t ?? 0.5;
 
-      const newWindow = createWindow(snapResult.entityId, t, this.width);
+      const layerId = projectSignal.value.activeLayerId;
+      const newWindow = createWindow(
+        snapResult.entityId,
+        t,
+        this.width,
+        layerId,
+      );
 
       const newEntities = [...page.entities, newWindow];
       updateActivePage(newEntities, page.constraints);
@@ -60,7 +67,8 @@ export class WindowTool implements Tool {
   private updatePreview(snapResult: SnapResult | null) {
     if (snapResult && snapResult.type === 'wall-align' && snapResult.entityId) {
       const t = snapResult.extra?.t ?? 0.5;
-      const ghost = createWindow(snapResult.entityId, t, this.width);
+      const layerId = projectSignal.value.activeLayerId;
+      const ghost = createWindow(snapResult.entityId, t, this.width, layerId);
       ghost.id = 'window-preview';
       previewEntitySignal.value = ghost;
     } else {

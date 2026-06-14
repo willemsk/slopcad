@@ -16,8 +16,10 @@ import {
   clearSelection,
   deleteSelectedAction,
   activePromptSignal,
+  isLayerModalOpenSignal,
 } from './state/app-state';
 import {DynamicPrompt} from './ui/dynamic-prompt';
+import {LayerModal} from './ui/layer-modal';
 import './app.css';
 
 export function App() {
@@ -31,7 +33,8 @@ export function App() {
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA' ||
         target.isContentEditable ||
-        activePromptSignal.value !== null
+        activePromptSignal.value !== null ||
+        isLayerModalOpenSignal.value
       ) {
         return;
       }
@@ -84,6 +87,9 @@ export function App() {
         <StatusBar />
       </div>
       <DynamicPrompt />
+      <div style={{zoom: uiScale}}>
+        <LayerModal />
+      </div>
     </div>
   );
 }

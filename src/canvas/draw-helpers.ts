@@ -13,6 +13,7 @@ import {
   TextEntity,
   Constraint,
   UnitSystem,
+  Layer,
 } from '../core/types';
 import {
   dist,
@@ -61,10 +62,15 @@ function mergeIntervals(intervals: [number, number][]): [number, number][] {
   return res;
 }
 
+function findWall(entities: Entity[], id: string): WallEntity | undefined {
+  return entities.find(e => e.id === id && e.type === 'wall') as WallEntity | undefined;
+}
+
 export function drawWalls(
   ctx: CanvasRenderingContext2D,
   walls: WallEntity[],
   selectedIds: Set<string>,
+  layers: Layer[],
   zoom: number,
 ) {
   const renderData: WallRenderData[] = [];
@@ -256,7 +262,10 @@ export function drawWalls(
   // Phase 4: Draw Strokes
   for (const data of renderData) {
     const isSelected = selectedIds.has(data.wall.id);
-    ctx.strokeStyle = isSelected ? '#22d3ee' : '#c8cad4';
+    const layer = layers.find(l => l.id === data.wall.layerId) || layers[0];
+    const color = layer?.color || '#c8cad4';
+
+    ctx.strokeStyle = isSelected ? '#22d3ee' : color;
     ctx.lineWidth = (isSelected ? 3 : 2) / zoom;
 
     // Draw left boundary
@@ -332,6 +341,7 @@ export function drawDoor(
   door: DoorEntity,
   entities: Entity[],
   isSelected: boolean,
+  color: string,
   zoom: number,
 ) {
   const wall = findWall(entities, door.wallId);
@@ -366,7 +376,7 @@ export function drawDoor(
   ctx.fill();
 
   // Draw wall cut outlines (the two ends of the wall)
-  ctx.strokeStyle = isSelected ? '#22d3ee' : '#c8cad4';
+  ctx.strokeStyle = isSelected ? '#22d3ee' : color;
   ctx.lineWidth = (isSelected ? 2 : 1.5) / zoom;
   ctx.beginPath();
   ctx.moveTo(m1.x, m1.y);
@@ -393,7 +403,7 @@ export function drawDoor(
   ctx.beginPath();
   ctx.moveTo(hinge.x, hinge.y);
   ctx.lineTo(leafEnd.x, leafEnd.y);
-  ctx.strokeStyle = isSelected ? '#22d3ee' : '#cbd5e1';
+  ctx.strokeStyle = isSelected ? '#22d3ee' : color;
   ctx.lineWidth = (isSelected ? 3 : 2) / zoom;
   ctx.stroke();
 
@@ -420,6 +430,7 @@ export function drawWindow(
   windowEnt: WindowEntity,
   entities: Entity[],
   isSelected: boolean,
+  color: string,
   zoom: number,
 ) {
   const wall = findWall(entities, windowEnt.wallId);
@@ -452,7 +463,7 @@ export function drawWindow(
   ctx.fill();
 
   // Draw Window glass lines (three parallel lines)
-  const strokeColor = isSelected ? '#22d3ee' : '#94a3b8';
+  const strokeColor = isSelected ? '#22d3ee' : color;
   ctx.strokeStyle = strokeColor;
   ctx.lineWidth = (isSelected ? 2.5 : 1.5) / zoom;
 
@@ -488,6 +499,7 @@ export function drawStairs(
   ctx: CanvasRenderingContext2D,
   stairs: StairsEntity,
   isSelected: boolean,
+  color: string,
   zoom: number,
 ) {
   const {start, end, width, treadCount, direction} = stairs;
@@ -506,7 +518,7 @@ export function drawStairs(
   const s4 = sub(start, scale(n, halfWidth));
 
   // Outline
-  ctx.strokeStyle = isSelected ? '#22d3ee' : '#94a3b8';
+  ctx.strokeStyle = isSelected ? '#22d3ee' : color;
   ctx.lineWidth = (isSelected ? 3 : 2) / zoom;
   ctx.beginPath();
   ctx.moveTo(s1.x, s1.y);
@@ -518,9 +530,7 @@ export function drawStairs(
 
   // Treads
   ctx.lineWidth = 1 / zoom;
-  ctx.strokeStyle = isSelected
-    ? 'rgba(34, 211, 238, 0.7)'
-    : 'rgba(148, 163, 184, 0.6)';
+  ctx.strokeStyle = isSelected ? 'rgba(34, 211, 238, 0.7)' : color + '99'; // 60% opacity of layer color
   for (let i = 1; i < treadCount; i++) {
     const t = i / treadCount;
     const pt = lerp(start, end, t);
@@ -535,8 +545,8 @@ export function drawStairs(
 
   // Draw direction arrow
   ctx.lineWidth = 1.5 / zoom;
-  ctx.strokeStyle = '#38bdf8'; // Blue direction line
-  ctx.fillStyle = '#38bdf8';
+  ctx.strokeStyle = color; // Direction line
+  ctx.fillStyle = color;
 
   // Draw start circle at 'start'
   ctx.beginPath();
@@ -585,13 +595,14 @@ export function drawLine(
   ctx: CanvasRenderingContext2D,
   line: LineEntity,
   isSelected: boolean,
+  color: string,
   zoom: number,
 ) {
   ctx.beginPath();
   ctx.moveTo(line.start.x, line.start.y);
   ctx.lineTo(line.end.x, line.end.y);
 
-  ctx.strokeStyle = isSelected ? '#22d3ee' : '#e2e8f0';
+  ctx.strokeStyle = isSelected ? '#22d3ee' : color;
   ctx.lineWidth = (isSelected ? 3 : 2) / zoom;
   ctx.stroke();
 }
@@ -600,13 +611,14 @@ export function drawRect(
   ctx: CanvasRenderingContext2D,
   rect: RectEntity,
   isSelected: boolean,
+  color: string,
   zoom: number,
 ) {
   const {p1, p2} = rect;
   ctx.beginPath();
   ctx.rect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
 
-  ctx.strokeStyle = isSelected ? '#22d3ee' : '#e2e8f0';
+  ctx.strokeStyle = isSelected ? '#22d3ee' : color;
   ctx.lineWidth = (isSelected ? 3 : 2) / zoom;
   ctx.stroke();
 
@@ -618,12 +630,13 @@ export function drawCircle(
   ctx: CanvasRenderingContext2D,
   circle: CircleEntity,
   isSelected: boolean,
+  color: string,
   zoom: number,
 ) {
   ctx.beginPath();
   ctx.arc(circle.center.x, circle.center.y, circle.radius, 0, Math.PI * 2);
 
-  ctx.strokeStyle = isSelected ? '#22d3ee' : '#e2e8f0';
+  ctx.strokeStyle = isSelected ? '#22d3ee' : color;
   ctx.lineWidth = (isSelected ? 3 : 2) / zoom;
   ctx.stroke();
 
@@ -635,12 +648,13 @@ export function drawArc(
   ctx: CanvasRenderingContext2D,
   arc: ArcEntity,
   isSelected: boolean,
+  color: string,
   zoom: number,
 ) {
   ctx.beginPath();
   ctx.arc(arc.center.x, arc.center.y, arc.radius, arc.startAngle, arc.endAngle);
 
-  ctx.strokeStyle = isSelected ? '#22d3ee' : '#e2e8f0';
+  ctx.strokeStyle = isSelected ? '#22d3ee' : color;
   ctx.lineWidth = (isSelected ? 3 : 2) / zoom;
   ctx.stroke();
 }
@@ -649,6 +663,7 @@ export function drawDimension(
   ctx: CanvasRenderingContext2D,
   dim: DimensionEntity,
   isSelected: boolean,
+  color: string,
   unitSystem: UnitSystem,
   zoom: number,
 ) {
@@ -663,7 +678,7 @@ export function drawDimension(
   const d1 = add(p1, scale(n, offset));
   const d2 = add(p2, scale(n, offset));
 
-  const dimColor = isSelected ? '#22d3ee' : '#60a5fa'; // nice blue
+  const dimColor = isSelected ? '#22d3ee' : color;
   ctx.strokeStyle = dimColor;
   ctx.fillStyle = dimColor;
   ctx.lineWidth = (isSelected ? 2 : 1.2) / zoom;
@@ -734,11 +749,12 @@ export function drawText(
   ctx: CanvasRenderingContext2D,
   textEnt: TextEntity,
   isSelected: boolean,
+  color: string,
   zoom: number,
 ) {
   ctx.save();
   ctx.font = `${textEnt.fontSize}px Inter, sans-serif`;
-  ctx.fillStyle = isSelected ? '#22d3ee' : '#f8fafc';
+  ctx.fillStyle = isSelected ? '#22d3ee' : color;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
   ctx.fillText(textEnt.text, textEnt.position.x, textEnt.position.y);

@@ -7,6 +7,7 @@ import {
   updateActivePage,
   previewEntitySignal,
   snapshotState,
+  projectSignal,
 } from '../state/app-state';
 
 export class DoorTool implements Tool {
@@ -39,12 +40,14 @@ export class DoorTool implements Tool {
       const page = activePageSignal.value;
       const t = snapResult.extra?.t ?? 0.5;
 
+      const layerId = projectSignal.value.activeLayerId;
       const newDoor = createDoor(
         snapResult.entityId,
         t,
         this.width,
         this.hingeSide,
         this.openSide,
+        layerId,
       );
 
       const newEntities = [...page.entities, newDoor];
@@ -84,12 +87,14 @@ export class DoorTool implements Tool {
     // If no snapResult is provided, we try to use the last active preview wallId and position
     if (snapResult && snapResult.type === 'wall-align' && snapResult.entityId) {
       const t = snapResult.extra?.t ?? 0.5;
+      const layerId = projectSignal.value.activeLayerId;
       const ghost = createDoor(
         snapResult.entityId,
         t,
         this.width,
         this.hingeSide,
         this.openSide,
+        layerId,
       );
       // Give ghost a temporary ID
       ghost.id = 'door-preview';

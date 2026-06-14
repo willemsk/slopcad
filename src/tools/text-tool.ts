@@ -8,6 +8,7 @@ import {
   selectEntity,
   snapshotState,
   requestPrompt,
+  projectSignal,
 } from '../state/app-state';
 
 export class TextTool implements Tool {
@@ -34,7 +35,8 @@ export class TextTool implements Tool {
     const cleanText = textVal.trim() || 'Text';
 
     // FontSize in world units: e.g. 0.25 meters (25cm tall letters)
-    const newText = createText(worldPos, cleanText, 0.25);
+    const layerId = projectSignal.value.activeLayerId;
+    const newText = createText(worldPos, cleanText, 0.25, layerId);
 
     const newEntities = [...page.entities, newText];
     updateActivePage(newEntities, page.constraints);

@@ -8,6 +8,7 @@ import {
   updateActivePage,
   previewEntitySignal,
   snapshotState,
+  projectSignal,
 } from '../state/app-state';
 
 export class StairsTool implements Tool {
@@ -47,12 +48,14 @@ export class StairsTool implements Tool {
       }
 
       const page = activePageSignal.value;
+      const layerId = projectSignal.value.activeLayerId;
       const newStairs = createStairs(
         this.startPt,
         targetPt,
         this.width,
-        this.treadCount,
+        12, // Default tread count
         'up',
+        layerId,
       );
 
       const newEntities = [...page.entities, newStairs];
@@ -81,12 +84,14 @@ export class StairsTool implements Tool {
         }
       }
 
+      const layerId = projectSignal.value.activeLayerId;
       previewEntitySignal.value = createStairs(
         this.startPt,
         finalPt,
         this.width,
-        this.treadCount,
+        12,
         'up',
+        layerId,
       );
     }
   }

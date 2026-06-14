@@ -40,6 +40,9 @@ import {
   triggerRenderSignal,
   activePageSignal,
   selectionSignal,
+  projectSignal,
+  setActiveLayerAction,
+  isLayerModalOpenSignal,
 } from '../state/app-state';
 import './ribbon.css';
 
@@ -226,6 +229,52 @@ export function Toolbar() {
                   </button>
                 </div>
                 <div className="ribbon-panel-title">Architectural</div>
+              </div>
+
+              {/* Layers Panel */}
+              <div className="ribbon-panel">
+                <div
+                  className="ribbon-panel-body"
+                  style={{
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: 4,
+                    padding: '4px 8px',
+                  }}
+                >
+                  <select
+                    style={{
+                      width: 120,
+                      padding: 4,
+                      borderRadius: 4,
+                      border: '1px solid var(--border-color)',
+                      background: 'var(--bg-tertiary)',
+                      color: 'var(--text-primary)',
+                    }}
+                    value={projectSignal.value.activeLayerId}
+                    onChange={e =>
+                      setActiveLayerAction(
+                        (e.target as HTMLSelectElement).value,
+                      )
+                    }
+                  >
+                    {projectSignal.value.layers.map(l => (
+                      <option key={l.id} value={l.id}>
+                        {l.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    className="ribbon-btn-small"
+                    onClick={() => (isLayerModalOpenSignal.value = true)}
+                    style={{width: '100%', justifyContent: 'center'}}
+                  >
+                    <span className="ribbon-btn-small-label">
+                      Layer Properties
+                    </span>
+                  </button>
+                </div>
+                <div className="ribbon-panel-title">Layers</div>
               </div>
             </>
           )}

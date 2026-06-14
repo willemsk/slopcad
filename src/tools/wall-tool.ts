@@ -9,6 +9,7 @@ import {
   previewEntitySignal,
   snapshotState,
   triggerRenderSignal,
+  projectSignal,
 } from '../state/app-state';
 
 export class WallTool implements Tool {
@@ -80,7 +81,13 @@ export class WallTool implements Tool {
         return;
       }
 
-      const newWall = createWall(this.startPt, targetPt, this.wallThickness);
+      const layerId = projectSignal.value.activeLayerId;
+      const newWall = createWall(
+        this.startPt,
+        targetPt,
+        this.wallThickness,
+        layerId,
+      );
       const newEntities = [...page.entities, newWall];
       const newConstraints = [...page.constraints];
 
@@ -191,10 +198,12 @@ export class WallTool implements Tool {
         }
       }
 
+      const layerId = projectSignal.value.activeLayerId;
       previewEntitySignal.value = createWall(
         this.startPt,
         finalPt,
         this.wallThickness,
+        layerId,
       );
     }
   }

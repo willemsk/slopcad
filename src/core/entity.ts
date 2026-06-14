@@ -25,10 +25,12 @@ export function createWall(
   start: Vec2,
   end: Vec2,
   thickness = 0.2,
+  layerId = '0',
 ): WallEntity {
   return {
     id: generateId(),
     type: 'wall',
+    layerId,
     start: {...start},
     end: {...end},
     thickness,
@@ -42,10 +44,12 @@ export function createDoor(
   width = 0.9,
   hingeSide: 'left' | 'right' = 'left',
   openSide: 'in' | 'out' = 'in',
+  layerId = '0',
 ): DoorEntity {
   return {
     id: generateId(),
     type: 'door',
+    layerId,
     wallId,
     position,
     width,
@@ -60,10 +64,12 @@ export function createWindow(
   wallId: string,
   position = 0.5,
   width = 1.2,
+  layerId = '0',
 ): WindowEntity {
   return {
     id: generateId(),
     type: 'window',
+    layerId,
     wallId,
     position,
     width,
@@ -77,10 +83,12 @@ export function createStairs(
   width = 1.0,
   treadCount = 12,
   direction: 'up' | 'down' = 'up',
+  layerId = '0',
 ): StairsEntity {
   return {
     id: generateId(),
     type: 'stairs',
+    layerId,
     start: {...start},
     end: {...end},
     width,
@@ -90,30 +98,37 @@ export function createStairs(
   };
 }
 
-export function createLine(start: Vec2, end: Vec2): LineEntity {
+export function createLine(start: Vec2, end: Vec2, layerId = '0'): LineEntity {
   return {
     id: generateId(),
     type: 'line',
+    layerId,
     start: {...start},
     end: {...end},
     locked: false,
   };
 }
 
-export function createRect(p1: Vec2, p2: Vec2): RectEntity {
+export function createRect(p1: Vec2, p2: Vec2, layerId = '0'): RectEntity {
   return {
     id: generateId(),
     type: 'rect',
+    layerId,
     p1: {...p1},
     p2: {...p2},
     locked: false,
   };
 }
 
-export function createCircle(center: Vec2, radius: number): CircleEntity {
+export function createCircle(
+  center: Vec2,
+  radius: number,
+  layerId = '0',
+): CircleEntity {
   return {
     id: generateId(),
     type: 'circle',
+    layerId,
     center: {...center},
     radius,
     locked: false,
@@ -125,10 +140,12 @@ export function createArc(
   radius: number,
   startAngle = 0,
   endAngle = Math.PI,
+  layerId = '0',
 ): ArcEntity {
   return {
     id: generateId(),
     type: 'arc',
+    layerId,
     center: {...center},
     radius,
     startAngle,
@@ -143,10 +160,12 @@ export function createDimension(
   offset = 0.5,
   label?: string,
   valueOverride?: number,
+  layerId = '0',
 ): DimensionEntity {
   return {
     id: generateId(),
     type: 'dimension',
+    layerId,
     p1: {...p1},
     p2: {...p2},
     offset,
@@ -160,10 +179,12 @@ export function createText(
   position: Vec2,
   text = 'Text',
   fontSize = 0.25,
+  layerId = '0',
 ): TextEntity {
   return {
     id: generateId(),
     type: 'text',
+    layerId,
     position: {...position},
     text,
     fontSize,

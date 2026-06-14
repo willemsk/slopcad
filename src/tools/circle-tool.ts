@@ -8,6 +8,7 @@ import {
   updateActivePage,
   previewEntitySignal,
   snapshotState,
+  projectSignal,
 } from '../state/app-state';
 
 export class CircleTool implements Tool {
@@ -46,7 +47,8 @@ export class CircleTool implements Tool {
       }
 
       const page = activePageSignal.value;
-      const newCircle = createCircle(this.centerPt, radius);
+      const layerId = projectSignal.value.activeLayerId;
+      const newCircle = createCircle(this.centerPt, radius, layerId);
 
       const newEntities = [...page.entities, newCircle];
       updateActivePage(newEntities, page.constraints);
@@ -63,7 +65,8 @@ export class CircleTool implements Tool {
     if (this.centerPt) {
       const targetPt = snapResult ? snapResult.point : worldPos;
       const radius = dist(this.centerPt, targetPt);
-      previewEntitySignal.value = createCircle(this.centerPt, radius);
+      const layerId = projectSignal.value.activeLayerId;
+      previewEntitySignal.value = createCircle(this.centerPt, radius, layerId);
     }
   }
 

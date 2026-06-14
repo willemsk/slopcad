@@ -8,6 +8,7 @@ import {
   updateActivePage,
   previewEntitySignal,
   snapshotState,
+  projectSignal,
 } from '../state/app-state';
 
 export class LineTool implements Tool {
@@ -45,7 +46,8 @@ export class LineTool implements Tool {
       }
 
       const page = activePageSignal.value;
-      const newLine = createLine(this.startPt, targetPt);
+      const layerId = projectSignal.value.activeLayerId;
+      const newLine = createLine(this.startPt, targetPt, layerId);
 
       const newEntities = [...page.entities, newLine];
       updateActivePage(newEntities, page.constraints);
@@ -71,7 +73,8 @@ export class LineTool implements Tool {
           finalPt.x = this.startPt.x;
         }
       }
-      previewEntitySignal.value = createLine(this.startPt, finalPt);
+      const layerId = projectSignal.value.activeLayerId;
+      previewEntitySignal.value = createLine(this.startPt, finalPt, layerId);
     }
   }
 

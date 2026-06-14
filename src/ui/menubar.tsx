@@ -49,21 +49,33 @@ export function Menubar() {
     if (
       window.confirm('Start a new project? Any unsaved changes will be lost.')
     ) {
-      const newPage = {
-        id: generateId(),
-        name: 'Ground Floor',
-        entities: [],
-        constraints: [],
-      };
-      projectSignal.value = {
+      const defaultProject = {
         name: 'New Project',
         created: Date.now(),
         modified: Date.now(),
-        unitSystem: 'metric',
-        scale: 100,
-        pages: [newPage],
+        unitSystem: 'metric' as const,
+        scale: 50,
+        layers: [
+          {
+            id: '0',
+            name: 'Layer 0',
+            color: '#ffffff',
+            visible: true,
+            locked: false,
+          },
+        ],
+        activeLayerId: '0',
+        pages: [
+          {
+            id: generateId(),
+            name: 'Ground Floor',
+            entities: [],
+            constraints: [],
+          },
+        ],
         activePageIndex: 0,
       };
+      projectSignal.value = defaultProject;
       selectionSignal.value = new Set();
       triggerRenderSignal.value = {};
       pushCommandMessage(

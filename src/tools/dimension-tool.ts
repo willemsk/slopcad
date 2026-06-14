@@ -8,6 +8,7 @@ import {
   updateActivePage,
   previewEntitySignal,
   snapshotState,
+  projectSignal,
 } from '../state/app-state';
 
 export class DimensionTool implements Tool {
@@ -51,7 +52,15 @@ export class DimensionTool implements Tool {
 
       const offset = this.calculateOffset(worldPos);
       const page = activePageSignal.value;
-      const newDim = createDimension(this.p1, this.p2, offset);
+      const layerId = projectSignal.value.activeLayerId;
+      const newDim = createDimension(
+        this.p1,
+        this.p2,
+        offset,
+        undefined,
+        undefined,
+        layerId,
+      );
 
       const newEntities = [...page.entities, newDim];
       updateActivePage(newEntities, page.constraints);
@@ -69,13 +78,29 @@ export class DimensionTool implements Tool {
 
     if (this.p1 && !this.p2) {
       // Ghost line showing selection progress
-      const ghost = createDimension(this.p1, targetPt, 0.3);
+      const layerId = projectSignal.value.activeLayerId;
+      const ghost = createDimension(
+        this.p1,
+        targetPt,
+        0.3,
+        undefined,
+        undefined,
+        layerId,
+      );
       ghost.id = 'dim-preview';
       previewEntitySignal.value = ghost;
     } else if (this.p1 && this.p2) {
       // Adjusting offset
       const offset = this.calculateOffset(worldPos);
-      const ghost = createDimension(this.p1, this.p2, offset);
+      const layerId = projectSignal.value.activeLayerId;
+      const ghost = createDimension(
+        this.p1,
+        this.p2,
+        offset,
+        undefined,
+        undefined,
+        layerId,
+      );
       ghost.id = 'dim-preview';
       previewEntitySignal.value = ghost;
     }

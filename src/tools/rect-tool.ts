@@ -8,6 +8,7 @@ import {
   updateActivePage,
   previewEntitySignal,
   snapshotState,
+  projectSignal,
 } from '../state/app-state';
 
 export class RectTool implements Tool {
@@ -45,7 +46,8 @@ export class RectTool implements Tool {
       }
 
       const page = activePageSignal.value;
-      const newRect = createRect(this.startPt, targetPt);
+      const layerId = projectSignal.value.activeLayerId;
+      const newRect = createRect(this.startPt, targetPt, layerId);
 
       const newEntities = [...page.entities, newRect];
       updateActivePage(newEntities, page.constraints);
@@ -73,7 +75,8 @@ export class RectTool implements Tool {
         finalPt.y =
           this.startPt.y + Math.sign(finalPt.y - this.startPt.y) * side;
       }
-      previewEntitySignal.value = createRect(this.startPt, finalPt);
+      const layerId = projectSignal.value.activeLayerId;
+      previewEntitySignal.value = createRect(this.startPt, finalPt, layerId);
     }
   }
 

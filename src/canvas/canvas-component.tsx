@@ -31,6 +31,7 @@ import {
   overlayPageIndexSignal,
   mouseCoordsSignal,
   pushCommandMessage,
+  isLayerModalOpenSignal,
 } from '../state/app-state';
 
 export function CanvasComponent() {
@@ -109,13 +110,19 @@ export function CanvasComponent() {
       currentMousePosScreen,
     );
 
+    const visibleEntities = activePage.entities.filter(ent => {
+      const layer =
+        project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+      return layer?.visible ?? true;
+    });
+
     let snapRes: SnapResult | null = null;
     if (snapEnabledSignal.value && activeToolSignal.value) {
       // 10 pixels screen-space snap radius converted to world
       const snapRadiusWorld = 12 / viewportRef.current.zoom;
       snapRes = getSnapPoint(
         currentMousePosWorld,
-        activePage.entities,
+        visibleEntities,
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
@@ -134,8 +141,9 @@ export function CanvasComponent() {
       width: dimensions.width,
       height: dimensions.height,
       viewport: viewportRef.current,
-      entities: activePage.entities,
+      entities: visibleEntities,
       constraints: activePage.constraints,
+      layers: project.layers,
       selection: selectionSignal.value,
       snapResult: snapRes,
       gridEnabled: gridEnabledSignal.value,
@@ -213,10 +221,15 @@ export function CanvasComponent() {
     if (snapEnabledSignal.value) {
       const project = projectSignal.value;
       const activePage = project.pages[project.activePageIndex];
+      const visibleEntities = activePage.entities.filter(ent => {
+        const layer =
+          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+        return layer?.visible ?? true;
+      });
       const snapRadiusWorld = 12 / viewportRef.current.zoom;
       const snap = getSnapPoint(
         worldPos,
-        activePage.entities,
+        visibleEntities,
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
@@ -262,10 +275,16 @@ export function CanvasComponent() {
       const activePage = project.pages[project.activePageIndex];
       const hoverRadiusWorld = 8 / viewportRef.current.zoom;
 
+      const visibleEntities = activePage.entities.filter(ent => {
+        const layer =
+          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+        return layer?.visible ?? true;
+      });
+
       let hoverId: string | null = null;
       let minHoverDist = hoverRadiusWorld;
 
-      for (const ent of activePage.entities) {
+      for (const ent of visibleEntities) {
         if (
           ent.type === 'wall' ||
           ent.type === 'line' ||
@@ -337,10 +356,15 @@ export function CanvasComponent() {
     if (snapEnabledSignal.value) {
       const project = projectSignal.value;
       const activePage = project.pages[project.activePageIndex];
+      const visibleEntities = activePage.entities.filter(ent => {
+        const layer =
+          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+        return layer?.visible ?? true;
+      });
       const snapRadiusWorld = 12 / viewportRef.current.zoom;
       const snap = getSnapPoint(
         worldPos,
-        activePage.entities,
+        visibleEntities,
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
@@ -382,10 +406,15 @@ export function CanvasComponent() {
     if (snapEnabledSignal.value) {
       const project = projectSignal.value;
       const activePage = project.pages[project.activePageIndex];
+      const visibleEntities = activePage.entities.filter(ent => {
+        const layer =
+          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+        return layer?.visible ?? true;
+      });
       const snapRadiusWorld = 12 / viewportRef.current.zoom;
       const snap = getSnapPoint(
         worldPos,
-        activePage.entities,
+        visibleEntities,
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
@@ -428,7 +457,8 @@ export function CanvasComponent() {
       if (
         document.activeElement?.tagName === 'INPUT' ||
         document.activeElement?.tagName === 'TEXTAREA' ||
-        document.activeElement?.getAttribute('contenteditable') === 'true'
+        document.activeElement?.getAttribute('contenteditable') === 'true' ||
+        isLayerModalOpenSignal.value
       ) {
         return;
       }

@@ -4,6 +4,7 @@ import {
   commandLineMessagesSignal,
   pushCommandMessage,
   activePromptSignal,
+  isLayerModalOpenSignal,
 } from '../state/app-state';
 import {dispatchCommand} from '../core/commands';
 import './command-line.css';
@@ -31,7 +32,8 @@ export function CommandLine() {
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA' ||
         target.isContentEditable ||
-        activePromptSignal.value !== null
+        activePromptSignal.value !== null ||
+        isLayerModalOpenSignal.value
       ) {
         return;
       }

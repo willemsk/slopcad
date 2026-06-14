@@ -1,4 +1,4 @@
-import {Entity, SnapResult, UnitSystem, Constraint} from '../core/types';
+import {Entity, SnapResult, UnitSystem, Constraint, Layer} from '../core/types';
 import {Viewport} from './viewport';
 import {
   drawWalls,
@@ -23,6 +23,7 @@ export interface RenderState {
   viewport: Viewport;
   entities: Entity[];
   constraints: Constraint[];
+  layers: Layer[];
   selection: Set<string>;
   snapResult: SnapResult | null;
   gridEnabled: boolean;
@@ -42,6 +43,7 @@ export function render(state: RenderState) {
     viewport,
     entities,
     constraints,
+    layers,
     selection,
     snapResult,
     gridEnabled,
@@ -72,7 +74,18 @@ export function render(state: RenderState) {
     ctx.save();
     ctx.globalAlpha = 0.15; // very faint transparency
     for (const ent of overlayEntities) {
-      drawEntity(ctx, ent, overlayEntities, false, unitSystem, viewport.zoom);
+      const layer = layers.find(l => l.id === ent.layerId) || layers[0];
+      const color = layer?.color || '#c8cad4';
+      drawEntity(
+        ctx,
+        ent,
+        overlayEntities,
+        false,
+        color,
+        unitSystem,
+        viewport.zoom,
+        layers,
+      );
     }
     ctx.restore();
   }
@@ -98,7 +111,7 @@ export function render(state: RenderState) {
   // Group and draw all walls together using the new cleaned-up routine
   const walls = entities.filter(e => e.type === 'wall') as any[];
   if (walls.length > 0) {
-    drawWalls(ctx, walls, selection, viewport.zoom);
+    drawWalls(ctx, walls, selection, layers, viewport.zoom);
   }
 
   for (const ent of sortedEntities) {
@@ -114,7 +127,19 @@ export function render(state: RenderState) {
       ctx.shadowBlur = 10 / viewport.zoom;
     }
 
-    drawEntity(ctx, ent, entities, isSelected, unitSystem, viewport.zoom);
+    const layer = layers.find(l => l.id === ent.layerId) || layers[0];
+    const color = layer?.color || '#c8cad4';
+
+    drawEntity(
+      ctx,
+      ent,
+      entities,
+      isSelected,
+      color,
+      unitSystem,
+      viewport.zoom,
+      layers,
+    );
 
     if (isHovered && !isSelected) {
       ctx.restore();
@@ -125,7 +150,18 @@ export function render(state: RenderState) {
   if (previewEntity) {
     ctx.save();
     ctx.globalAlpha = 0.6;
-    drawEntity(ctx, previewEntity, entities, false, unitSystem, viewport.zoom);
+    const layer = layers.find(l => l.id === previewEntity.layerId) || layers[0];
+    const color = layer?.color || '#c8cad4';
+    drawEntity(
+      ctx,
+      previewEntity,
+      entities,
+      false,
+      color,
+      unitSystem,
+      viewport.zoom,
+      layers,
+    );
     ctx.restore();
   }
 
@@ -181,46 +217,54 @@ export function render(state: RenderState) {
   ctx.restore();
 }
 
-function drawEntity(
+export function drawEntity(
   ctx: CanvasRenderingContext2D,
   ent: Entity,
   entities: Entity[],
   isSelected: boolean,
+  color: string,
   unitSystem: UnitSystem,
   zoom: number,
+  layers: Layer[],
 ) {
   switch (ent.type) {
     case 'wall':
       // Walls are drawn collectively in the main render loop using drawWalls.
       // But if drawEntity is called specifically for a preview wall:
-      drawWalls(ctx, [ent as any], new Set(isSelected ? [ent.id] : []), zoom);
+      drawWalls(
+        ctx,
+        [ent as any],
+        new Set(isSelected ? [ent.id] : []),
+        layers,
+        zoom,
+      );
       break;
     case 'door':
-      drawDoor(ctx, ent, entities, isSelected, zoom);
+      drawDoor(ctx, ent, entities, isSelected, color, zoom);
       break;
     case 'window':
-      drawWindow(ctx, ent, entities, isSelected, zoom);
+      drawWindow(ctx, ent, entities, isSelected, color, zoom);
       break;
     case 'stairs':
-      drawStairs(ctx, ent, isSelected, zoom);
+      drawStairs(ctx, ent, isSelected, color, zoom);
       break;
     case 'line':
-      drawLine(ctx, ent, isSelected, zoom);
+      drawLine(ctx, ent, isSelected, color, zoom);
       break;
     case 'rect':
-      drawRect(ctx, ent, isSelected, zoom);
+      drawRect(ctx, ent, isSelected, color, zoom);
       break;
     case 'circle':
-      drawCircle(ctx, ent, isSelected, zoom);
+      drawCircle(ctx, ent, isSelected, color, zoom);
       break;
     case 'arc':
-      drawArc(ctx, ent, isSelected, zoom);
+      drawArc(ctx, ent, isSelected, color, zoom);
       break;
     case 'dimension':
-      drawDimension(ctx, ent, isSelected, unitSystem, zoom);
+      drawDimension(ctx, ent, isSelected, color, unitSystem, zoom);
       break;
     case 'text':
-      drawText(ctx, ent, isSelected, zoom);
+      drawText(ctx, ent, isSelected, color, zoom);
       break;
   }
 }

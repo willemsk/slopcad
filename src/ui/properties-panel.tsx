@@ -261,6 +261,26 @@ export function PropertiesPanel() {
             </div>
 
             <div className="property-item">
+              <span className="property-label">Layer</span>
+              <div className="property-value">
+                <select
+                  value={activeEntity.layerId || project.layers[0].id}
+                  onChange={e => {
+                    commitProperty(ent => {
+                      ent.layerId = (e.target as HTMLSelectElement).value;
+                    });
+                  }}
+                >
+                  {project.layers.map(l => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="property-item">
               <span className="property-label">Lock Geometry</span>
               <div className="property-value">
                 <input

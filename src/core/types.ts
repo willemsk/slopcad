@@ -15,10 +15,19 @@ export type EntityType =
   | 'dimension'
   | 'text';
 
+export interface Layer {
+  id: string;
+  name: string;
+  color: string; // hex string
+  visible: boolean;
+  locked: boolean;
+}
+
 export interface BaseEntity {
   id: string;
   type: EntityType;
-  color?: string;
+  layerId?: string; // Optional for backward compatibility with old saves
+  color?: string; // Entity-specific override, defaults to Layer color if empty
   lineWidth?: number;
   locked?: boolean;
 }
@@ -151,6 +160,8 @@ export interface Project {
   modified: number;
   unitSystem: UnitSystem;
   scale: number; // e.g. 100 for 1:100
+  layers: Layer[];
+  activeLayerId: string;
   pages: Page[];
   activePageIndex: number;
 }
