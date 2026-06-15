@@ -125,6 +125,8 @@ export function Menubar() {
           <button
             className={`file-menu-btn ${isFileMenuOpen ? 'active' : ''}`}
             onClick={() => setIsFileMenuOpen(!isFileMenuOpen)}
+            aria-expanded={isFileMenuOpen}
+            aria-haspopup="true"
           >
             File
           </button>

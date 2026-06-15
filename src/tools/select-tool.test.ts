@@ -13,8 +13,10 @@ describe('SelectTool', () => {
   beforeEach(() => {
     tool = new SelectTool();
     projectSignal.value = {
-      id: 'test-project',
       name: 'Test Project',
+      created: 0,
+      modified: 0,
+      activeLayerId: 'layer1',
       unitSystem: 'metric',
       scale: 100,
       activePageIndex: 0,
@@ -35,7 +37,15 @@ describe('SelectTool', () => {
           constraints: [],
         },
       ],
-      layers: [{id: 'layer1', name: 'Default', visible: true, locked: false}],
+      layers: [
+        {
+          id: 'layer1',
+          name: 'Default',
+          visible: true,
+          locked: false,
+          color: '#ffffff',
+        },
+      ],
     };
     selectionSignal.value.clear();
   });
