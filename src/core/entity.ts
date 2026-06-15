@@ -192,7 +192,14 @@ export function createText(
 
 // Clone an entity
 export function cloneEntity(entity: Entity): Entity {
-  return JSON.parse(JSON.stringify(entity));
+  const clone = {...entity} as any;
+  if (clone.start) clone.start = {...clone.start};
+  if (clone.end) clone.end = {...clone.end};
+  if (clone.p1) clone.p1 = {...clone.p1};
+  if (clone.p2) clone.p2 = {...clone.p2};
+  if (clone.center) clone.center = {...clone.center};
+  if (clone.position) clone.position = {...clone.position};
+  return clone as Entity;
 }
 
 /**
