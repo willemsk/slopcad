@@ -2,7 +2,8 @@ import {h} from 'preact';
 import {useState} from 'preact/hooks';
 import {Entity} from '../../core/types';
 import {ChevronDownIcon, ChevronRightIcon} from '../icons';
-import {DoorWindowParams} from './DoorWindowParams';
+import {DoorParams} from './DoorParams';
+import {WindowParams} from './WindowParams';
 import {StairsParams} from './StairsParams';
 import {DimensionParams} from './DimensionParams';
 import {TextParams} from './TextParams';
@@ -50,8 +51,20 @@ export function ParamProperties({
 
       {paramOpen && (
         <div className="properties-category-content">
-          {(activeEntity.type === 'door' || activeEntity.type === 'window') && (
-            <DoorWindowParams
+          {activeEntity.type === 'door' && (
+            <DoorParams
+              activeEntity={activeEntity}
+              unitSystem={unitSystem}
+              setLocalVals={setLocalVals}
+              getVal={getVal}
+              handleInputChange={handleInputChange}
+              commitProperty={commitProperty}
+              handleKeyDownCommit={handleKeyDownCommit}
+            />
+          )}
+
+          {activeEntity.type === 'window' && (
+            <WindowParams
               activeEntity={activeEntity}
               unitSystem={unitSystem}
               setLocalVals={setLocalVals}

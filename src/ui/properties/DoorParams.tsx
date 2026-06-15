@@ -5,7 +5,7 @@ import {dist} from '../../core/geometry';
 import {formatLength, parseLength} from '../../core/units';
 import {activePageSignal} from '../../state/app-state';
 
-interface DoorWindowParamsProps {
+interface DoorParamsProps {
   activeEntity: Entity;
   unitSystem: 'metric' | 'imperial';
   setLocalVals: (vals: Record<string, string>) => void;
@@ -15,7 +15,7 @@ interface DoorWindowParamsProps {
   handleKeyDownCommit: (e: KeyboardEvent) => void;
 }
 
-export function DoorWindowParams({
+export function DoorParams({
   activeEntity,
   unitSystem,
   setLocalVals,
@@ -23,9 +23,11 @@ export function DoorWindowParams({
   handleInputChange,
   commitProperty,
   handleKeyDownCommit,
-}: DoorWindowParamsProps) {
+}: DoorParamsProps) {
   const [distFromStart, setDistFromStart] = useState(true);
   const page = activePageSignal.value;
+
+  if (activeEntity.type !== 'door') return null;
 
   return (
     <div>
@@ -94,76 +96,74 @@ export function DoorWindowParams({
         </div>
       </div>
 
-      {activeEntity.type === 'door' && (
-        <div>
-          <div className="property-item">
-            <span className="property-label">Flip Left/Right</span>
-            <div className="property-value">
-              <input
-                type="checkbox"
-                checked={!!(activeEntity as DoorEntity).flipX}
-                onChange={e => {
-                  commitProperty(ent => {
-                    (ent as DoorEntity).flipX = (
-                      e.target as HTMLInputElement
-                    ).checked;
-                  });
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="property-item">
-            <span className="property-label">Flip In/Out</span>
-            <div className="property-value">
-              <input
-                type="checkbox"
-                checked={!!(activeEntity as DoorEntity).flipY}
-                onChange={e => {
-                  commitProperty(ent => {
-                    (ent as DoorEntity).flipY = (
-                      e.target as HTMLInputElement
-                    ).checked;
-                  });
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="property-item">
-            <span className="property-label">Opening Angle</span>
-            <div className="property-value">
-              <input
-                type="number"
-                min="0"
-                max="180"
-                value={getVal(
-                  'openingAngle',
-                  ((activeEntity as DoorEntity).openingAngle ?? 90).toString(),
-                )}
-                onInput={e =>
-                  handleInputChange(
-                    'openingAngle',
-                    (e.target as HTMLInputElement).value,
-                  )
-                }
-                onFocus={e => (e.target as HTMLInputElement).select()}
-                onKeyDown={handleKeyDownCommit}
-                onBlur={e => {
-                  const val = parseFloat((e.target as HTMLInputElement).value);
-                  if (!isNaN(val)) {
-                    commitProperty(ent => {
-                      (ent as DoorEntity).openingAngle = val;
-                    });
-                  } else {
-                    setLocalVals({});
-                  }
-                }}
-              />
-            </div>
+      <div>
+        <div className="property-item">
+          <span className="property-label">Flip Left/Right</span>
+          <div className="property-value">
+            <input
+              type="checkbox"
+              checked={!!(activeEntity as DoorEntity).flipX}
+              onChange={e => {
+                commitProperty(ent => {
+                  (ent as DoorEntity).flipX = (
+                    e.target as HTMLInputElement
+                  ).checked;
+                });
+              }}
+            />
           </div>
         </div>
-      )}
+
+        <div className="property-item">
+          <span className="property-label">Flip In/Out</span>
+          <div className="property-value">
+            <input
+              type="checkbox"
+              checked={!!(activeEntity as DoorEntity).flipY}
+              onChange={e => {
+                commitProperty(ent => {
+                  (ent as DoorEntity).flipY = (
+                    e.target as HTMLInputElement
+                  ).checked;
+                });
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="property-item">
+          <span className="property-label">Opening Angle</span>
+          <div className="property-value">
+            <input
+              type="number"
+              min="0"
+              max="180"
+              value={getVal(
+                'openingAngle',
+                ((activeEntity as DoorEntity).openingAngle ?? 90).toString(),
+              )}
+              onInput={e =>
+                handleInputChange(
+                  'openingAngle',
+                  (e.target as HTMLInputElement).value,
+                )
+              }
+              onFocus={e => (e.target as HTMLInputElement).select()}
+              onKeyDown={handleKeyDownCommit}
+              onBlur={e => {
+                const val = parseFloat((e.target as HTMLInputElement).value);
+                if (!isNaN(val)) {
+                  commitProperty(ent => {
+                    (ent as DoorEntity).openingAngle = val;
+                  });
+                } else {
+                  setLocalVals({});
+                }
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
