@@ -13,8 +13,10 @@ describe('DoorTool', () => {
   beforeEach(() => {
     tool = new DoorTool();
     projectSignal.value = {
-      id: 'test-project',
       name: 'Test Project',
+      created: 0,
+      modified: 0,
+      activeLayerId: 'layer1',
       unitSystem: 'metric',
       scale: 100,
       activePageIndex: 0,
@@ -35,7 +37,15 @@ describe('DoorTool', () => {
           constraints: [],
         },
       ],
-      layers: [{id: 'layer1', name: 'Default', visible: true, locked: false}],
+      layers: [
+        {
+          id: 'layer1',
+          name: 'Default',
+          visible: true,
+          locked: false,
+          color: '#ffffff',
+        },
+      ],
     };
     // Don't set activePageSignal.value if it's computed, it updates automatically when projectSignal changes
     previewEntitySignal.value = null;
@@ -50,7 +60,6 @@ describe('DoorTool', () => {
       type: 'wall-align',
       point: {x: 5, y: 0},
       entityId: 'wall1',
-      distance: 0,
       extra: {t: 0.5},
     });
 
@@ -66,7 +75,6 @@ describe('DoorTool', () => {
       type: 'wall-align',
       point: {x: 5, y: 0},
       entityId: 'wall1',
-      distance: 0,
       extra: {t: 0.5},
     });
 

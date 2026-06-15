@@ -13,8 +13,10 @@ describe('WindowTool', () => {
   beforeEach(() => {
     tool = new WindowTool();
     projectSignal.value = {
-      id: 'test-project',
       name: 'Test Project',
+      created: 0,
+      modified: 0,
+      activeLayerId: 'layer1',
       unitSystem: 'metric',
       scale: 100,
       activePageIndex: 0,
@@ -35,7 +37,15 @@ describe('WindowTool', () => {
           constraints: [],
         },
       ],
-      layers: [{id: 'layer1', name: 'Default', visible: true, locked: false}],
+      layers: [
+        {
+          id: 'layer1',
+          name: 'Default',
+          visible: true,
+          locked: false,
+          color: '#ffffff',
+        },
+      ],
     };
     previewEntitySignal.value = null;
   });
@@ -49,7 +59,6 @@ describe('WindowTool', () => {
       type: 'wall-align',
       point: {x: 5, y: 0},
       entityId: 'wall1',
-      distance: 0,
       extra: {t: 0.5},
     });
 
@@ -65,7 +74,6 @@ describe('WindowTool', () => {
       type: 'wall-align',
       point: {x: 5, y: 0},
       entityId: 'wall1',
-      distance: 0,
       extra: {t: 0.5},
     });
 

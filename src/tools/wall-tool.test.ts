@@ -17,8 +17,10 @@ describe('WallTool', () => {
     tool = new WallTool();
     // Reset state
     projectSignal.value = {
-      id: 'test-project',
       name: 'Test Project',
+      created: 0,
+      modified: 0,
+      activeLayerId: 'layer1',
       unitSystem: 'metric',
       scale: 100,
       activePageIndex: 0,
@@ -30,7 +32,15 @@ describe('WallTool', () => {
           constraints: [],
         },
       ],
-      layers: [{id: 'layer1', name: 'Default', visible: true, locked: false}],
+      layers: [
+        {
+          id: 'layer1',
+          name: 'Default',
+          visible: true,
+          locked: false,
+          color: '#ffffff',
+        },
+      ],
     };
     previewEntitySignal.value = null;
     selectionSignal.value.clear();

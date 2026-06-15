@@ -73,6 +73,8 @@ export function StatusBar() {
           className={`status-btn ${gridEnabledSignal.value ? 'active' : ''}`}
           onClick={toggleGrid}
           title="Grid Display (G / F7)"
+          aria-label="Toggle Grid Display"
+          aria-pressed={gridEnabledSignal.value}
         >
           <GridIcon />
         </button>
@@ -80,6 +82,8 @@ export function StatusBar() {
           className={`status-btn ${snapEnabledSignal.value ? 'active' : ''}`}
           onClick={toggleSnap}
           title="Object Snap (S / F3)"
+          aria-label="Toggle Object Snap"
+          aria-pressed={snapEnabledSignal.value}
         >
           <SnapIcon />
         </button>
@@ -87,6 +91,8 @@ export function StatusBar() {
           className={`status-btn ${showConstraintsSignal.value ? 'active' : ''}`}
           onClick={toggleConstraints}
           title="Show Constraints"
+          aria-label="Toggle Show Constraints"
+          aria-pressed={showConstraintsSignal.value}
         >
           <ConstraintIcon />
         </button>

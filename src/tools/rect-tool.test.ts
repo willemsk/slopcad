@@ -13,8 +13,10 @@ describe('RectTool', () => {
   beforeEach(() => {
     tool = new RectTool();
     projectSignal.value = {
-      id: 'test-project',
       name: 'Test Project',
+      created: 0,
+      modified: 0,
+      activeLayerId: 'layer1',
       unitSystem: 'metric',
       scale: 100,
       activePageIndex: 0,
@@ -26,7 +28,15 @@ describe('RectTool', () => {
           constraints: [],
         },
       ],
-      layers: [{id: 'layer1', name: 'Default', visible: true, locked: false}],
+      layers: [
+        {
+          id: 'layer1',
+          name: 'Default',
+          visible: true,
+          locked: false,
+          color: '#ffffff',
+        },
+      ],
     };
     previewEntitySignal.value = null;
   });
