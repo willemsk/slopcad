@@ -110,9 +110,11 @@ export function CanvasComponent() {
       currentMousePosScreen,
     );
 
+    const layerMap = new Map(project.layers.map(l => [l.id, l]));
+    const defaultLayer = project.layers[0];
     const visibleEntities = activePage.entities.filter(ent => {
       const layer =
-        project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+        (ent.layerId ? layerMap.get(ent.layerId) : undefined) || defaultLayer;
       return layer?.visible ?? true;
     });
 
@@ -221,9 +223,11 @@ export function CanvasComponent() {
     if (snapEnabledSignal.value) {
       const project = projectSignal.value;
       const activePage = project.pages[project.activePageIndex];
+      const layerMap = new Map(project.layers.map(l => [l.id, l]));
+      const defaultLayer = project.layers[0];
       const visibleEntities = activePage.entities.filter(ent => {
         const layer =
-          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+          (ent.layerId ? layerMap.get(ent.layerId) : undefined) || defaultLayer;
         return layer?.visible ?? true;
       });
       const snapRadiusWorld = 12 / viewportRef.current.zoom;
@@ -275,9 +279,11 @@ export function CanvasComponent() {
       const activePage = project.pages[project.activePageIndex];
       const hoverRadiusWorld = 8 / viewportRef.current.zoom;
 
+      const layerMap = new Map(project.layers.map(l => [l.id, l]));
+      const defaultLayer = project.layers[0];
       const visibleEntities = activePage.entities.filter(ent => {
         const layer =
-          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+          (ent.layerId ? layerMap.get(ent.layerId) : undefined) || defaultLayer;
         return layer?.visible ?? true;
       });
 
@@ -356,9 +362,11 @@ export function CanvasComponent() {
     if (snapEnabledSignal.value) {
       const project = projectSignal.value;
       const activePage = project.pages[project.activePageIndex];
+      const layerMap = new Map(project.layers.map(l => [l.id, l]));
+      const defaultLayer = project.layers[0];
       const visibleEntities = activePage.entities.filter(ent => {
         const layer =
-          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+          (ent.layerId ? layerMap.get(ent.layerId) : undefined) || defaultLayer;
         return layer?.visible ?? true;
       });
       const snapRadiusWorld = 12 / viewportRef.current.zoom;
@@ -406,9 +414,11 @@ export function CanvasComponent() {
     if (snapEnabledSignal.value) {
       const project = projectSignal.value;
       const activePage = project.pages[project.activePageIndex];
+      const layerMap = new Map(project.layers.map(l => [l.id, l]));
+      const defaultLayer = project.layers[0];
       const visibleEntities = activePage.entities.filter(ent => {
         const layer =
-          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+          (ent.layerId ? layerMap.get(ent.layerId) : undefined) || defaultLayer;
         return layer?.visible ?? true;
       });
       const snapRadiusWorld = 12 / viewportRef.current.zoom;
