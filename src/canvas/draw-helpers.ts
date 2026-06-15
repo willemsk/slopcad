@@ -120,44 +120,34 @@ export function drawWalls(
           if (isStart) skipStartCap = true;
           else skipEndCap = true;
 
-          const pt2 = dist(w2.start, pt) < 1e-4 ? w2.start : w2.end;
-          const w2Other = dist(w2.start, pt) < 1e-4 ? w2.end : w2.start;
+          const isW2Start = dist(w2.start, pt) < 1e-4;
 
-          const u2Out = normalize(sub(w2Other, pt2));
-          const n2Out = {x: -u2Out.y, y: u2Out.x};
+          const u2 = normalize(sub(w2.end, w2.start));
+          const n2 = {x: -u2.y, y: u2.x};
           const halfThick2 = w2.thickness / 2;
+          const w2_L_start = add(w2.start, scale(n2, halfThick2));
+          const w2_R_start = sub(w2.start, scale(n2, halfThick2));
 
-          const L2 = add(pt2, scale(n2Out, halfThick2));
-          const R2 = sub(pt2, scale(n2Out, halfThick2));
+          const p1L = isStart ? pStartL : pEndL;
+          const p1R = isStart ? pStartR : pEndR;
 
-          const leftOfOut = isStart ? ptR : ptL;
-          const rightOfOut = isStart ? ptL : ptR;
+          let newL: Vec2 | null;
+          let newR: Vec2 | null;
 
-          const crossProd = uOut.x * u2Out.y - uOut.y * u2Out.x;
-
-          let newLeftOfOut: Vec2;
-          let newRightOfOut: Vec2;
-
-          if (crossProd > 0) {
-            newLeftOfOut =
-              infiniteLineIntersection(leftOfOut, uOut, L2, u2Out) || leftOfOut;
-            newRightOfOut =
-              infiniteLineIntersection(rightOfOut, uOut, R2, u2Out) ||
-              rightOfOut;
+          if (isStart !== isW2Start) {
+            newL = infiniteLineIntersection(p1L, u, w2_L_start, u2);
+            newR = infiniteLineIntersection(p1R, u, w2_R_start, u2);
           } else {
-            newLeftOfOut =
-              infiniteLineIntersection(leftOfOut, uOut, R2, u2Out) || leftOfOut;
-            newRightOfOut =
-              infiniteLineIntersection(rightOfOut, uOut, L2, u2Out) ||
-              rightOfOut;
+            newL = infiniteLineIntersection(p1L, u, w2_R_start, u2);
+            newR = infiniteLineIntersection(p1R, u, w2_L_start, u2);
           }
 
           if (isStart) {
-            pStartR = newLeftOfOut;
-            pStartL = newRightOfOut;
+            pStartL = newL || pStartL;
+            pStartR = newR || pStartR;
           } else {
-            pEndL = newLeftOfOut;
-            pEndR = newRightOfOut;
+            pEndL = newL || pEndL;
+            pEndR = newR || pEndR;
           }
         } else {
           // T-Junction (wall ends on w2)
