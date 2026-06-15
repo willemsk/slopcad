@@ -32,6 +32,7 @@ import {
   mouseCoordsSignal,
   pushCommandMessage,
   isLayerModalOpenSignal,
+  visibleEntitiesSignal,
 } from '../state/app-state';
 
 export function CanvasComponent() {
@@ -110,11 +111,7 @@ export function CanvasComponent() {
       currentMousePosScreen,
     );
 
-    const visibleEntities = activePage.entities.filter(ent => {
-      const layer =
-        project.layers.find(l => l.id === ent.layerId) || project.layers[0];
-      return layer?.visible ?? true;
-    });
+    const visibleEntities = visibleEntitiesSignal.value;
 
     let snapRes: SnapResult | null = null;
     if (snapEnabledSignal.value && activeToolSignal.value) {
@@ -219,13 +216,7 @@ export function CanvasComponent() {
     let targetPos = worldPos;
     let activeSnap: SnapResult | null = null;
     if (snapEnabledSignal.value) {
-      const project = projectSignal.value;
-      const activePage = project.pages[project.activePageIndex];
-      const visibleEntities = activePage.entities.filter(ent => {
-        const layer =
-          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
-        return layer?.visible ?? true;
-      });
+      const visibleEntities = visibleEntitiesSignal.value;
       const snapRadiusWorld = 12 / viewportRef.current.zoom;
       const snap = getSnapPoint(
         worldPos,
@@ -271,15 +262,9 @@ export function CanvasComponent() {
 
     // Calculate hover entity for Select tool
     if (activeToolSignal.value && activeToolSignal.value.name === 'select') {
-      const project = projectSignal.value;
-      const activePage = project.pages[project.activePageIndex];
       const hoverRadiusWorld = 8 / viewportRef.current.zoom;
 
-      const visibleEntities = activePage.entities.filter(ent => {
-        const layer =
-          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
-        return layer?.visible ?? true;
-      });
+      const visibleEntities = visibleEntitiesSignal.value;
 
       let hoverId: string | null = null;
       let minHoverDist = hoverRadiusWorld;
@@ -354,13 +339,7 @@ export function CanvasComponent() {
     let targetPos = worldPos;
     let activeSnap: SnapResult | null = null;
     if (snapEnabledSignal.value) {
-      const project = projectSignal.value;
-      const activePage = project.pages[project.activePageIndex];
-      const visibleEntities = activePage.entities.filter(ent => {
-        const layer =
-          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
-        return layer?.visible ?? true;
-      });
+      const visibleEntities = visibleEntitiesSignal.value;
       const snapRadiusWorld = 12 / viewportRef.current.zoom;
       const snap = getSnapPoint(
         worldPos,
@@ -404,13 +383,7 @@ export function CanvasComponent() {
     let targetPos = worldPos;
     let activeSnap: SnapResult | null = null;
     if (snapEnabledSignal.value) {
-      const project = projectSignal.value;
-      const activePage = project.pages[project.activePageIndex];
-      const visibleEntities = activePage.entities.filter(ent => {
-        const layer =
-          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
-        return layer?.visible ?? true;
-      });
+      const visibleEntities = visibleEntitiesSignal.value;
       const snapRadiusWorld = 12 / viewportRef.current.zoom;
       const snap = getSnapPoint(
         worldPos,

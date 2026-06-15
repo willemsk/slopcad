@@ -145,6 +145,28 @@ export const activePageSignal = computed<Page>(() => {
   return proj.pages[proj.activePageIndex] || proj.pages[0];
 });
 
+// Computes the visible entities on the active page
+export const visibleEntitiesSignal = computed<Entity[]>(() => {
+  const page = activePageSignal.value;
+  const project = projectSignal.value;
+
+  // Create a fast map for layer visibility lookups
+  const layerVisibilityMap = new Map<string, boolean>();
+  for (const layer of project.layers) {
+    layerVisibilityMap.set(layer.id, layer.visible);
+  }
+
+  // Fallback to first layer if entity layer not found
+  const fallbackVisibility = project.layers[0]?.visible ?? true;
+
+  return page.entities.filter(ent => {
+    const isVisible = ent.layerId
+      ? layerVisibilityMap.get(ent.layerId)
+      : undefined;
+    return isVisible !== undefined ? isVisible : fallbackVisibility;
+  });
+});
+
 // Snapshots the current page state to the history stack
 export function snapshotState() {
   const page = activePageSignal.value;
