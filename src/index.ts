@@ -30,4 +30,3 @@ export function doSomeStuff(
   console.log(longString, trailing, why, iWish, vizzini, re);
   return;
 }
-// TODO: more examples
