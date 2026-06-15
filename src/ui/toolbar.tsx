@@ -24,6 +24,7 @@ import {
   ZoomInIcon,
   ZoomOutIcon,
 } from './icons';
+import {FileMenu} from './file-menu';
 import {
   addHorizontalConstraintAction,
   addVerticalConstraintAction,
@@ -96,6 +97,7 @@ export function Toolbar() {
     <div className="ribbon-container">
       {/* Ribbon Tabs */}
       <div className="ribbon-tabs">
+        <FileMenu />
         <button
           className={`ribbon-tab ${activeTab === 'home' ? 'active' : ''}`}
           onClick={() => setActiveTab('home')}
