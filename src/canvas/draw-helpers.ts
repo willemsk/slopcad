@@ -164,13 +164,13 @@ export function drawWalls(
           const iR_L2 = infiniteLineIntersection(ptR, uOut, L2, u2);
           const iR_R2 = infiniteLineIntersection(ptR, uOut, R2, u2);
 
-          const tL_L2 = iL_L2 ? dot(sub(iL_L2, ptL), uOut) : -Infinity;
-          const tL_R2 = iL_R2 ? dot(sub(iL_R2, ptL), uOut) : -Infinity;
-          const iL = tL_L2 > tL_R2 ? iL_L2 : iL_R2;
+          const tL_L2 = iL_L2 ? dot(sub(iL_L2, ptL), uOut) : Infinity;
+          const tL_R2 = iL_R2 ? dot(sub(iL_R2, ptL), uOut) : Infinity;
+          const iL = tL_L2 < tL_R2 ? iL_L2 : iL_R2;
 
-          const tR_L2 = iR_L2 ? dot(sub(iR_L2, ptR), uOut) : -Infinity;
-          const tR_R2 = iR_R2 ? dot(sub(iR_R2, ptR), uOut) : -Infinity;
-          const iR = tR_L2 > tR_R2 ? iR_L2 : iR_R2;
+          const tR_L2 = iR_L2 ? dot(sub(iR_L2, ptR), uOut) : Infinity;
+          const tR_R2 = iR_R2 ? dot(sub(iR_R2, ptR), uOut) : Infinity;
+          const iR = tR_L2 < tR_R2 ? iR_L2 : iR_R2;
 
           if (isStart) {
             pStartL = iL || ptL;
@@ -218,31 +218,43 @@ export function drawWalls(
         distToSegment(tData.wall.start, w.start, w.end) < 1e-4
           ? tData.wall.start
           : tData.wall.end;
-      // The corners of the T-wall intersecting us are:
-      const p1 =
-        dist(pt, tData.wall.start) < 1e-4 ? tData.pStartL : tData.pEndL;
-      const p2 =
-        dist(pt, tData.wall.start) < 1e-4 ? tData.pStartR : tData.pEndR;
 
-      // Check which side of w they fall on
-      const t1L = projectPointT(p1, data.pStartL, data.pEndL);
-      const t2L = projectPointT(p2, data.pStartL, data.pEndL);
-      if (
-        t1L >= -0.01 &&
-        t1L <= 1.01 &&
-        distToSegment(p1, data.pStartL, data.pEndL) < 1e-4
-      ) {
-        data.leftGaps.push([Math.min(t1L, t2L), Math.max(t1L, t2L)]);
-      }
+      const isCornerStart =
+        dist(w.start, tData.wall.start) < 1e-4 ||
+        dist(w.start, tData.wall.end) < 1e-4;
+      const isCornerEnd =
+        dist(w.end, tData.wall.start) < 1e-4 ||
+        dist(w.end, tData.wall.end) < 1e-4;
 
-      const t1R = projectPointT(p1, data.pStartR, data.pEndR);
-      const t2R = projectPointT(p2, data.pStartR, data.pEndR);
-      if (
-        t1R >= -0.01 &&
-        t1R <= 1.01 &&
-        distToSegment(p1, data.pStartR, data.pEndR) < 1e-4
-      ) {
-        data.rightGaps.push([Math.min(t1R, t2R), Math.max(t1R, t2R)]);
+      if (isCornerStart || isCornerEnd) continue;
+
+      const isStart = dist(pt, tData.wall.start) < 1e-4;
+
+      // The exact intersection points with the faces of w were computed in Phase 1
+      const p1 = isStart ? tData.pStartL : tData.pEndL;
+      const p2 = isStart ? tData.pStartR : tData.pEndR;
+
+      // Project these points onto w's center line to find the interval t1 to t2
+      const t1 = projectPointT(p1, w.start, w.end);
+      const t2 = projectPointT(p2, w.start, w.end);
+
+      const gapInterval: [number, number] = [
+        Math.min(t1, t2),
+        Math.max(t1, t2),
+      ];
+
+      // Check which side of w the incoming wall is on
+      const inU = normalize(sub(tData.wall.end, tData.wall.start));
+      const uOut = isStart ? scale(inU, -1) : inU;
+
+      const mainU = normalize(sub(w.end, w.start));
+      const mainN = {x: -mainU.y, y: mainU.x};
+
+      // If uOut points towards the normal, it's on the left side
+      if (dot(uOut, mainN) > 0) {
+        data.leftGaps.push(gapInterval);
+      } else {
+        data.rightGaps.push(gapInterval);
       }
     }
 
