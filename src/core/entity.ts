@@ -11,6 +11,7 @@ import {
   DimensionEntity,
   TextEntity,
   Vec2,
+  Layer,
 } from './types';
 
 // Helper to generate a simple unique ID
@@ -192,4 +193,21 @@ export function createText(
 // Clone an entity
 export function cloneEntity(entity: Entity): Entity {
   return JSON.parse(JSON.stringify(entity));
+}
+
+/**
+ * Filters entities to return only those that belong to a visible layer.
+ */
+export function getVisibleEntities(
+  entities: Entity[],
+  layers: Layer[],
+): Entity[] {
+  const layerVisibilityMap = new Map(layers.map(l => [l.id, l.visible]));
+  const defaultVisibility = layers[0]?.visible ?? true;
+  return entities.filter(ent => {
+    if (ent.layerId && layerVisibilityMap.has(ent.layerId)) {
+      return layerVisibilityMap.get(ent.layerId);
+    }
+    return defaultVisibility;
+  });
 }
