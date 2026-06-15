@@ -1,20 +1,16 @@
 import {Entity, SnapResult, UnitSystem, Constraint, Layer} from '../core/types';
 import {Viewport} from './viewport';
 import {
-  drawWalls,
-  drawDoor,
-  drawWindow,
-  drawStairs,
-  drawLine,
-  drawRect,
-  drawCircle,
-  drawArc,
-  drawDimension,
-  drawText,
-  drawSelectionHandles,
-  drawSnapIndicator,
-  drawConstraint,
-} from './draw-helpers';
+  clearCanvas,
+  drawGrid,
+  drawOverlayFloor,
+  drawAllEntities,
+  drawPreviewEntity,
+  drawAllConstraints,
+  drawAllSelectionHandles,
+  drawUCS,
+} from './render-helpers';
+import {drawSnapIndicator} from './draw-helpers';
 
 export interface RenderState {
   ctx: CanvasRenderingContext2D;
@@ -56,8 +52,7 @@ export function render(state: RenderState) {
   } = state;
 
   // 1. Clear canvas
-  ctx.fillStyle = '#212830'; // AutoCAD slate dark blue-gray background
-  ctx.fillRect(0, 0, width, height);
+  clearCanvas(ctx, width, height);
 
   // 2. Save state and apply camera viewport transform
   ctx.save();
@@ -71,114 +66,46 @@ export function render(state: RenderState) {
 
   // 3b. Draw Ghost Overlay Floor
   if (overlayEntities && overlayEntities.length > 0) {
-    ctx.save();
-    ctx.globalAlpha = 0.15; // very faint transparency
-    for (const ent of overlayEntities) {
-      const layer = layers.find(l => l.id === ent.layerId) || layers[0];
-      const color = layer?.color || '#c8cad4';
-      drawEntity(
-        ctx,
-        ent,
-        overlayEntities,
-        false,
-        color,
-        unitSystem,
-        viewport.zoom,
-        layers,
-      );
-    }
-    ctx.restore();
+    drawOverlayFloor(ctx, overlayEntities, layers, unitSystem, viewport.zoom);
   }
 
   // 4. Draw Entities
-  // Draw order: Walls -> Lines/Rects/Circles/Arcs -> Doors/Windows -> Stairs -> Dimensions -> Text
-  const typeOrder = [
-    'line',
-    'rect',
-    'circle',
-    'arc',
-    'door',
-    'window',
-    'stairs',
-    'dimension',
-    'text',
-  ];
-
-  const sortedEntities = [...entities].sort((a, b) => {
-    return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
-  });
-
-  // Group and draw all walls together using the new cleaned-up routine
-  const walls = entities.filter(e => e.type === 'wall') as any[];
-  if (walls.length > 0) {
-    drawWalls(ctx, walls, selection, layers, viewport.zoom);
-  }
-
-  for (const ent of sortedEntities) {
-    if (ent.type === 'wall') continue; // walls drawn collectively above
-
-    const isSelected = selection.has(ent.id);
-    const isHovered = ent.id === hoveredEntityId;
-
-    // We pass a hover highlight if applicable
-    if (isHovered && !isSelected) {
-      ctx.save();
-      ctx.shadowColor = '#22d3ee';
-      ctx.shadowBlur = 10 / viewport.zoom;
-    }
-
-    const layer = layers.find(l => l.id === ent.layerId) || layers[0];
-    const color = layer?.color || '#c8cad4';
-
-    drawEntity(
-      ctx,
-      ent,
-      entities,
-      isSelected,
-      color,
-      unitSystem,
-      viewport.zoom,
-      layers,
-    );
-
-    if (isHovered && !isSelected) {
-      ctx.restore();
-    }
-  }
+  drawAllEntities(
+    ctx,
+    entities,
+    selection,
+    hoveredEntityId,
+    layers,
+    unitSystem,
+    viewport.zoom,
+  );
 
   // 5. Draw Active Tool Preview (Ghost/Helper)
   if (previewEntity) {
-    ctx.save();
-    ctx.globalAlpha = 0.6;
-    const layer = layers.find(l => l.id === previewEntity.layerId) || layers[0];
-    const color = layer?.color || '#c8cad4';
-    drawEntity(
+    drawPreviewEntity(
       ctx,
       previewEntity,
       entities,
-      false,
-      color,
+      layers,
       unitSystem,
       viewport.zoom,
-      layers,
     );
-    ctx.restore();
   }
 
   // 6. Draw Constraints (if visible)
   if (showConstraints) {
-    for (const c of constraints) {
-      const isSelected = c.entityIds.some(id => selection.has(id));
-      drawConstraint(ctx, c, entities, isSelected, unitSystem, viewport.zoom);
-    }
+    drawAllConstraints(
+      ctx,
+      constraints,
+      entities,
+      selection,
+      unitSystem,
+      viewport.zoom,
+    );
   }
 
   // 7. Draw Selection Handles on Top
-  for (const ent of entities) {
-    if (selection.has(ent.id)) {
-      drawSelectionHandles(ctx, ent, viewport.zoom, entities);
-    }
-  }
+  drawAllSelectionHandles(ctx, entities, selection, viewport.zoom);
 
   // 8. Draw Snap Indicator
   if (snapResult) {
@@ -189,110 +116,6 @@ export function render(state: RenderState) {
   ctx.restore();
 
   // 9. Draw Screen-Space UCS Indicator (Bottom-Left)
-  ctx.save();
-  ctx.translate(20, height - 20); // 20px padding from bottom-left
-  ctx.lineWidth = 1.5;
-
-  // X axis (red)
-  ctx.strokeStyle = '#f44747';
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(24, 0);
-  ctx.stroke();
-
-  // Y axis (green)
-  ctx.strokeStyle = '#6a9955';
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(0, -24); // Upwards in screen space is negative Y
-  ctx.stroke();
-
-  // Draw label X and Y
-  ctx.fillStyle = '#f44747';
-  ctx.font = 'bold 10px var(--font-mono)';
-  ctx.fillText('X', 28, 4);
-
-  ctx.fillStyle = '#6a9955';
-  ctx.fillText('Y', -4, -28);
-  ctx.restore();
+  drawUCS(ctx, height);
 }
-
-export function drawEntity(
-  ctx: CanvasRenderingContext2D,
-  ent: Entity,
-  entities: Entity[],
-  isSelected: boolean,
-  color: string,
-  unitSystem: UnitSystem,
-  zoom: number,
-  layers: Layer[],
-) {
-  switch (ent.type) {
-    case 'wall':
-      // Walls are drawn collectively in the main render loop using drawWalls.
-      // But if drawEntity is called specifically for a preview wall:
-      drawWalls(
-        ctx,
-        [ent as any],
-        new Set(isSelected ? [ent.id] : []),
-        layers,
-        zoom,
-      );
-      break;
-    case 'door':
-      drawDoor(ctx, ent, entities, isSelected, color, zoom);
-      break;
-    case 'window':
-      drawWindow(ctx, ent, entities, isSelected, color, zoom);
-      break;
-    case 'stairs':
-      drawStairs(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'line':
-      drawLine(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'rect':
-      drawRect(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'circle':
-      drawCircle(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'arc':
-      drawArc(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'dimension':
-      drawDimension(ctx, ent, isSelected, color, unitSystem, zoom);
-      break;
-    case 'text':
-      drawText(ctx, ent, isSelected, color, zoom);
-      break;
-  }
-}
-
-function drawGrid(
-  ctx: CanvasRenderingContext2D,
-  viewport: Viewport,
-  width: number,
-  height: number,
-  spacing: number,
-) {
-  const topLeft = viewport.screenToWorld({x: 0, y: 0});
-  const bottomRight = viewport.screenToWorld({x: width, y: height});
-
-  const startX = Math.floor(topLeft.x / spacing) * spacing;
-  const endX = Math.ceil(bottomRight.x / spacing) * spacing;
-  const startY = Math.floor(topLeft.y / spacing) * spacing;
-  const endY = Math.ceil(bottomRight.y / spacing) * spacing;
-
-  ctx.fillStyle = 'rgba(200, 202, 212, 0.08)'; // extremely subtle grid dots
-
-  const dotSize = 1.5 / viewport.zoom; // keep dot size constant on screen
-
-  for (let x = startX; x <= endX; x += spacing) {
-    for (let y = startY; y <= endY; y += spacing) {
-      ctx.beginPath();
-      ctx.arc(x, y, dotSize, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-}
+export {drawEntity} from './render-helpers';
