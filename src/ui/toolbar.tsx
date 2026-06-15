@@ -24,7 +24,7 @@ import {
   ZoomInIcon,
   ZoomOutIcon,
 } from './icons';
-import {FileMenu} from './file-menu';
+import {FilePanel} from './file-panel';
 import {
   addHorizontalConstraintAction,
   addVerticalConstraintAction,
@@ -66,7 +66,7 @@ const TOOL_PROMPTS: Record<string, string> = {
 
 export function Toolbar() {
   const [activeTab, setActiveTab] = useState<
-    'home' | 'annotate' | 'view' | 'constraints'
+    'file' | 'home' | 'annotate' | 'view' | 'constraints'
   >('home');
   const [isRibbonCollapsed, setIsRibbonCollapsed] = useState(false);
   const activeTool = activeToolSignal.value;
@@ -97,7 +97,12 @@ export function Toolbar() {
     <div className="ribbon-container">
       {/* Ribbon Tabs */}
       <div className="ribbon-tabs">
-        <FileMenu />
+        <button
+          className={`ribbon-tab ${activeTab === 'file' ? 'active' : ''}`}
+          onClick={() => setActiveTab('file')}
+        >
+          File
+        </button>
         <button
           className={`ribbon-tab ${activeTab === 'home' ? 'active' : ''}`}
           onClick={() => setActiveTab('home')}
@@ -137,6 +142,8 @@ export function Toolbar() {
       {/* Ribbon Panels */}
       {!isRibbonCollapsed && (
         <div className="ribbon-content">
+          {activeTab === 'file' && <FilePanel />}
+
           {activeTab === 'home' && (
             <>
               {/* Draw Panel */}

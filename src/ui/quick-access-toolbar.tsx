@@ -1,6 +1,6 @@
-import {h} from 'preact';
-import {useState, useRef, useEffect} from 'preact/hooks';
-import {projectSignal, selectionSignal} from '../state/app-state';
+import { h } from 'preact';
+import { useState, useRef, useEffect } from 'preact/hooks';
+import { projectSignal, selectionSignal } from '../state/app-state';
 import {
   NewIcon,
   OpenIcon,
@@ -21,7 +21,6 @@ import {
 } from './menu-actions';
 
 export function QuickAccessToolbar() {
-  const project = projectSignal.value;
   const hasSelection = selectionSignal.value.size > 0;
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
   const fileMenuRef = useRef<HTMLDivElement>(null);
@@ -42,63 +41,7 @@ export function QuickAccessToolbar() {
   }, [isFileMenuOpen]);
 
   return (
-    <div className="qat-group">
-      <div className="file-menu-container" ref={fileMenuRef}>
-        <button
-          className={`file-menu-btn ${isFileMenuOpen ? 'active' : ''}`}
-          onClick={() => setIsFileMenuOpen(!isFileMenuOpen)}
-          aria-expanded={isFileMenuOpen}
-          aria-haspopup="true"
-        >
-          File
-        </button>
-        {isFileMenuOpen && (
-          <div className="file-dropdown-menu">
-            <button
-              className="file-menu-item"
-              onClick={() => {
-                setIsFileMenuOpen(false);
-                handleNewProject();
-              }}
-            >
-              <NewIcon /> <span style={{marginLeft: '8px'}}>New Plan</span>{' '}
-              <span className="shortcut">Ctrl+N</span>
-            </button>
-            <button
-              className="file-menu-item"
-              onClick={() => {
-                setIsFileMenuOpen(false);
-                handleOpenProject();
-              }}
-            >
-              <OpenIcon /> <span style={{marginLeft: '8px'}}>Open...</span>{' '}
-              <span className="shortcut">Ctrl+O</span>
-            </button>
-            <button
-              className="file-menu-item"
-              onClick={() => {
-                setIsFileMenuOpen(false);
-                handleSaveProject();
-              }}
-            >
-              <SaveIcon /> <span style={{marginLeft: '8px'}}>Save</span>{' '}
-              <span className="shortcut">Ctrl+S</span>
-            </button>
-            <button
-              className="file-menu-item"
-              onClick={() => {
-                setIsFileMenuOpen(false);
-                handleExportSVG();
-              }}
-            >
-              <ExportIcon /> <span style={{marginLeft: '8px'}}>Export SVG</span>
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className="qat-separator" />
-
+    <>
       <button
         className="qat-btn"
         onClick={handleNewProject}
@@ -159,9 +102,6 @@ export function QuickAccessToolbar() {
       >
         <DeleteIcon />
       </button>
-
-      <div className="qat-separator" />
-      <div className="qat-title">{project.name || 'Untitled Plan'}</div>
-    </div>
+    </>
   );
 }
