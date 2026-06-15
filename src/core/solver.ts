@@ -1,4 +1,5 @@
 import {Entity, Constraint, PointRef, Vec2} from './types';
+import {cloneEntity} from './entity';
 import {
   dist,
   sub,
@@ -88,7 +89,7 @@ export function solveConstraints(
   maxIterations = 50,
 ): Entity[] {
   // Deep copy entities so we don't mutate state prematurely
-  const solvedEntities = JSON.parse(JSON.stringify(entities)) as Entity[];
+  const solvedEntities = entities.map(cloneEntity);
 
   // Keep track of locked points. Entity locked flag or pinnedRefs
   const isPointLocked = (ref: PointRef): boolean => {
