@@ -182,6 +182,7 @@ export function Menubar() {
           className="qat-btn"
           onClick={handleNewProject}
           title="New Plan (Ctrl+N)"
+          aria-label="New Plan"
         >
           <NewIcon />
         </button>
@@ -189,6 +190,7 @@ export function Menubar() {
           className="qat-btn"
           onClick={handleOpenProject}
           title="Open Plan... (Ctrl+O)"
+          aria-label="Open Plan"
         >
           <OpenIcon />
         </button>
@@ -196,6 +198,7 @@ export function Menubar() {
           className="qat-btn"
           onClick={handleSaveProject}
           title="Save Plan (Ctrl+S)"
+          aria-label="Save Plan"
         >
           <SaveIcon />
         </button>
@@ -203,6 +206,7 @@ export function Menubar() {
           className="qat-btn"
           onClick={handleExportSVG}
           title="Export current floor layout to SVG"
+          aria-label="Export SVG"
         >
           <ExportIcon />
         </button>
@@ -213,6 +217,7 @@ export function Menubar() {
           className="qat-btn"
           onClick={handleUndo}
           title="Undo last change (Ctrl+Z)"
+          aria-label="Undo"
         >
           <UndoIcon />
         </button>
@@ -220,6 +225,7 @@ export function Menubar() {
           className="qat-btn"
           onClick={handleRedo}
           title="Redo last change (Ctrl+Y)"
+          aria-label="Redo"
         >
           <RedoIcon />
         </button>
@@ -228,6 +234,7 @@ export function Menubar() {
           onClick={handleDelete}
           disabled={!hasSelection}
           title="Delete selected (Del)"
+          aria-label="Delete selected"
         >
           <DeleteIcon />
         </button>
