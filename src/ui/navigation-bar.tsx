@@ -63,20 +63,36 @@ export function NavigationBar() {
         padding: '4px',
       }}
     >
-      <button className="nav-btn" onClick={handlePan} title="Pan">
+      <button
+        className="nav-btn"
+        onClick={handlePan}
+        title="Pan"
+        aria-label="Pan"
+      >
         <PanIcon />
       </button>
       <button
         className="nav-btn"
         onClick={handleZoomExtents}
         title="Zoom Extents"
+        aria-label="Zoom Extents"
       >
         <FitScreenIcon />
       </button>
-      <button className="nav-btn" onClick={handleZoomIn} title="Zoom In">
+      <button
+        className="nav-btn"
+        onClick={handleZoomIn}
+        title="Zoom In"
+        aria-label="Zoom In"
+      >
         <ZoomInIcon />
       </button>
-      <button className="nav-btn" onClick={handleZoomOut} title="Zoom Out">
+      <button
+        className="nav-btn"
+        onClick={handleZoomOut}
+        title="Zoom Out"
+        aria-label="Zoom Out"
+      >
         <ZoomOutIcon />
       </button>
     </div>
