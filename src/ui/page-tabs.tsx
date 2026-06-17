@@ -35,6 +35,7 @@ export function PageTabs() {
                     deletePageAction(idx);
                   }}
                   title="Delete floor"
+                  aria-label="Delete floor"
                 >
                   ×
                 </button>
@@ -46,6 +47,7 @@ export function PageTabs() {
           className="tab-add"
           onClick={addPageAction}
           title="Add new floor"
+          aria-label="Add new floor"
         >
           +
         </button>

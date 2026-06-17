@@ -52,6 +52,8 @@ export function PropertiesPanel() {
           <button
             className="properties-close-btn"
             onClick={() => (isPropertiesPanelOpenSignal.value = false)}
+            aria-label="Close properties"
+            title="Close"
           >
             ×
           </button>
@@ -68,6 +70,8 @@ export function PropertiesPanel() {
         <button
           className="properties-close-btn"
           onClick={() => (isPropertiesPanelOpenSignal.value = false)}
+          aria-label="Close properties"
+          title="Close"
         >
           ×
         </button>
