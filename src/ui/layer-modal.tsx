@@ -29,7 +29,12 @@ export function LayerModal() {
       <div className="layer-modal-content" onClick={e => e.stopPropagation()}>
         <div className="layer-modal-header">
           <h2>Layer Properties</h2>
-          <button className="layer-modal-close" onClick={handleClose}>
+          <button
+            className="layer-modal-close"
+            onClick={handleClose}
+            aria-label="Close"
+            title="Close"
+          >
             ×
           </button>
         </div>
