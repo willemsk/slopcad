@@ -10,7 +10,7 @@ import {CircleTool} from './circle-tool';
 import {DimensionTool} from './dimension-tool';
 import {TextTool} from './text-tool';
 import {
-  activeToolSignal,
+  activeToolNameSignal,
   previewEntitySignal,
   clearSelection,
   triggerRenderSignal,
@@ -41,10 +41,11 @@ export const toolsMap: Record<string, Tool> = {
   text: textTool,
 };
 
+let currentActiveTool: Tool | null = null;
+
 export function setActiveToolByName(name: string) {
-  const current = activeToolSignal.value;
-  if (current) {
-    current.deactivate();
+  if (currentActiveTool) {
+    currentActiveTool.deactivate();
   }
 
   const next = toolsMap[name];
@@ -56,7 +57,8 @@ export function setActiveToolByName(name: string) {
       clearSelection();
     }
     next.activate();
-    activeToolSignal.value = next;
+    currentActiveTool = next;
+    activeToolNameSignal.value = name;
     triggerRenderSignal.value = {};
   }
 }

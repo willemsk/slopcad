@@ -1,6 +1,7 @@
 import {h} from 'preact';
 import {useEffect, useRef, useState} from 'preact/hooks';
-import {Viewport} from './viewport';
+import {ViewportMath} from '../core/viewport-math';
+import {toolsMap} from '../tools/tool-registry';
 import {render, RenderState} from './renderer';
 import {Entity, Vec2, SnapResult, PointRef} from '../core/types';
 import {getSnapPoint, SnapSettings} from '../core/snap';
@@ -16,7 +17,7 @@ import {Tool} from '../tools/tool';
 import {getVisibleEntities} from '../core/entity';
 import {
   projectSignal,
-  activeToolSignal,
+  activeToolNameSignal,
   selectionSignal,
   viewportSignal,
   snapEnabledSignal,
@@ -41,7 +42,7 @@ export function CanvasComponent() {
   const [dimensions, setDimensions] = useState({width: 800, height: 600});
 
   // Viewport instance
-  const viewportRef = useRef<Viewport>(new Viewport());
+  const viewportRef = useRef<ViewportMath>(viewportSignal.value);
 
   // Mouse pan state
   const isPanningRef = useRef(false);
@@ -117,7 +118,7 @@ export function CanvasComponent() {
     );
 
     let snapRes: SnapResult | null = null;
-    if (snapEnabledSignal.value && activeToolSignal.value) {
+    if (snapEnabledSignal.value && toolsMap[activeToolNameSignal.value]) {
       // 10 pixels screen-space snap radius converted to world
       const snapRadiusWorld = 12 / viewportRef.current.zoom;
       snapRes = getSnapPoint(
@@ -126,7 +127,7 @@ export function CanvasComponent() {
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
-        activeToolSignal.value.name,
+        toolsMap[activeToolNameSignal.value].name,
       );
     }
 
@@ -158,14 +159,15 @@ export function CanvasComponent() {
     render(renderState);
 
     // Also draw tool-specific SVG/overlay graphics if any
-    if (activeToolSignal.value && activeToolSignal.value.renderPreview) {
+    const activeTool = toolsMap[activeToolNameSignal.value];
+    if (activeTool && activeTool.renderPreview) {
       ctx.save();
       ctx.translate(
         viewportRef.current.panOffset.x,
         viewportRef.current.panOffset.y,
       );
       ctx.scale(viewportRef.current.zoom, viewportRef.current.zoom);
-      activeToolSignal.value.renderPreview(
+      activeTool.renderPreview(
         ctx,
         viewportRef.current,
         snapRes ? snapRes.point : currentMousePosWorld,
@@ -179,7 +181,7 @@ export function CanvasComponent() {
     draw();
   }, [
     projectSignal.value,
-    activeToolSignal.value,
+    toolsMap[activeToolNameSignal.value],
     selectionSignal.value,
     snapEnabledSignal.value,
     gridEnabledSignal.value,
@@ -232,7 +234,7 @@ export function CanvasComponent() {
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
-        activeToolSignal.value?.name,
+        toolsMap[activeToolNameSignal.value]?.name,
       );
       targetPos = snap.point;
       if (
@@ -243,8 +245,12 @@ export function CanvasComponent() {
       }
     }
 
-    if (activeToolSignal.value) {
-      activeToolSignal.value.onMouseDown(targetPos, e, activeSnap);
+    if (toolsMap[activeToolNameSignal.value]) {
+      toolsMap[activeToolNameSignal.value].onMouseDown(
+        targetPos,
+        e,
+        activeSnap,
+      );
       draw();
     }
   };
@@ -269,7 +275,10 @@ export function CanvasComponent() {
     mouseCoordsSignal.value = worldPos;
 
     // Calculate hover entity for Select tool
-    if (activeToolSignal.value && activeToolSignal.value.name === 'select') {
+    if (
+      toolsMap[activeToolNameSignal.value] &&
+      toolsMap[activeToolNameSignal.value].name === 'select'
+    ) {
       const project = projectSignal.value;
       const activePage = project.pages[project.activePageIndex];
       const hoverRadiusWorld = 8 / viewportRef.current.zoom;
@@ -365,7 +374,7 @@ export function CanvasComponent() {
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
-        activeToolSignal.value?.name,
+        toolsMap[activeToolNameSignal.value]?.name,
       );
       targetPos = snap.point;
       if (
@@ -376,8 +385,12 @@ export function CanvasComponent() {
       }
     }
 
-    if (activeToolSignal.value) {
-      activeToolSignal.value.onMouseMove(targetPos, e, activeSnap);
+    if (toolsMap[activeToolNameSignal.value]) {
+      toolsMap[activeToolNameSignal.value].onMouseMove(
+        targetPos,
+        e,
+        activeSnap,
+      );
       draw();
     }
   };
@@ -414,7 +427,7 @@ export function CanvasComponent() {
         gridSpacingSignal.value,
         getSnapSettings(),
         snapRadiusWorld,
-        activeToolSignal.value?.name,
+        toolsMap[activeToolNameSignal.value]?.name,
       );
       targetPos = snap.point;
       if (
@@ -425,8 +438,8 @@ export function CanvasComponent() {
       }
     }
 
-    if (activeToolSignal.value) {
-      activeToolSignal.value.onMouseUp(targetPos, e, activeSnap);
+    if (toolsMap[activeToolNameSignal.value]) {
+      toolsMap[activeToolNameSignal.value].onMouseUp(targetPos, e, activeSnap);
       draw();
     }
   };
@@ -492,17 +505,18 @@ export function CanvasComponent() {
       // Escape cancels current tool operations or sets active tool to select
       if (e.key === 'Escape') {
         pushCommandMessage('Command: *Cancel*');
-        if (activeToolSignal.value) {
-          activeToolSignal.value.deactivate();
-          activeToolSignal.value.activate(); // re-init active tool (resets substate)
+        if (toolsMap[activeToolNameSignal.value]) {
+          toolsMap[activeToolNameSignal.value].deactivate();
+          toolsMap[activeToolNameSignal.value].activate(); // re-init active tool (resets substate)
           previewEntitySignal.value = null;
           triggerRenderSignal.value = {};
         }
       }
 
       // Route to active tool
-      if (activeToolSignal.value && activeToolSignal.value.onKeyDown) {
-        activeToolSignal.value.onKeyDown(e);
+      const activeTool = toolsMap[activeToolNameSignal.value];
+      if (activeTool && activeTool.onKeyDown) {
+        activeTool.onKeyDown(e);
         draw();
       }
     };

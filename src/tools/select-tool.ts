@@ -1,6 +1,6 @@
 import {Tool} from './tool';
 import {Vec2, SnapResult, Entity, PointRef} from '../core/types';
-import {Viewport} from '../canvas/viewport';
+import {ViewportMath} from '../core/viewport-math';
 import {
   dist,
   distToSegment,
@@ -335,7 +335,7 @@ export class SelectTool implements Tool {
 
   renderPreview(
     ctx: CanvasRenderingContext2D,
-    viewport: Viewport,
+    viewport: ViewportMath,
     currentWorldPos: Vec2,
   ) {
     // Draw Box Selection rectangle

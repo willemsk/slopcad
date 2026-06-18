@@ -1,5 +1,5 @@
 import {Vec2, SnapResult} from '../core/types';
-import {Viewport} from '../canvas/viewport';
+import {ViewportMath} from '../core/viewport-math';
 
 export interface Tool {
   name: string;
@@ -21,7 +21,7 @@ export interface Tool {
   onKeyDown?(event: KeyboardEvent): void;
   renderPreview?(
     ctx: CanvasRenderingContext2D,
-    viewport: Viewport,
+    viewport: ViewportMath,
     currentWorldPos: Vec2,
   ): void;
   activate(): void;

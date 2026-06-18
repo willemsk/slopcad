@@ -1,6 +1,6 @@
 import {Tool} from './tool';
 import {Vec2, SnapResult, WallEntity, Constraint} from '../core/types';
-import {Viewport} from '../canvas/viewport';
+import {ViewportMath} from '../core/viewport-math';
 import {createWall, generateId} from '../core/entity';
 import {dist} from '../core/geometry';
 import {

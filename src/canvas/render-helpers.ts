@@ -1,5 +1,5 @@
 import {Entity, Constraint, Layer, UnitSystem} from '../core/types';
-import {Viewport} from './viewport';
+import {ViewportMath} from '../core/viewport-math';
 import {drawWalls, drawSelectionHandles, drawConstraint} from './draw-helpers';
 
 import {
@@ -25,7 +25,7 @@ export function clearCanvas(
 
 export function drawGrid(
   ctx: CanvasRenderingContext2D,
-  viewport: Viewport,
+  viewport: ViewportMath,
   width: number,
   height: number,
   spacing: number,

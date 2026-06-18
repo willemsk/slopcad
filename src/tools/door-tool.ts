@@ -1,6 +1,6 @@
 import {Tool} from './tool';
 import {Vec2, SnapResult, DoorEntity} from '../core/types';
-import {Viewport} from '../canvas/viewport';
+import {ViewportMath} from '../core/viewport-math';
 import {createDoor} from '../core/entity';
 import {
   activePageSignal,
