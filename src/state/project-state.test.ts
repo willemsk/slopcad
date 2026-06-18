@@ -2,13 +2,12 @@
 import {describe, it, expect, beforeEach} from 'vitest';
 import {
   projectSignal,
-  selectionSignal,
   activePageSignal,
   updateActivePage,
   deleteSelectedAction,
-  clearSelection,
-  addHorizontalConstraintAction,
-} from './app-state';
+} from './project-state';
+import {selectionSignal, clearSelection} from './selection-state';
+import {addHorizontalConstraintAction} from './constraint-actions';
 import {Entity} from '../core/types';
 
 describe('App State', () => {

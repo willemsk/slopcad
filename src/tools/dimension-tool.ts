@@ -6,10 +6,10 @@ import {dist, sub, dot, normalize} from '../core/geometry';
 import {
   activePageSignal,
   updateActivePage,
-  previewEntitySignal,
   snapshotState,
   projectSignal,
-} from '../state/app-state';
+} from '../state/project-state';
+import {previewEntitySignal} from '../state/ui-state';
 
 export class DimensionTool implements Tool {
   name = 'dimension';

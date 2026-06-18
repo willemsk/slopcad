@@ -14,16 +14,18 @@ import {
 import {solveConstraints} from '../core/solver';
 import {
   projectSignal,
-  selectionSignal,
-  clearSelection,
-  selectEntity,
   updateActivePage,
   activePageSignal,
   runSolverOnActivePage,
   snapshotState,
-  triggerRenderSignal,
-  viewportSignal,
-} from '../state/app-state';
+} from '../state/project-state';
+import {
+  selectionSignal,
+  clearSelection,
+  selectEntity,
+} from '../state/selection-state';
+import {triggerRenderSignal} from '../state/ui-state';
+import {viewportSignal} from '../state/viewport-state';
 
 export class SelectTool implements Tool {
   name = 'select';

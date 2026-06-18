@@ -5,11 +5,11 @@ import {createText} from '../core/entity';
 import {
   activePageSignal,
   updateActivePage,
-  selectEntity,
   snapshotState,
-  requestPrompt,
   projectSignal,
-} from '../state/app-state';
+} from '../state/project-state';
+import {selectEntity} from '../state/selection-state';
+import {requestPrompt} from '../state/ui-state';
 
 export class TextTool implements Tool {
   name = 'text';

@@ -5,7 +5,7 @@ import {
   activePageSignal,
   snapshotState,
   updateActivePage,
-} from '../../state/app-state';
+} from '../../state/project-state';
 import {ChevronDownIcon, ChevronRightIcon} from '../icons';
 
 interface Props {

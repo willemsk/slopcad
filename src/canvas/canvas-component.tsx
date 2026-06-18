@@ -17,9 +17,12 @@ import {Tool} from '../tools/tool';
 import {getVisibleEntities} from '../core/entity';
 import {
   projectSignal,
+  undoAction,
+  redoAction,
+  deleteSelectedAction,
+} from '../state/project-state';
+import {
   activeToolNameSignal,
-  selectionSignal,
-  viewportSignal,
   snapEnabledSignal,
   gridEnabledSignal,
   showConstraintsSignal,
@@ -27,14 +30,13 @@ import {
   previewEntitySignal,
   hoveredEntityIdSignal,
   triggerRenderSignal,
-  undoAction,
-  redoAction,
-  deleteSelectedAction,
   overlayPageIndexSignal,
   mouseCoordsSignal,
   pushCommandMessage,
   isLayerModalOpenSignal,
-} from '../state/app-state';
+} from '../state/ui-state';
+import {selectionSignal} from '../state/selection-state';
+import {viewportSignal} from '../state/viewport-state';
 
 export function CanvasComponent() {
   const containerRef = useRef<HTMLDivElement>(null);

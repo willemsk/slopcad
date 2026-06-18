@@ -1,5 +1,5 @@
 import {h} from 'preact';
-import {projectSignal} from '../state/app-state';
+import {projectSignal} from '../state/project-state';
 import {QuickAccessToolbar} from './quick-access-toolbar';
 
 export function Menubar() {

@@ -1,13 +1,13 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
+import {projectSignal} from '../state/project-state';
+import {isLayerModalOpenSignal} from '../state/ui-state';
 import {
-  projectSignal,
-  isLayerModalOpenSignal,
   addLayerAction,
   updateLayerAction,
   deleteLayerAction,
   setActiveLayerAction,
-} from '../state/app-state';
+} from '../state/layer-actions';
 import './layer-modal.css';
 
 export function LayerModal() {

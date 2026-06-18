@@ -3,7 +3,7 @@ import {useState} from 'preact/hooks';
 import {Entity, DoorEntity} from '../../core/types';
 import {dist} from '../../core/geometry';
 import {formatLength, parseLength} from '../../core/units';
-import {activePageSignal} from '../../state/app-state';
+import {activePageSignal} from '../../state/project-state';
 
 interface DoorParamsProps {
   activeEntity: Entity;

@@ -5,10 +5,10 @@ import {createWindow} from '../core/entity';
 import {
   activePageSignal,
   updateActivePage,
-  previewEntitySignal,
   snapshotState,
   projectSignal,
-} from '../state/app-state';
+} from '../state/project-state';
+import {previewEntitySignal} from '../state/ui-state';
 
 export class WindowTool implements Tool {
   name = 'window';

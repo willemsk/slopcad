@@ -12,9 +12,9 @@ import {TextTool} from './text-tool';
 import {
   activeToolNameSignal,
   previewEntitySignal,
-  clearSelection,
   triggerRenderSignal,
-} from '../state/app-state';
+} from '../state/ui-state';
+import {clearSelection} from '../state/selection-state';
 
 // Single instances of tools
 export const selectTool = new SelectTool();

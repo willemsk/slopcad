@@ -1,10 +1,7 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
-import {
-  projectSignal,
-  activePageSignal,
-  gridSpacingSignal,
-} from '../../state/app-state';
+import {projectSignal, activePageSignal} from '../../state/project-state';
+import {gridSpacingSignal} from '../../state/ui-state';
 import {ChevronDownIcon, ChevronRightIcon} from '../icons';
 
 export function PageProperties() {

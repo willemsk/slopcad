@@ -13,11 +13,11 @@ import {setActiveToolByName} from './tools/tool-registry';
 import {
   uiScaleSignal,
   isPropertiesPanelOpenSignal,
-  clearSelection,
-  deleteSelectedAction,
   activePromptSignal,
   isLayerModalOpenSignal,
-} from './state/app-state';
+} from './state/ui-state';
+import {clearSelection} from './state/selection-state';
+import {deleteSelectedAction} from './state/project-state';
 import {DynamicPrompt} from './ui/dynamic-prompt';
 import {LayerModal} from './ui/layer-modal';
 import './app.css';
