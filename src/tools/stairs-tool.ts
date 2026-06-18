@@ -1,6 +1,6 @@
 import {Tool} from './tool';
 import {Vec2, SnapResult} from '../core/types';
-import {Viewport} from '../canvas/viewport';
+import {ViewportMath} from '../core/viewport-math';
 import {createStairs} from '../core/entity';
 import {dist} from '../core/geometry';
 import {

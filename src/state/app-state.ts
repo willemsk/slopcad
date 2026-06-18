@@ -12,7 +12,7 @@ import {
 import {HistoryManager} from '../core/history';
 import {solveConstraints} from '../core/solver';
 import {dist} from '../core/geometry';
-import {Tool} from '../tools/tool';
+import {ViewportMath} from '../core/viewport-math';
 import {generateId} from '../core/entity';
 
 // Initial default page
@@ -72,9 +72,9 @@ if (saved) {
 }
 
 export const projectSignal = signal<Project>(initialProject);
-export const activeToolSignal = signal<Tool | null>(null);
+export const activeToolNameSignal = signal<string>('select');
 export const selectionSignal = signal<Set<string>>(new Set());
-export const viewportSignal = signal<any>(null); // Viewport instance
+export const viewportSignal = signal<ViewportMath>(new ViewportMath());
 export const snapEnabledSignal = signal<boolean>(true);
 export const gridEnabledSignal = signal<boolean>(true);
 export const showConstraintsSignal = signal<boolean>(true);

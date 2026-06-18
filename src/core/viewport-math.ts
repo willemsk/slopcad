@@ -1,6 +1,6 @@
-import {Vec2, Entity} from '../core/types';
+import {Vec2, Entity} from './types';
 
-export class Viewport {
+export class ViewportMath {
   // zoom is screen pixels per world unit (meter)
   // e.g., zoom = 100 means 1 meter = 100 pixels
   zoom = 100;

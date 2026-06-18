@@ -6,7 +6,7 @@ import {
   activePromptSignal,
   isLayerModalOpenSignal,
 } from '../state/app-state';
-import {dispatchCommand} from '../core/commands';
+import {dispatchCommand} from '../tools/commands';
 import './command-line.css';
 
 export function CommandLine() {

@@ -1,7 +1,7 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
 import {
-  activeToolSignal,
+  activeToolNameSignal,
   gridEnabledSignal,
   snapEnabledSignal,
   pushCommandMessage,
@@ -69,8 +69,7 @@ export function Toolbar() {
     'file' | 'home' | 'annotate' | 'view' | 'constraints'
   >('home');
   const [isRibbonCollapsed, setIsRibbonCollapsed] = useState(false);
-  const activeTool = activeToolSignal.value;
-  const activeToolName = activeTool?.name || 'select';
+  const activeToolName = activeToolNameSignal.value || 'select';
 
   const selectTool = (name: string) => {
     setActiveToolByName(name);
