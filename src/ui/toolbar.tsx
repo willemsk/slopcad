@@ -125,6 +125,8 @@ export function Toolbar() {
           className="ribbon-collapse-toggle"
           onClick={() => setIsRibbonCollapsed(!isRibbonCollapsed)}
           title={isRibbonCollapsed ? 'Expand Ribbon' : 'Collapse Ribbon'}
+          aria-label={isRibbonCollapsed ? 'Expand Ribbon' : 'Collapse Ribbon'}
+          aria-expanded={!isRibbonCollapsed}
         >
           {isRibbonCollapsed ? '▼' : '▲'}
         </button>
