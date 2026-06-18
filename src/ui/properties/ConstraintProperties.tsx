@@ -61,6 +61,7 @@ export function ConstraintProperties({activeEntity}: Props) {
                     opacity: 0.5,
                   }}
                   title="Delete constraint"
+                  aria-label="Delete constraint"
                   onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
                 >
