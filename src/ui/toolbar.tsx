@@ -5,7 +5,7 @@ import {
   gridEnabledSignal,
   snapEnabledSignal,
   pushCommandMessage,
-} from '../state/app-state';
+} from '../state/ui-state';
 import {setActiveToolByName} from '../tools/tool-registry';
 import {
   SelectIcon,
@@ -37,14 +37,12 @@ import {
   addConcentricConstraintAction,
   addEqualLengthConstraintAction,
   addFixedAngleConstraintAction,
-  viewportSignal,
-  triggerRenderSignal,
-  activePageSignal,
-  selectionSignal,
-  projectSignal,
-  setActiveLayerAction,
-  isLayerModalOpenSignal,
-} from '../state/app-state';
+} from '../state/constraint-actions';
+import {viewportSignal} from '../state/viewport-state';
+import {triggerRenderSignal, isLayerModalOpenSignal} from '../state/ui-state';
+import {activePageSignal, projectSignal} from '../state/project-state';
+import {selectionSignal} from '../state/selection-state';
+import {setActiveLayerAction} from '../state/layer-actions';
 import './ribbon.css';
 
 const TOOL_PROMPTS: Record<string, string> = {

@@ -5,7 +5,7 @@ import {
   pushCommandMessage,
   activePromptSignal,
   isLayerModalOpenSignal,
-} from '../state/app-state';
+} from '../state/ui-state';
 import {dispatchCommand} from '../tools/commands';
 import './command-line.css';
 

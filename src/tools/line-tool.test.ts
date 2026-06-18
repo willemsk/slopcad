@@ -1,10 +1,7 @@
 import {describe, it, expect, beforeEach} from 'vitest';
 import {LineTool} from './line-tool';
-import {
-  activePageSignal,
-  projectSignal,
-  previewEntitySignal,
-} from '../state/app-state';
+import {activePageSignal, projectSignal} from '../state/project-state';
+import {previewEntitySignal} from '../state/ui-state';
 import {LineEntity} from '../core/types';
 
 describe('LineTool', () => {

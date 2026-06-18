@@ -4,7 +4,7 @@ import {
   snapshotState,
   updateActivePage,
   runSolverOnActivePage,
-} from '../../state/app-state';
+} from '../../state/project-state';
 import {Entity} from '../../core/types';
 
 export function usePropertyCommit(activeEntity: Entity | null) {
