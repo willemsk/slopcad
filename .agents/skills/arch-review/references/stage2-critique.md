@@ -1,164 +1,239 @@
 # Stage 2 — Rigorous Architectural Critique
 
 ## Goal
-Act as a strict architectural critic. Using the Stage 1 findings as your map, evaluate
-the implementation against established design principles and the project's own documented
-conventions. Produce a structured list of findings.
+
+Act as a strict architectural critic. Using the discovery artifact from Stage 1
+as your map, evaluate the implementation against universal design principles
+and framework-specific best practices. Produce a structured list of findings.
+
+**Input**: Read `docs/.arch-review/discovery.md` (written by Stage 1).
+If `HAS_PREVIOUS_RUN = true`, also read the previous
+`docs/.arch-review/findings.md` to enable regression detection.
 
 **Severity levels** (only two — no minor nits):
-- **Critical**: A violation that actively undermines correctness, maintainability, or the
-  core architectural contract. Needs to be fixed before the codebase scales further.
-- **Warning**: A notable smell that increases technical debt or makes future changes
-  harder. Should be addressed but is not urgent.
+- **Critical**: A violation that actively undermines correctness,
+  maintainability, or the core architectural contract. Must be addressed.
+- **Warning**: A notable smell that increases technical debt or makes future
+  changes harder. Should be addressed but is not urgent.
 
 ---
 
-## Critique Checklist
+## Universal Checks
 
-Work through each check below. For every violation found, create a finding entry with
-the format specified at the end of this file.
-
----
-
-### Check 2.1 — Layer Boundary Violations (SoC / DIP)
-
-Using the dependency graph you built in Stage 1, verify:
-
-**2.1a — `core/` purity**
-`src/core/` must have zero imports from `src/state/`, `src/ui/`, `src/canvas/`,
-`src/tools/`, or `src/io/`. If any exist: **Critical**.
-
-Run `grep_search` on `src/core/` for patterns: `from '../state`, `from '../ui`,
-`from '../canvas`, `from '../tools`, `from '../io`.
-
-**2.1b — `state/` boundary**
-`src/state/` must not import from `src/ui/`, `src/canvas/`, or `src/tools/`. Importing
-from `src/core/` is correct and expected. If violation found: **Critical**.
-
-**2.1c — `io/` boundary**
-`src/io/` must not import from `src/ui/`, `src/canvas/`, or `src/tools/`. If violation
-found: **Warning** (it may legitimately read from state for active-page snapshots —
-evaluate in context).
-
-**2.1d — Tool direct state mutation**
-Check `src/tools/` files for direct mutation of arrays or signal values that bypass
-`app-state.ts` exports. Search for patterns like `.value.push(`, `.value.splice(`,
-`.value =` in tool files. Direct `.value` assignment to a complex signal is a
-**Warning** unless it is a re-assignment of the entire signal (which should go through
-a named mutator in `app-state.ts`).
+These checks apply to **every project** regardless of language or framework.
+Work through each one using the discovery artifact as your guide.
 
 ---
 
-### Check 2.2 — Single Responsibility Principle (SRP)
+### Check U1 — Layer Boundary Violations (SoC / DIP)
 
-**2.2a — Oversized files**
-The existing `general-coding-standards.md` rule states files must stay under ~300 LOC.
-List all files exceeding 300 lines. If a file exceeds 500 lines, it is **Critical**
-(highly likely to be doing too much). 300–499 lines is a **Warning**.
+Using the dependency graph from the discovery artifact:
 
-Specifically check known large files flagged in Stage 1:
-- `src/canvas/draw-helpers.ts`
-- `src/tools/select-tool.ts`
-- `src/state/app-state.ts`
-- `src/ui/toolbar.tsx`
+**U1a — Pure-layer purity**
+Identify any module classified as a "pure" or "core" layer (domain logic,
+models, types, utilities). This layer must have zero imports from higher
+layers (UI, controllers, tools, state, I/O). Any such import: **Critical**.
 
-**2.2b — `app-state.ts` god-file smell**
-Read `src/state/app-state.ts` fully. Count the number of exported signals vs. the
-number of exported mutator functions. If it exports more than 15 distinct mutator
-functions covering multiple unrelated concerns (e.g., selection, history, pages,
-layers, tools, preferences), flag as **Warning** — it may benefit from domain-scoped
-state slices in the future.
+Verify by running `grep_search` on the pure-layer directory for imports
+pointing to higher-layer directories.
 
-**2.2c — `draw-helpers.ts` mixed concerns**
-Read `src/canvas/draw-helpers.ts`. Determine if it mixes drawing logic with geometry
-computation or entity-interpretation logic. If geometry is reimplemented here that
-duplicates `src/core/geometry.ts`, flag as **Warning** (DRY violation).
+**U1b — Upward dependency violations**
+For every edge in the dependency graph marked as `violation`, verify by
+reading the actual import statements. If confirmed: severity depends on the
+nature of the violation:
+- Core/domain importing from UI/presentation: **Critical**
+- Sibling modules with unexpected coupling: **Warning**
 
----
-
-### Check 2.3 — Framework Anti-Patterns (Preact / Signals)
-
-**2.3a — React-specific API usage**
-Search for usage of React-specific APIs that are incompatible with Preact or represent
-patterns the project rules prohibit:
-- `useState` for global or cross-component state (search across `src/state/` and
-  `src/tools/` — it should not appear there)
-- `useReducer` anywhere (prohibited by `app-tech-stack.md`)
-- `createContext` / `useContext` for shared state (prohibited)
-- `React.` namespace references (should not appear)
-
-Run `grep_search` with `IsRegex: true` for `useState|useReducer|createContext|useContext`
-across `src/state/` and `src/tools/`. Any match: **Critical**.
-
-**2.3b — Signal mutation without snapshot**
-The constraint from `app-implementation.md` states that `snapshotState()` must be
-called before mutations that tools perform. Search `src/tools/` for mutating calls
-(functions that write to signals) without a preceding `snapshotState` call.
-Evaluate in context — if a tool method writes to state without first snapshotting,
-flag as **Warning**.
-
-**2.3c — Non-signal DOM state in components**
-Search `src/ui/` for `useState` used for non-trivially-local state (i.e., state that
-is derived from or should be reflected in global signals). Minor accordion toggles are
-acceptable. State that shadows a global signal is a **Warning**.
+**U1c — Direct state mutation from consumers**
+If the project uses a state management layer, check whether consuming modules
+(tools, controllers, UI components) bypass the state layer's public API to
+mutate state directly. Search for patterns like direct property assignment on
+state objects, in-place array mutation (`.push()`, `.splice()` on state),
+or direct signal/store writes from outside the state module. Any bypass:
+**Warning**.
 
 ---
 
-### Check 2.4 — Abstraction Leakage
+### Check U2 — Single Responsibility Principle (SRP)
 
-**2.4a — Canvas internals leaked to tools**
-Check if `src/tools/` directly imports from `src/canvas/` (other than reading the
-viewport signal, which is acceptable). Tools should interact with the world through
-`app-state.ts` and `core/` types, not through canvas internals.
-Search `src/tools/` for `from '../canvas`. If found: **Warning**.
+**U2a — Oversized files**
+Using the "File Size Hotspots" table from the discovery artifact, classify:
+- Files exceeding 500 LOC: **Critical** (almost certainly doing too much)
+- Files 300–499 LOC: **Warning** (approaching the threshold)
 
-**2.4b — Renderer interface usage**
-`src/io/renderer-interface.ts` defines an abstraction for rendering backends. Verify
-that `src/io/entity-renderers.ts` and `src/io/svg-renderer.ts` actually use this
-interface rather than duplicating ad-hoc rendering logic. If the interface exists but
-is unused or bypassed: **Warning**.
+For each flagged file, skim it to confirm whether it genuinely mixes concerns
+(not just long due to verbose but cohesive content like test fixtures).
 
-**2.4c — Serialization leakage**
-Check if entity types from `src/core/types.ts` are used directly in `src/io/file-io.ts`
-without going through `src/io/serialize.ts` as an intermediary. Direct use of raw entity
-types in I/O without the serialize layer is acceptable if serialize.ts is thin; flag as
-**Warning** only if business logic (non-trivial transformation) is duplicated between
-`serialize.ts` and `file-io.ts`.
+**U2b — God-file smell**
+If the discovery artifact identifies a central state/config file that exports
+more than 15 distinct public functions or types covering multiple unrelated
+domains, flag as **Warning**. It may benefit from decomposition.
 
----
-
-### Check 2.5 — Circular Dependencies
-
-**2.5a — Explicit circular import check**
-For each of the 6 module directories, search for mutual imports:
-- Does A import from B *and* B import from A?
-
-Check these pairs (most likely to be problematic):
-- `state` ↔ `tools`
-- `canvas` ↔ `tools`
-- `core` ↔ `state`
-- `ui` ↔ `state` (signals flow from state to ui; ui should not re-export to state)
-
-Any confirmed circular dependency: **Critical**.
+**U2c — Mixed concerns in large files**
+For the largest files flagged in U2a, check whether they mix distinct
+responsibilities (e.g., data transformation + rendering, business logic +
+I/O, model definition + validation + serialization). If geometry or business
+logic is reimplemented in a presentation layer file (duplicating a core
+module), flag as **Warning** (DRY violation).
 
 ---
 
-### Check 2.6 — Test Coverage Gaps
+### Check U3 — Circular Dependencies
 
-**2.6a — Untested critical modules**
-Cross-reference the test file inventory from Stage 1. Identify modules with zero test
-coverage despite containing complex logic. The following are considered "critical" for
-testing purposes based on project complexity:
-- `src/core/solver.ts` — constraint solving (test file exists: `solver.test.ts` ✓)
-- `src/core/geometry.ts` — geometric math (check if `geometry.test.ts` covers the
-  exported API adequately)
-- `src/state/app-state.ts` — central state (check `app-state.test.ts` coverage)
-- `src/tools/select-tool.ts` — complex interactive logic
-- `src/canvas/draw-helpers.ts` — pure rendering functions (testable without DOM)
+**U3a — Module-level cycles**
+For each pair of modules in the dependency graph, check for mutual imports
+(A imports B AND B imports A). Use `grep_search` to verify.
 
-If a critical module has no test file at all: **Warning**.
-If test files exist but coverage appears sparse relative to the module's complexity
-(qualitatively assessed): note as **Warning**.
+Any confirmed circular dependency between modules: **Critical**.
+
+**U3b — File-level cycles within a module**
+If a module is large (>10 files), spot-check for circular imports between
+files within the module. If found: **Warning**.
+
+---
+
+### Check U4 — Test Coverage Gaps
+
+**U4a — Untested critical modules**
+Using the test coverage table from the discovery artifact, identify modules
+containing complex logic (domain rules, algorithms, data transformations)
+that have zero test files. Flag as **Warning**.
+
+**U4b — Sparse coverage**
+If test files exist but appear sparse relative to the module's complexity
+(e.g., a 500-line solver module with a 30-line test file), note as **Warning**.
+
+---
+
+### Check U5 — DRY Violations
+
+**U5a — Duplicated logic across layers**
+Check if business logic, validation rules, or data transformation code is
+duplicated between modules (e.g., the same geometric calculation in both a
+core module and a rendering module, or the same validation in both client
+and server). Flag confirmed duplication as **Warning**.
+
+---
+
+### Check U6 — Abstraction Leakage
+
+**U6a — Internal details leaked to consumers**
+Check if high-level modules (UI, controllers, tools) import internal helpers
+or private utilities from lower-level modules instead of going through the
+module's public API. Flag as **Warning**.
+
+**U6b — Unused abstractions**
+If the discovery artifact notes an abstraction layer (interface, abstract
+class, protocol) that exists but is not actually used by any implementation
+or consumer, flag as **Warning** — it may be dead code or premature
+abstraction.
+
+---
+
+## Framework-Specific Checks
+
+Based on the `framework` field in the discovery artifact, select and execute
+the appropriate check set from the catalogue below. If the project's framework
+is not listed, skip this section (the universal checks are sufficient).
+
+---
+
+### React / Preact / Solid / Svelte (Component-Based UI)
+
+**F-UI-1 — Prohibited state patterns**
+If the project documents preferred state management (e.g., signals, stores,
+context, Redux), search for prohibited alternatives:
+- `useState` / `useReducer` used for global or cross-component state when
+  the project mandates a different approach.
+- React Context used for high-frequency state when the project prefers
+  signals or external stores.
+
+Search the state and tools/controller directories for these patterns. If
+found where prohibited: **Critical**.
+
+**F-UI-2 — State mutation protocol violations**
+If the project documents a mutation protocol (e.g., "snapshot before mutate",
+"dispatch actions", "use named mutators"), check whether tools/controllers
+follow it. If a mutation occurs without the required protocol step: **Warning**.
+
+**F-UI-3 — Framework namespace leakage**
+If the project uses Preact, search for `React.` namespace references or
+React-specific imports (`react-dom`, `react/jsx-runtime`). If found: **Warning**.
+
+---
+
+### Django / Flask / FastAPI (Python Web)
+
+**F-PY-1 — Fat views / thin models anti-pattern**
+Check if view/route handler files contain business logic that should live in
+models, services, or domain modules. Views exceeding 50 LOC per handler:
+**Warning**.
+
+**F-PY-2 — Business logic in serializers**
+Check if serializer/schema files contain non-trivial data transformation or
+business rules. Flag as **Warning**.
+
+**F-PY-3 — Raw SQL in views**
+Search for raw SQL queries (`cursor.execute`, `raw()`, `execute()`) outside
+dedicated data access modules. Flag as **Warning**.
+
+**F-PY-4 — Missing migrations**
+If Django, check if model changes have corresponding migration files. Note
+as **Warning** if unclear.
+
+---
+
+### Express / Fastify / NestJS (Node.js Backend)
+
+**F-NODE-1 — Business logic in route handlers**
+Check if route/controller files contain business logic that should be in
+service or domain modules. Flag as **Warning**.
+
+**F-NODE-2 — Error handling consistency**
+Check if error handling uses a consistent middleware pattern or is scattered
+with ad-hoc try/catch blocks in handlers. Flag inconsistency as **Warning**.
+
+**F-NODE-3 — Database calls in controllers**
+Search for direct database/ORM calls in route handlers instead of going
+through a service or repository layer. Flag as **Warning**.
+
+---
+
+### Spring / Spring Boot (Java / Kotlin)
+
+**F-SPRING-1 — Service layer bypass**
+Check if controllers directly access repositories without going through a
+service layer. Flag as **Warning**.
+
+**F-SPRING-2 — Circular bean dependencies**
+Search for `@Lazy` annotations or constructor cycles. Flag as **Warning**.
+
+---
+
+### Rust (Actix-web / Axum / Library)
+
+**F-RUST-1 — Unsafe usage audit**
+Search for `unsafe` blocks outside dedicated FFI or performance-critical
+modules. Flag as **Warning**.
+
+**F-RUST-2 — Error type proliferation**
+Check if custom error types are scattered across modules instead of using a
+centralised error enum/type. Flag as **Warning**.
+
+---
+
+## Regression Detection
+
+If `HAS_PREVIOUS_RUN = true`, read the previous `docs/.arch-review/findings.md`:
+
+1. **New findings**: Any finding in the current run whose ID does not match
+   a finding in the previous run (compare by file + principle + summary).
+2. **Resolved findings**: Any finding in the previous run not present in the
+   current run.
+3. **Regressions**: New findings with severity `Critical`, OR any finding
+   that escalated from `Warning` to `Critical`.
+
+Record these counts for the console output and for Stage 3 regression notices.
 
 ---
 
@@ -169,21 +244,74 @@ Each finding must be recorded as a structured entry:
 ```
 ID: CRIT-NNN  (or WARN-NNN)
 Severity: Critical | Warning
-File(s): src/path/to/file.ts (line range if applicable)
+File(s): path/to/file (line range if applicable)
 Principle: SoC | SRP | DIP | DRY | OCP | LSP | Framework-Contract | Testability
+Check: [The check ID that triggered this, e.g. U1a, F-UI-1]
 Summary: One-sentence description of the violation.
 Detail: 2–4 sentences explaining *why* this is a problem and what the risk is
         if left unaddressed.
 ```
 
-Number findings sequentially across severity groups:
-- Criticals: CRIT-001, CRIT-002, ...
-- Warnings: WARN-001, WARN-002, ...
+Number findings sequentially: CRIT-001, CRIT-002, ..., WARN-001, WARN-002, ...
 
 ---
 
-## Output
+## Output — Findings Artifact
 
-- Print the count of findings per severity level to the console.
-- Hold the full structured finding list in memory for Stage 3 (it will be embedded in
-  the `ARCHITECTURE.md` technical debt section).
+Write the file `docs/.arch-review/findings.md`:
+
+```markdown
+---
+generated_by: /arch-review
+generated_at: [CURRENT_ISO_TIMESTAMP]
+project_name: [FROM_DISCOVERY_ARTIFACT]
+total_critical: [N]
+total_warning: [M]
+new_findings: [COUNT_OR_NA]
+resolved_findings: [COUNT_OR_NA]
+regressions: [COUNT_OR_NA]
+---
+
+# Architectural Findings
+
+## Summary
+
+- **Critical**: N finding(s)
+- **Warning**: M finding(s)
+- **New since last run**: [count or "N/A — first run"]
+- **Resolved since last run**: [count or "N/A — first run"]
+- **Regressions**: [count or "N/A — first run"]
+
+## Critical Findings
+
+### CRIT-001 — [Summary]
+- **Severity**: Critical
+- **File(s)**: [path]
+- **Principle**: [principle]
+- **Check**: [check ID]
+- **Detail**: [2-4 sentences]
+
+[Repeat for each Critical finding]
+
+## Warning Findings
+
+### WARN-001 — [Summary]
+- **Severity**: Warning
+- **File(s)**: [path]
+- **Principle**: [principle]
+- **Check**: [check ID]
+- **Detail**: [2-4 sentences]
+
+[Repeat for each Warning finding]
+
+## Resolved Findings (since previous run)
+
+[List finding IDs and summaries that were present in the previous run but are
+no longer found. If first run, write "N/A — first run."]
+```
+
+### Console Output
+
+Print:
+- `Stage 2 complete: N Critical, M Warning findings.`
+- If `HAS_PREVIOUS_RUN`: `New: X | Resolved: Y | Regressions: Z`

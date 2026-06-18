@@ -1,283 +1,254 @@
 # Stage 4 — Agent Rule Generation (`.agents/rules/`)
 
 ## Goal
-Distil the structural invariants and patterns discovered in Stages 1 and 2 into
-actionable, enforceable rules for future agent interactions. These rules supplement —
-never replace — the existing hand-crafted rules.
 
-**Critical constraint**: Only create or update files with the `arch-` prefix. Never
-touch, modify, or delete any existing rule file that does not start with `arch-`.
+Distil the structural invariants and patterns discovered in Stages 1 and 2
+into actionable, enforceable rules for future agent interactions. These rules
+supplement — never replace — existing hand-crafted rules.
 
----
+**Inputs**:
+- `docs/.arch-review/discovery.md` (Stage 1 artifact)
+- `docs/.arch-review/findings.md` (Stage 2 artifact)
+- All existing `.agents/rules/*.md` files (for non-contradiction check)
 
-## Step 4.0 — Existing Rule File Check
-
-Before writing anything, check whether these files already exist:
-- `.agents/rules/arch-layer-boundaries.md`
-- `.agents/rules/arch-state-patterns.md`
-- `.agents/rules/arch-naming-invariants.md`
-
-- **If they do not exist**: Create them from scratch using the templates in
-  Steps 4.1–4.3.
-- **If they exist**: Read each one, compare it to the current Stage 1 + Stage 2
-  analysis, and update them in-place. Add a `<!-- Updated: [CURRENT_DATE] -->` HTML
-  comment after the frontmatter block. Do not remove rules unless you can confirm
-  the pattern they describe no longer exists in the codebase.
+**Critical constraints**:
+- Only create or update files with the `arch-` prefix.
+- Never touch, modify, or delete any existing rule file not prefixed with
+  `arch-`.
+- Never generate a rule that **contradicts** an existing rule. If a
+  contradiction is detected, **do not write the contradicting rule** and
+  report it in the final output.
 
 ---
 
-## Step 4.1 — `arch-layer-boundaries.md`
+## Step 4.0 — Non-Contradiction Check
 
-This rule enforces the dependency graph discovered in Stage 1 and codifies the
-violations found in Stage 2.
+Before writing ANY rule files, read all existing `.agents/rules/*.md` files
+(excluding `arch-*` files). Parse their content to understand what rules are
+already established.
+
+For each auto-generated rule you intend to write, verify:
+1. It does not contradict any existing rule. A contradiction is when your
+   auto-generated rule would instruct the agent to do the opposite of what
+   an existing rule says (e.g., existing rule says "use `useState` for all
+   state" but your rule says "never use `useState`").
+2. It does not redefine terminology in a conflicting way.
+
+If a contradiction is found:
+- **Do NOT write the contradicting rule section.**
+- Record it for the final report with the format:
+  `CONTRADICTION: arch-[file].md rule "[rule summary]" contradicts
+  existing rule in [existing-file].md: "[existing rule summary]"`
+
+Overlap (saying the same thing in different words) is acceptable and
+intentional — prescriptive (human-authored) and descriptive
+(machine-discovered) rules serve different purposes.
+
+---
+
+## Step 4.1 — Rule Set Selection
+
+Read the `Rule Archetypes Selected` section from the discovery artifact.
+This determines which rule files to create or update.
+
+`arch-layer-boundaries.md` is **always** generated. Additional rule files
+are selected from the catalogue below based on what Stage 1 discovered.
+
+### Rule Archetype Catalogue
+
+| Archetype | Generated When | Covers |
+|-----------|---------------|--------|
+| `arch-layer-boundaries.md` | Always | Module import rules, dependency direction, circular dep ban |
+| `arch-state-patterns.md` | State management library detected | Signal/store usage patterns, mutation protocol, prohibited patterns |
+| `arch-naming-invariants.md` | Consistent naming patterns detected | File naming, export conventions, test co-location |
+| `arch-api-contracts.md` | API routing framework detected | Endpoint conventions, middleware rules, error handling |
+| `arch-data-access.md` | Database / ORM detected | Query patterns, migration rules, repository conventions |
+| `arch-error-handling.md` | Consistent error handling pattern detected | Error types, propagation rules, logging conventions |
+
+---
+
+## Step 4.2 — Existing Rule File Check
+
+For each selected archetype, check whether the `arch-` file already exists:
+
+- **If it does not exist**: Create it from scratch using the templates below.
+- **If it exists**: Read it, compare to the current analysis, and update
+  in-place. Add a `<!-- Updated: [CURRENT_DATE] by /arch-review -->` comment.
+  Do not remove rules unless the pattern they describe no longer exists.
+
+---
+
+## Step 4.3 — `arch-layer-boundaries.md` (Always Generated)
 
 ### Template
 
 ```markdown
 ---
 trigger: glob
-description: "Enforces architectural layer boundary constraints for Antigravity CAD."
-globs: src/**/*.ts, src/**/*.tsx
+description: "Enforces architectural layer boundary constraints."
+globs: [GLOB_PATTERN_FOR_ALL_SOURCE_FILES]
 ---
 <!-- Generated by /arch-review | Last updated: [CURRENT_DATE] -->
 
 # Architectural Layer Boundaries
 
-These rules are derived from the `/arch-review` analysis and must be treated as
-hard constraints when adding or modifying imports.
+These rules are derived from the `/arch-review` analysis and must be treated
+as hard constraints when adding or modifying imports.
 
 ## Module Dependency Rules
 
 The allowed import directions are:
 
 ```
-ui      → state, core, io (types only)
-canvas  → state, core
-tools   → state, core
-state   → core
-io      → core, state (read-only; for active-page snapshot on export)
-core    → (nothing — zero dependencies on other src/ modules)
+[RENDER THE ACTUAL DEPENDENCY RULES FROM THE DISCOVERY ARTIFACT]
+[Format: module_name → allowed_targets (with notes)]
+[e.g.: ui → state, core (read-only)]
+[e.g.: core → (nothing — zero external dependencies)]
 ```
 
-### `src/core/` — Zero-Dependency Zone
-- **NEVER** import from `src/state/`, `src/ui/`, `src/canvas/`, `src/tools/`,
-  or `src/io/` inside any file under `src/core/`.
-- `src/core/` must remain a pure computation and type library with no side effects.
-- Violation: Critical. Reject any PR or agent-generated change that introduces
-  such an import.
+[FOR EACH MODULE, generate a subsection:]
 
-### `src/state/` — State Owns the Truth
-- May import from `src/core/` only.
-- **NEVER** import from `src/ui/`, `src/canvas/`, or `src/tools/`.
-- `app-state.ts` is the single source of truth. All state mutations must be
-  exported as named functions from this file; do not allow tools or UI components
-  to write to signals directly.
-
-### `src/tools/` — Tools Are Consumers
-- May import from `src/state/` (for mutators and signals) and `src/core/` (for types
-  and geometry utilities).
-- **NEVER** import from `src/ui/` or `src/io/`.
-- Importing from `src/canvas/` is permitted *only* for reading the viewport signal.
-  Importing canvas drawing internals (draw-helpers, renderer) is forbidden.
-
-### `src/ui/` — UI Is a View Layer
-- May import from `src/state/` (signals, read-only), `src/core/` (types), and
-  `src/io/` (for triggering file operations via menu actions).
-- **NEVER** import from `src/canvas/` or `src/tools/` internals.
-
-### `src/io/` — I/O Is an Adapter
-- May import from `src/core/` (types) and `src/state/` (read-only, for export
-  of current page state).
-- **NEVER** import from `src/ui/`, `src/canvas/`, or `src/tools/`.
+### `[module_path]` — [One-word role]
+- May import from: [list of allowed modules with any caveats]
+- **NEVER** import from: [list of prohibited modules]
+- Rationale: [One sentence explaining why]
+- Violation severity: [Critical or Warning, based on the module's purity]
 
 ## Circular Dependency Ban
-- Zero circular imports between any two modules are permitted.
-- Before adding an import that creates a potential cycle, restructure by extracting
-  the shared dependency to `src/core/types.ts` or a new shared utility.
+- Zero circular imports between modules are permitted.
+- Before adding an import that creates a potential cycle, restructure by
+  extracting the shared dependency to the core/shared types module.
 
-## Enforcement
-- These rules are enforceable via ESLint with `eslint-plugin-import` and
-  `import/no-restricted-paths`. Consider adding this configuration to
-  `eslint.config.cjs` in a future refactor.
-
-[INJECT_LAYER_VIOLATIONS_FROM_STAGE2_HERE]
-```
-
-### Populating `[INJECT_LAYER_VIOLATIONS_FROM_STAGE2_HERE]`
-
-Replace this placeholder with a section titled `## Known Violations (as of [DATE])`.
-List every `CRIT-` or `WARN-` finding from Stage 2 that relates to layer boundaries
-(Check 2.1 and Check 2.4). Format as:
-
-```markdown
 ## Known Violations (as of [CURRENT_DATE])
+
+[If Stage 2 found layer boundary violations (checks U1a-U1c, F-*-related
+boundary checks), list them here:]
+
 > [!WARNING]
-> These violations exist in the current codebase. They are documented here so future
-> agents are aware and do not introduce additional instances.
+> These violations exist in the current codebase. They are documented here
+> so future agents are aware and do not introduce additional instances.
 
-- **[CRIT/WARN-NNN]** `path/to/file.ts`: [Summary of violation]
-```
+- **[CRIT/WARN-NNN]** `path/to/file`: [Summary of violation]
 
-If Stage 2 found zero layer violations, write:
-```markdown
-## Known Violations (as of [CURRENT_DATE])
+[If no violations were found:]
+
 ✅ No layer boundary violations detected in this review.
 ```
 
 ---
 
-## Step 4.2 — `arch-state-patterns.md`
+## Step 4.4 — Additional Archetype Rule Templates
 
-This rule enforces the signal/state patterns mandated by the tech stack and discovered
-in Stage 1.
+For each additional archetype selected, create a rule file using the generic
+structure below, adapted to the specific domain.
 
-### Template
-
-```markdown
----
-trigger: glob
-description: "Enforces @preact/signals state management patterns in Antigravity CAD."
-globs: src/**/*.ts, src/**/*.tsx
----
-<!-- Generated by /arch-review | Last updated: [CURRENT_DATE] -->
-
-# State Management Patterns
-
-## Mandatory: Use Signals for All Global State
-- **DO** use `signal()` and `computed()` from `@preact/signals` for any state that is
-  shared across components, tools, or the canvas renderer.
-- **DO NOT** use `useState` or `useReducer` for global or cross-component state.
-- **DO NOT** use React Context API (`createContext`, `useContext`) for shared state.
-- `useState` from `preact/hooks` is *only* acceptable for strictly local, ephemeral
-  UI state (e.g., a dropdown open/close toggle that no other component cares about).
-- `useSignal` from `@preact/signals/react` is acceptable for component-scoped
-  signal state.
-
-## State Mutation Protocol
-When a tool or UI action needs to mutate application state, follow this sequence:
-
-1. **Snapshot first** (for undoable operations): Call `snapshotState()` exported from
-   `src/state/app-state.ts` *before* making any mutation. Failure to do this breaks
-   undo/redo.
-2. **Use named mutators**: Call the appropriate named mutator function exported from
-   `src/state/app-state.ts`. Do NOT write to a signal's `.value` directly from a tool
-   or UI component.
-3. **Run the solver** (if entities have constraints): After mutating entity positions
-   or relationships, call `runSolverOnActivePage()` from `src/state/app-state.ts`.
-4. **Trust reactivity**: Do not manually force re-renders. Signal changes automatically
-   propagate to all subscribers.
-
-## Prohibited Patterns
-- ❌ `someSignal.value.push(item)` — never mutate arrays in signals in-place.
-  Use `someSignal.value = [...someSignal.value, item]` via a named mutator.
-- ❌ `someSignal.value = newValue` from inside a tool file — call a named mutator instead.
-- ❌ `useEffect` to synchronise signals with other signals — use `computed()` or
-  `effect()` from `@preact/signals` directly.
-
-## `app-state.ts` Contribution Rules
-When adding new state to `app-state.ts`:
-- Group related signals together with a comment block (e.g., `// --- Selection State ---`).
-- Export signals with descriptive names (e.g., `selectedEntityIdsSignal`, not `sel`).
-- Every signal must have a corresponding TypeScript type annotation on its `signal<T>()`
-  call.
-- Mutator functions must be named imperatively: `setActiveTool()`, `addEntity()`,
-  `deleteSelectedEntities()`.
-
-## Preferences
-- User preferences (font size, UI scale, theme) are stored in `localStorage` via
-  `src/state/preferences.ts`. **Do not** store project data or entity state in
-  `localStorage`.
-
-[INJECT_STATE_VIOLATIONS_FROM_STAGE2_HERE]
-```
-
-### Populating `[INJECT_STATE_VIOLATIONS_FROM_STAGE2_HERE]`
-
-Replace with a `## Known Violations` section listing all Stage 2 findings from Check
-2.3 (Framework Anti-Patterns) and any SRP findings related to `app-state.ts` (Check 2.2b).
-
----
-
-## Step 4.3 — `arch-naming-invariants.md`
-
-This rule enforces the file naming and export conventions discovered in Stage 1.
-
-### Template
+### Generic Rule Template
 
 ```markdown
 ---
 trigger: glob
-description: "Enforces file naming conventions and structural invariants in Antigravity CAD."
-globs: src/**/*.ts, src/**/*.tsx
+description: "[DESCRIPTION_OF_WHAT_THIS_RULE_ENFORCES]"
+globs: [GLOB_PATTERN_FOR_RELEVANT_FILES]
 ---
 <!-- Generated by /arch-review | Last updated: [CURRENT_DATE] -->
 
-# Naming & Structural Invariants
+# [Rule Title]
 
-## File Naming Conventions
-These naming patterns are structural contracts — they allow the codebase to be navigated
-predictably and are enforced by this rule.
+[Introductory paragraph explaining what this rule enforces and why.]
 
-| Location | Pattern | Example | Prohibited |
-|----------|---------|---------|------------|
-| `src/tools/` | `[domain]-tool.ts` | `wall-tool.ts` | `WallTool.ts`, `wallTool.ts` |
-| `src/tools/` | `[domain]-tool.test.ts` | `wall-tool.test.ts` | Separate test directory |
-| `src/ui/` | `[domain]-panel.tsx` | `properties-panel.tsx` | `.jsx`, `.js` extensions |
-| `src/ui/` | `[domain].tsx` for non-panel components | `toolbar.tsx` | |
-| `src/core/` | `[concept].ts` | `geometry.ts`, `types.ts` | No `.tsx` in core/ |
-| `src/canvas/` | descriptive noun | `draw-helpers.ts`, `viewport.ts` | |
-| `src/io/` | `[verb]-[format].ts` | `export-svg.ts` | |
-| CSS files | Co-located with component | `toolbar.css` next to `toolbar.tsx` | |
+## [Pattern Category 1]
 
-**kebab-case** for all filenames. No PascalCase or camelCase filenames.
+### Mandatory Patterns
+- **DO**: [Specific instruction for what the agent must do]
+- **DO**: [Another instruction]
 
-## Tool Implementation Contract
-Every file in `src/tools/` that defines a drawing/editing tool MUST:
-1. Export a class implementing the `Tool` interface from `src/tools/tool.ts`.
-2. Register itself in `src/tools/tool-registry.ts`.
-3. Be named `[domain]-tool.ts`.
-4. Have a co-located test file `[domain]-tool.test.ts`.
+### Prohibited Patterns
+- ❌ [Pattern description] — [Why it's prohibited]
+- ❌ [Pattern description] — [Why it's prohibited]
 
-## Export Conventions
-- **Named exports only**. No `default` exports anywhere in the project.
-- Signal names: suffix with `Signal` (e.g., `activeToolSignal`).
-- Mutator function names: imperative verbs (e.g., `addEntity`, `deleteEntity`).
-- Interface/Type names: `PascalCase` (e.g., `WallEntity`, `SnapPoint`).
-- Constants: `UPPER_SNAKE_CASE` (e.g., `GRID_SIZE`, `DEFAULT_WALL_THICKNESS`).
+## [Pattern Category 2]
+[Additional sections as needed]
 
-## Test File Co-location
-- Test files MUST be co-located with the source file they test.
-- Pattern: `[filename].test.ts` in the same directory as `[filename].ts`.
-- Do NOT create a top-level `tests/` or `__tests__/` directory.
+## Known Violations (as of [CURRENT_DATE])
 
-## No `index.ts` Barrel Files
-- Do not create `index.ts` barrel files in module directories unless explicitly
-  sanctioned. The project prefers direct, explicit imports that make dependencies
-  auditable.
-- **Exception**: `src/index.ts` at the source root is permitted.
-
-## CSS Co-location
-- Component-specific CSS must live in the same directory as its `.tsx` file.
-- Use BEM-inspired class naming: `[component]__[element]--[modifier]`.
-- Do not add inline `style={}` props for anything beyond trivial dynamic values
-  (e.g., a dynamic width). Prefer CSS custom properties for theming.
-
-[INJECT_NAMING_VIOLATIONS_FROM_STAGE2_HERE]
+[List relevant findings from Stage 2, or "✅ No violations detected."]
 ```
 
-### Populating `[INJECT_NAMING_VIOLATIONS_FROM_STAGE2_HERE]`
+### Archetype-Specific Content Guidance
 
-Replace with a `## Known Violations` section listing any Stage 2 findings related to
-naming, file organisation, or SRP violations discovered during the file walk.
+**arch-state-patterns.md** — populate with:
+- Which state library/approach is mandatory.
+- Signal/store/atom creation rules and naming conventions.
+- State mutation protocol (exact step sequence from discovery).
+- Prohibited state patterns (from framework-specific checks).
+- Contribution rules for the central state file.
+
+**arch-naming-invariants.md** — populate with:
+- File naming conventions per module (table: location, pattern, example).
+- Export conventions (named vs default, naming case rules).
+- Test file co-location rules.
+- Barrel file policy (if barrel files are used/prohibited).
+- CSS/styling file co-location rules (if applicable).
+
+**arch-api-contracts.md** — populate with:
+- Endpoint naming and URL structure conventions.
+- HTTP method usage rules.
+- Request/response format conventions.
+- Error response format.
+- Middleware ordering requirements.
+- Authentication/authorization patterns.
+
+**arch-data-access.md** — populate with:
+- Repository/DAO pattern rules (if used).
+- Query location rules (where database calls may live).
+- Migration naming and ordering conventions.
+- Transaction handling patterns.
+- Raw query restrictions.
+
+**arch-error-handling.md** — populate with:
+- Error type hierarchy (if centralised).
+- Error propagation rules (throw vs return vs Result type).
+- Logging requirements at error boundaries.
+- User-facing error message rules.
 
 ---
 
-## Step 4.4 — Final Verification
+## Step 4.5 — Populating Known Violations
 
-After writing all 3 rule files, verify:
-1. No existing rule file was modified (only `arch-*` files were touched).
-2. Every rule file has the correct frontmatter (`trigger`, `description`, `globs`).
-3. Every `[INJECT_*]` placeholder has been replaced with actual content.
-4. All dates match today's date.
+For every rule file, the `Known Violations` section must be populated with
+the relevant Stage 2 findings. Map findings to rule files by their `Check`
+field:
 
-Report to the main workflow which files were created vs. updated.
+| Check ID Pattern | Rule File |
+|-----------------|-----------|
+| U1*, U6* (layer/abstraction) | `arch-layer-boundaries.md` |
+| F-UI-1, F-UI-2, F-UI-3 (state/framework) | `arch-state-patterns.md` |
+| U2* (SRP/file size/naming) | `arch-naming-invariants.md` |
+| F-PY-1 to F-PY-4, F-NODE-1 to F-NODE-3 (API) | `arch-api-contracts.md` |
+| F-PY-3, F-NODE-3 (data access) | `arch-data-access.md` |
+| U5* (DRY), U4* (test coverage) | Distribute to most relevant file |
+
+If a finding doesn't map cleanly, include it in `arch-layer-boundaries.md`
+(the catch-all).
+
+---
+
+## Step 4.6 — Final Verification
+
+After writing all rule files, verify:
+
+1. **No existing non-`arch-` rule file was modified.** List the existing
+   rule files you read and confirm none were written to.
+2. **Every rule file has correct frontmatter** (`trigger`, `description`,
+   `globs`). The `globs` pattern must match the project's actual source file
+   extensions (e.g., `*.ts, *.tsx` for TypeScript, `*.py` for Python).
+3. **No contradictions.** Review the non-contradiction check results from
+   Step 4.0. Report any contradictions that blocked rule generation.
+4. **All `Known Violations` sections are populated** (or marked with ✅).
+5. **All dates are today's date.**
+
+### Console Output
+
+Report:
+- How many rule files were created vs. updated.
+- Whether any rules were blocked due to contradictions (list them).
