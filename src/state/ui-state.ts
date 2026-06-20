@@ -58,7 +58,7 @@ export function setUiScale(scale: number) {
 
 export function pushCommandMessage(msg: string) {
   commandLineMessagesSignal.value = [
-    ...commandLineMessagesSignal.value.slice(-20),
+    ...commandLineMessagesSignal.value.slice(-19),
     msg,
   ];
 }
