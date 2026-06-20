@@ -1,18 +1,9 @@
 import {Entity, Constraint, Layer, UnitSystem} from '../core/types';
 import {ViewportMath} from '../core/viewport-math';
-import {drawWalls, drawSelectionHandles, drawConstraint} from './draw-helpers';
-
-import {
-  drawDoor,
-  drawWindow,
-  drawStairs,
-  drawLine,
-  drawRect,
-  drawCircle,
-  drawArc,
-  drawDimension,
-  drawText,
-} from './draw-helpers';
+import {drawWalls} from './renderers/wall-renderer';
+import {drawSelectionHandles} from './renderers/selection-renderer';
+import {drawConstraint} from './renderers/constraint-renderer';
+import {RendererRegistry} from './renderers/registry';
 
 export function clearCanvas(
   ctx: CanvasRenderingContext2D,
@@ -61,43 +52,18 @@ export function drawEntity(
   zoom: number,
   layers: Layer[],
 ) {
-  switch (ent.type) {
-    case 'wall':
-      drawWalls(
-        ctx,
-        [ent as any],
-        new Set(isSelected ? [ent.id] : []),
-        layers,
-        zoom,
-      );
-      break;
-    case 'door':
-      drawDoor(ctx, ent, entities, isSelected, color, zoom);
-      break;
-    case 'window':
-      drawWindow(ctx, ent, entities, isSelected, color, zoom);
-      break;
-    case 'stairs':
-      drawStairs(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'line':
-      drawLine(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'rect':
-      drawRect(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'circle':
-      drawCircle(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'arc':
-      drawArc(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'dimension':
-      drawDimension(ctx, ent, isSelected, color, unitSystem, zoom);
-      break;
-    case 'text':
-      drawText(ctx, ent, isSelected, color, zoom);
-      break;
+  const renderer = RendererRegistry[ent.type];
+  if (renderer) {
+    renderer({
+      ctx,
+      entity: ent as any,
+      entities,
+      layers,
+      unitSystem,
+      zoom,
+      isSelected,
+      color,
+    });
   }
 }
 
