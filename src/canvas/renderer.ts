@@ -10,7 +10,7 @@ import {
   drawAllSelectionHandles,
   drawUCS,
 } from './render-helpers';
-import {drawSnapIndicator} from './draw-helpers';
+import {drawSnapIndicator} from './renderers/snap-renderer';
 
 export interface RenderState {
   ctx: CanvasRenderingContext2D;
