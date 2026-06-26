@@ -1,26 +1,72 @@
-import {EntityType} from '../../core/types';
+import {EntityType, WallEntity} from '../../core/types';
 import {RenderFunction} from '../types';
+import {Canvas2DRenderer} from '../canvas-renderer';
+import * as entityRenderers from '../../io/entity-renderers';
 
-import {renderWall} from './wall-renderer';
-import {renderDoor} from './door-renderer';
-import {renderWindow} from './window-renderer';
-import {renderStairs} from './stairs-renderer';
-import {renderLine} from './line-renderer';
-import {renderRect} from './rect-renderer';
-import {renderCircle} from './circle-renderer';
-import {renderArc} from './arc-renderer';
-import {renderDimension} from './dimension-renderer';
-import {renderText} from './text-renderer';
-
+/**
+ * Registry mapping each entity type to its canvas drawing delegation.
+ * Translates standard Preact canvas render context to generic Renderer calls.
+ */
 export const RendererRegistry: Record<EntityType, RenderFunction<any>> = {
-  wall: renderWall,
-  door: renderDoor,
-  window: renderWindow,
-  stairs: renderStairs,
-  line: renderLine,
-  rect: renderRect,
-  circle: renderCircle,
-  arc: renderArc,
-  dimension: renderDimension,
-  text: renderText,
+  wall: context => {
+    const {ctx, entity, entities, isSelected, color, zoom} = context;
+    const allWalls = entities.filter(e => e.type === 'wall') as WallEntity[];
+    const canvasRenderer = new Canvas2DRenderer(ctx, zoom, isSelected, color);
+    entityRenderers.renderWalls([entity], allWalls, canvasRenderer);
+  },
+  door: context => {
+    const {ctx, entity, entities, isSelected, color, zoom} = context;
+    const wall = entities.find(e => e.id === entity.wallId) as
+      | WallEntity
+      | undefined;
+    if (wall) {
+      const canvasRenderer = new Canvas2DRenderer(ctx, zoom, isSelected, color);
+      entityRenderers.renderDoor(entity, wall, canvasRenderer);
+    }
+  },
+  window: context => {
+    const {ctx, entity, entities, isSelected, color, zoom} = context;
+    const wall = entities.find(e => e.id === entity.wallId) as
+      | WallEntity
+      | undefined;
+    if (wall) {
+      const canvasRenderer = new Canvas2DRenderer(ctx, zoom, isSelected, color);
+      entityRenderers.renderWindow(entity, wall, canvasRenderer);
+    }
+  },
+  stairs: context => {
+    const {ctx, entity, isSelected, color, zoom} = context;
+    const canvasRenderer = new Canvas2DRenderer(ctx, zoom, isSelected, color);
+    entityRenderers.renderStairs(entity, canvasRenderer);
+  },
+  line: context => {
+    const {ctx, entity, isSelected, color, zoom} = context;
+    const canvasRenderer = new Canvas2DRenderer(ctx, zoom, isSelected, color);
+    entityRenderers.renderLine(entity, canvasRenderer);
+  },
+  rect: context => {
+    const {ctx, entity, isSelected, color, zoom} = context;
+    const canvasRenderer = new Canvas2DRenderer(ctx, zoom, isSelected, color);
+    entityRenderers.renderRect(entity, canvasRenderer);
+  },
+  circle: context => {
+    const {ctx, entity, isSelected, color, zoom} = context;
+    const canvasRenderer = new Canvas2DRenderer(ctx, zoom, isSelected, color);
+    entityRenderers.renderCircle(entity, canvasRenderer);
+  },
+  arc: context => {
+    const {ctx, entity, isSelected, color, zoom} = context;
+    const canvasRenderer = new Canvas2DRenderer(ctx, zoom, isSelected, color);
+    entityRenderers.renderArc(entity, canvasRenderer);
+  },
+  dimension: context => {
+    const {ctx, entity, isSelected, color, zoom, unitSystem} = context;
+    const canvasRenderer = new Canvas2DRenderer(ctx, zoom, isSelected, color);
+    entityRenderers.renderDimension(entity, unitSystem, canvasRenderer);
+  },
+  text: context => {
+    const {ctx, entity, isSelected, color, zoom} = context;
+    const canvasRenderer = new Canvas2DRenderer(ctx, zoom, isSelected, color);
+    entityRenderers.renderText(entity, canvasRenderer);
+  },
 };

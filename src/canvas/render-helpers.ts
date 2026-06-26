@@ -1,6 +1,5 @@
 import {Entity, Constraint, Layer, UnitSystem} from '../core/types';
 import {ViewportMath} from '../core/viewport-math';
-import {drawWalls} from './renderers/wall-renderer';
 import {drawSelectionHandles} from './renderers/selection-renderer';
 import {drawConstraint} from './renderers/constraint-renderer';
 import {RendererRegistry} from './renderers/registry';
@@ -118,9 +117,38 @@ export function drawAllEntities(
     return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
   });
 
-  const walls = entities.filter(e => e.type === 'wall') as any[];
-  if (walls.length > 0) {
-    drawWalls(ctx, walls, selection, layers, zoom);
+  const walls = entities.filter(e => e.type === 'wall');
+  for (const wall of walls) {
+    const isSelected = selection.has(wall.id);
+    const isHovered = wall.id === hoveredEntityId;
+
+    if (isHovered && !isSelected) {
+      ctx.save();
+      ctx.shadowColor = '#22d3ee';
+      ctx.shadowBlur = 10 / zoom;
+    }
+
+    const layer = layers.find(l => l.id === wall.layerId) || layers[0];
+    let color = layer?.color || '#c8cad4';
+    if (wall.color) color = wall.color;
+    if (isHovered && !isSelected) {
+      color = '#67e8f9';
+    }
+
+    drawEntity(
+      ctx,
+      wall,
+      entities,
+      isSelected,
+      color,
+      unitSystem,
+      zoom,
+      layers,
+    );
+
+    if (isHovered && !isSelected) {
+      ctx.restore();
+    }
   }
 
   for (const ent of sortedEntities) {

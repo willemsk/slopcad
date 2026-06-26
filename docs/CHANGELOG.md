@@ -4,6 +4,41 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ---
 
+### [WARN-001] & [WARN-002] — Unify rendering logic and implement IO test suites
+- **Date**: 2026-06-26
+- **Commit**: `[Pending Commit]`
+- **Files Changed**: 18 files, +1148 insertions, -798 deletions
+- **Tests**: ✅ 129 passed, 0 failed (Added new test suites `src/io/serialize.test.ts`, `src/io/entity-renderers.test.ts`, `src/io/export-svg.test.ts`)
+- **Details**: Unified rendering logic between the main editor viewport (Canvas2D) and SVG export using a generic `Renderer` interface. Implemented the `Canvas2DRenderer` class under `src/canvas/canvas-renderer.ts` to map the generic interface calls to the HTML5 Canvas 2D API, while handling selection and hover style overrides. Ported and consolidated wall corner mitering and T-junction gap calculations to the batch `renderWalls` function in `src/io/entity-renderers.ts` to ensure SVG export matches the canvas view perfectly. Deleted 10 redundant Canvas2D-specific entity renderers under `src/canvas/renderers/` and refactored the drawing registry to use the unified entity rendering functions. Finally, introduced 3 new Vitest suites under `src/io/` covering serialization validation, SVG page export generation, and comprehensive coordinates/primitives mock rendering.
+
+<details>
+<summary>Files</summary>
+
+| Status | File |
+|--------|------|
+| Added | `src/canvas/canvas-renderer.ts` |
+| Added | `src/io/entity-renderers.test.ts` |
+| Added | `src/io/export-svg.test.ts` |
+| Added | `src/io/serialize.test.ts` |
+| Modified | `src/canvas/render-helpers.ts` |
+| Modified | `src/canvas/renderers/registry.ts` |
+| Modified | `src/io/entity-renderers.ts` |
+| Modified | `src/io/export-svg.ts` |
+| Deleted | `src/canvas/renderers/arc-renderer.ts` |
+| Deleted | `src/canvas/renderers/circle-renderer.ts` |
+| Deleted | `src/canvas/renderers/dimension-renderer.ts` |
+| Deleted | `src/canvas/renderers/door-renderer.ts` |
+| Deleted | `src/canvas/renderers/line-renderer.ts` |
+| Deleted | `src/canvas/renderers/rect-renderer.ts` |
+| Deleted | `src/canvas/renderers/stairs-renderer.ts` |
+| Deleted | `src/canvas/renderers/text-renderer.ts` |
+| Deleted | `src/canvas/renderers/wall-renderer.ts` |
+| Deleted | `src/canvas/renderers/window-renderer.ts` |
+
+</details>
+
+---
+
 ### [CRIT-007] & [CRIT-008] — Decompose monolithic Canvas component and extract Selection hit-testing
 - **Date**: 2026-06-26
 - **Commit**: `e8c5fb9`
