@@ -19,6 +19,7 @@ export function useViewportInteraction(
     if (!canvas) return;
 
     const handleWheel = (e: WheelEvent) => {
+      if (!viewportRef.current) return;
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
       const screenPos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
@@ -40,7 +41,7 @@ export function useViewportInteraction(
     lastMousePosRef.current = screenPos;
     // Middle button or Space+LeftClick pans
 
-    const isSpacePressed = (window as any).isSpacePressed;
+    const isSpacePressed = window.isSpacePressed;
     if (e.button === 1 || (e.button === 0 && isSpacePressed)) {
       isPanningRef.current = true;
       canvas.style.cursor = 'grabbing';
@@ -50,7 +51,7 @@ export function useViewportInteraction(
   };
 
   const updatePanning = (dx: number, dy: number): boolean => {
-    if (isPanningRef.current) {
+    if (isPanningRef.current && viewportRef.current) {
       viewportRef.current.pan(dx, dy);
       triggerRenderSignal.value = {};
       return true;
@@ -65,7 +66,7 @@ export function useViewportInteraction(
     if (isPanningRef.current) {
       isPanningRef.current = false;
 
-      const isSpacePressed = (window as any).isSpacePressed;
+      const isSpacePressed = window.isSpacePressed;
       canvas.style.cursor = isSpacePressed ? 'grab' : 'default';
       return true;
     }

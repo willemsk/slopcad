@@ -88,10 +88,10 @@ export function CommandLine() {
     <div className="command-line-area" style={{height: `${height}px`}}>
       <div
         className="command-line-drag-handle"
-        onPointerDown={handlePointerDown as any}
-        onPointerMove={handlePointerMove as any}
-        onPointerUp={handlePointerUp as any}
-        onPointerCancel={handlePointerUp as any}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
       >
         <div className="drag-lines"></div>
       </div>

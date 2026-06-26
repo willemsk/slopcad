@@ -11,28 +11,29 @@ export function drawSelectionHandles(
   if (
     entity.type === 'wall' ||
     entity.type === 'line' ||
-    entity.type === 'stairs' ||
-    entity.type === 'dimension'
+    entity.type === 'stairs'
   ) {
-    pts.push(
-      (entity as any).start || (entity as any).p1,
-      (entity as any).end || (entity as any).p2,
-    );
+    pts.push(entity.start, entity.end);
+  } else if (entity.type === 'dimension') {
+    pts.push(entity.p1, entity.p2);
   } else if (entity.type === 'rect') {
-    const r = entity as any;
-    pts.push(r.p1, r.p2, {x: r.p1.x, y: r.p2.y}, {x: r.p2.x, y: r.p1.y});
+    pts.push(
+      entity.p1,
+      entity.p2,
+      {x: entity.p1.x, y: entity.p2.y},
+      {x: entity.p2.x, y: entity.p1.y},
+    );
   } else if (entity.type === 'circle' || entity.type === 'arc') {
-    pts.push((entity as any).center);
+    pts.push(entity.center);
     if (entity.type === 'circle') {
-      const c = entity as any;
-      pts.push({x: c.center.x + c.radius, y: c.center.y});
+      pts.push({x: entity.center.x + entity.radius, y: entity.center.y});
     }
   } else if (entity.type === 'text') {
-    pts.push((entity as any).position);
+    pts.push(entity.position);
   } else if (entity.type === 'door' || entity.type === 'window') {
-    const wall = entities.find(e => e.id === (entity as any).wallId) as any;
-    if (wall) {
-      pts.push(lerp(wall.start, wall.end, (entity as any).position));
+    const wall = entities.find(e => e.id === entity.wallId);
+    if (wall && wall.type === 'wall') {
+      pts.push(lerp(wall.start, wall.end, entity.position));
     }
   }
 

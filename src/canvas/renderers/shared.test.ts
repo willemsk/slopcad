@@ -49,7 +49,6 @@ describe('shared renderer utilities', () => {
       start: {x: 0, y: 0},
       end: {x: 1, y: 1},
       thickness: 0.1,
-      height: 2,
     };
     const line: LineEntity = {
       id: 'l1',

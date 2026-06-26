@@ -1,6 +1,6 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
-import {Entity, DoorEntity} from '../../core/types';
+import {Entity, DoorEntity, WallEntity} from '../../core/types';
 import {dist} from '../../core/geometry';
 import {formatLength, parseLength} from '../../core/units';
 import {activePageSignal} from '../../state/project-state';
@@ -52,10 +52,10 @@ export function DoorParams({
               'posDist',
               (() => {
                 const wall = page.entities.find(
-                  e => e.id === (activeEntity as any).wallId,
-                ) as any;
+                  e => e.id === activeEntity.wallId,
+                ) as WallEntity | undefined;
                 const wallLength = wall ? dist(wall.start, wall.end) : 0;
-                const pos = (activeEntity as any).position;
+                const pos = activeEntity.position;
                 const currentDist = distFromStart
                   ? pos * wallLength
                   : (1 - pos) * wallLength;
@@ -73,20 +73,22 @@ export function DoorParams({
                 unitSystem,
               );
               const wall = page.entities.find(
-                w => w.id === (activeEntity as any).wallId,
-              ) as any;
+                w => w.id === activeEntity.wallId,
+              ) as WallEntity | undefined;
               const wallLength = wall ? dist(wall.start, wall.end) : 0;
 
               if (m !== null && wallLength > 0) {
                 let newPos = distFromStart
                   ? m / wallLength
                   : 1 - m / wallLength;
-                const minT = (activeEntity as any).width / 2 / wallLength;
+                const minT = activeEntity.width / 2 / wallLength;
                 const maxT = 1 - minT;
                 newPos = Math.max(minT, Math.min(maxT, newPos));
 
                 commitProperty(ent => {
-                  (ent as any).position = newPos;
+                  if (ent.type === 'door') {
+                    ent.position = newPos;
+                  }
                 });
               } else {
                 setLocalVals({});

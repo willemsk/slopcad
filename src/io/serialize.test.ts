@@ -5,8 +5,12 @@ import {Project} from '../core/types';
 describe('Project Serialization', () => {
   const mockProject: Project = {
     name: 'Test Project',
+    created: 0,
+    modified: 0,
     activePageIndex: 0,
     unitSystem: 'metric',
+    scale: 1,
+    activeLayerId: '0',
     layers: [
       {
         id: '0',
@@ -18,6 +22,7 @@ describe('Project Serialization', () => {
     ],
     pages: [
       {
+        id: 'p1',
         name: 'Page 1',
         entities: [],
         constraints: [],

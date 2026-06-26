@@ -56,13 +56,16 @@ export function StairsParams({
         <span className="property-label">Direction</span>
         <div className="property-value">
           <select
-            value={(activeEntity as StairsEntity).direction}
+            value={activeEntity.direction}
             onChange={e => {
-              commitProperty(ent => {
-                (ent as StairsEntity).direction = (
-                  e.target as HTMLSelectElement
-                ).value as any;
-              });
+              const val = (e.target as HTMLSelectElement).value;
+              if (val === 'up' || val === 'down') {
+                commitProperty(ent => {
+                  if (ent.type === 'stairs') {
+                    ent.direction = val;
+                  }
+                });
+              }
             }}
           >
             <option value="up">Going UP</option>
