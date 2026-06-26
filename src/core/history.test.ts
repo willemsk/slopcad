@@ -1,6 +1,6 @@
 import {describe, it, expect} from 'vitest';
 import {HistoryManager} from './history';
-import {Entity, Constraint} from './types';
+import {Entity, Constraint, LineEntity} from './types';
 
 describe('HistoryManager', () => {
   it('pushes state and manages undo/redo', () => {
@@ -35,14 +35,14 @@ describe('HistoryManager', () => {
     // Undo
     const previous = history.undo(e2, c1);
     expect(previous).not.toBeNull();
-    expect((previous?.entities[0] as any).end?.x).toBe(10);
+    expect((previous?.entities[0] as LineEntity).end?.x).toBe(10);
     expect(history.canUndo()).toBe(false);
     expect(history.canRedo()).toBe(true);
 
     // Redo
     const next = history.redo(previous!.entities, previous!.constraints);
     expect(next).not.toBeNull();
-    expect((next?.entities[0] as any).end?.x).toBe(20);
+    expect((next?.entities[0] as LineEntity).end?.x).toBe(20);
     expect(history.canUndo()).toBe(true);
     expect(history.canRedo()).toBe(false);
   });

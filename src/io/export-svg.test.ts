@@ -55,7 +55,7 @@ describe('SVG Exporter', () => {
 
     const createElementSpy = vi
       .spyOn(document, 'createElement')
-      .mockReturnValue(anchorMock as any);
+      .mockReturnValue(anchorMock as unknown as HTMLAnchorElement);
 
     vi.useFakeTimers();
 

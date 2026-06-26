@@ -55,7 +55,7 @@ export function drawEntity(
   if (renderer) {
     renderer({
       ctx,
-      entity: ent as any,
+      entity: ent,
       entities,
       layers,
       unitSystem,

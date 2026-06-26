@@ -68,9 +68,8 @@ export class ViewportMath {
 
     for (const ent of entities) {
       if (ent.type === 'wall' || ent.type === 'line' || ent.type === 'stairs') {
-        const e = ent as any;
-        expandBBox(e.start);
-        expandBBox(e.end);
+        expandBBox(ent.start);
+        expandBBox(ent.end);
       } else if (ent.type === 'rect') {
         const r = ent;
         expandBBox(r.p1);

@@ -9,6 +9,7 @@ import {
   angle,
 } from '../../core/geometry';
 import {formatLength} from '../../core/units';
+import {getEntityPoint} from '../../core/entity';
 
 export function drawConstraint(
   ctx: CanvasRenderingContext2D,
@@ -22,11 +23,8 @@ export function drawConstraint(
   for (const ref of constraint.pointRefs || []) {
     const ent = entities.find(e => e.id === ref.entityId);
     if (!ent) continue;
-    if (ref.pointKey === 'start') points.push((ent as any).start);
-    else if (ref.pointKey === 'end') points.push((ent as any).end);
-    else if (ref.pointKey === 'center') points.push((ent as any).center);
-    else if (ref.pointKey === 'p1') points.push((ent as any).p1);
-    else if (ref.pointKey === 'p2') points.push((ent as any).p2);
+    const pt = getEntityPoint(ent, ref.pointKey);
+    if (pt) points.push(pt);
   }
 
   if (points.length === 0) return;

@@ -14,7 +14,7 @@ import {
 } from './project-state';
 import {selectionSignal} from './selection-state';
 import {activePromptSignal} from './ui-state';
-import {Entity} from '../core/types';
+import {Entity, LineEntity} from '../core/types';
 
 describe('Simple Constraint Actions', () => {
   beforeEach(() => {
@@ -45,8 +45,8 @@ describe('Simple Constraint Actions', () => {
     expect(activePageSignal.value.constraints[0].type).toBe('horizontal');
 
     // The solver should have run, modifying L1 to be horizontal
-    const line = activePageSignal.value.entities[0];
-    expect((line as any).start?.y).toBeCloseTo((line as any).end?.y as number);
+    const line = activePageSignal.value.entities[0] as LineEntity;
+    expect(line.start.y).toBeCloseTo(line.end.y);
   });
 
   it('adds a vertical constraint and solves', () => {
@@ -68,8 +68,8 @@ describe('Simple Constraint Actions', () => {
     expect(activePageSignal.value.constraints[0].type).toBe('vertical');
 
     // The solver should have run, modifying L1 to be vertical
-    const line = activePageSignal.value.entities[0];
-    expect((line as any).start?.x).toBeCloseTo((line as any).end?.x as number);
+    const line = activePageSignal.value.entities[0] as LineEntity;
+    expect(line.start.x).toBeCloseTo(line.end.x);
   });
 
   it('adds a length constraint when prompt is resolved', async () => {

@@ -7,7 +7,7 @@ import {
   runSolverOnActivePage,
   setUnitSystem,
 } from './project-state';
-import {Entity} from '../core/types';
+import {Entity, WallEntity} from '../core/types';
 
 describe('Project State', () => {
   beforeEach(() => {
@@ -56,8 +56,8 @@ describe('Project State', () => {
 
     runSolverOnActivePage();
 
-    const solvedWall = activePageSignal.value.entities[0];
-    expect((solvedWall as any).start.y).toBeCloseTo((solvedWall as any).end.y); // start.y should equal end.y after horizontal constraint solve
+    const solvedWall = activePageSignal.value.entities[0] as WallEntity;
+    expect(solvedWall.start.y).toBeCloseTo(solvedWall.end.y); // start.y should equal end.y after horizontal constraint solve
   });
 
   it('sets unit system and triggers render signal', () => {

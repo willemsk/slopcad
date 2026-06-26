@@ -31,6 +31,7 @@ function WallLineGeometry({
   handleKeyDownCommit,
   setLocalVals,
 }: Props) {
+  if (activeEntity.type !== 'wall' && activeEntity.type !== 'line') return null;
   const fmt = (v: number) => formatLength(v, unitSystem);
   return (
     <div>
@@ -38,7 +39,7 @@ function WallLineGeometry({
         <span className="property-label">Start X</span>
         <div className="property-value">
           <span className="property-value-text">
-            {fmt((activeEntity as any).start.x)}
+            {fmt(activeEntity.start.x)}
           </span>
         </div>
       </div>
@@ -47,7 +48,7 @@ function WallLineGeometry({
         <span className="property-label">Start Y</span>
         <div className="property-value">
           <span className="property-value-text">
-            {fmt((activeEntity as any).start.y)}
+            {fmt(activeEntity.start.y)}
           </span>
         </div>
       </div>
@@ -55,18 +56,14 @@ function WallLineGeometry({
       <div className="property-item">
         <span className="property-label">End X</span>
         <div className="property-value">
-          <span className="property-value-text">
-            {fmt((activeEntity as any).end.x)}
-          </span>
+          <span className="property-value-text">{fmt(activeEntity.end.x)}</span>
         </div>
       </div>
 
       <div className="property-item">
         <span className="property-label">End Y</span>
         <div className="property-value">
-          <span className="property-value-text">
-            {fmt((activeEntity as any).end.y)}
-          </span>
+          <span className="property-value-text">{fmt(activeEntity.end.y)}</span>
         </div>
       </div>
 
@@ -117,7 +114,7 @@ function WallLineGeometry({
             value={getVal(
               'length',
               formatLength(
-                dist((activeEntity as any).start, (activeEntity as any).end),
+                dist(activeEntity.start, activeEntity.end),
                 unitSystem,
               ),
             )}
@@ -133,19 +130,21 @@ function WallLineGeometry({
               );
               if (m !== null && m > 0) {
                 commitProperty(ent => {
-                  const start = (ent as any).start;
-                  const end = (ent as any).end;
-                  const dir = sub(end, start);
-                  const currentL = dist(start, end);
-                  if (currentL > 0) {
-                    const u = {
-                      x: dir.x / currentL,
-                      y: dir.y / currentL,
-                    };
-                    (ent as any).end = {
-                      x: start.x + u.x * m,
-                      y: start.y + u.y * m,
-                    };
+                  if (ent.type === 'wall' || ent.type === 'line') {
+                    const start = ent.start;
+                    const end = ent.end;
+                    const dir = sub(end, start);
+                    const currentL = dist(start, end);
+                    if (currentL > 0) {
+                      const u = {
+                        x: dir.x / currentL,
+                        y: dir.y / currentL,
+                      };
+                      ent.end = {
+                        x: start.x + u.x * m,
+                        y: start.y + u.y * m,
+                      };
+                    }
                   }
                 });
               } else {
@@ -314,9 +313,11 @@ function GeneralElementGeometry({
             value={getVal(
               'width',
               formatLength(
-                (activeEntity as any).width ||
-                  (activeEntity as any).measuredLength ||
-                  0,
+                activeEntity.type === 'door' ||
+                  activeEntity.type === 'window' ||
+                  activeEntity.type === 'stairs'
+                  ? activeEntity.width
+                  : 0,
                 unitSystem,
               ),
             )}
@@ -332,7 +333,13 @@ function GeneralElementGeometry({
               );
               if (m !== null && m > 0 && activeEntity.type !== 'dimension') {
                 commitProperty(ent => {
-                  (ent as any).width = m;
+                  if (
+                    ent.type === 'door' ||
+                    ent.type === 'window' ||
+                    ent.type === 'stairs'
+                  ) {
+                    ent.width = m;
+                  }
                 });
               } else {
                 setLocalVals({});

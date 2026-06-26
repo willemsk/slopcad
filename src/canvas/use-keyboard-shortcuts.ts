@@ -1,6 +1,12 @@
 import {RefObject} from 'preact';
 import {useEffect} from 'preact/hooks';
 import {Tool} from '../tools/tool';
+
+declare global {
+  interface Window {
+    isSpacePressed?: boolean;
+  }
+}
 import {
   undoAction,
   redoAction,
@@ -38,7 +44,7 @@ export function useKeyboardShortcuts(
       if (e.code === 'Space') {
         e.preventDefault();
 
-        (window as any).isSpacePressed = true;
+        window.isSpacePressed = true;
         if (canvasRef.current && !isPanningRef.current) {
           canvasRef.current.style.cursor = 'grab';
         }
@@ -88,7 +94,7 @@ export function useKeyboardShortcuts(
 
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
-        (window as any).isSpacePressed = false;
+        window.isSpacePressed = false;
         if (canvasRef.current) {
           canvasRef.current.style.cursor = 'default';
         }

@@ -4,6 +4,56 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ---
 
+### [WARN-003] & [WARN-005] — Resolve type safety bypasses and decompose icons module
+- **Date**: 2026-06-26
+- **Commit**: `[Pending Commit]`
+- **Files Changed**: 33 files, +873 insertions, -718 deletions
+- **Tests**: ✅ 144 passed, 0 failed
+- **Details**: Resolved all type safety bypasses (`as any` casts) across the entire codebase (including core, state, canvas, tools, UI, and test suites) to ensure 100% strict type safety compliance. Replaced unsafe casts with type-safe discriminated union checks and explicit, safe castings to specialized entity interfaces (e.g., `WallEntity` or `LineEntity`). Introduced `getEntityPoint` as a clean, type-safe point lookup helper and refactored `cloneEntity` with a type-safe `switch` statement to prevent spread mutation properties corruption. Additionally, decomposed the oversized `src/ui/icons.tsx` file (which exceeded 490 lines) into modular sub-files under a new `src/ui/icons/` directory: `editor-icons.tsx`, `file-icons.tsx`, and `ui-icons.tsx`. The main `src/ui/icons.tsx` file now acts as a clean, 3-line re-export hub to guarantee absolute zero disruption to importing consumer components.
+
+<details>
+<summary>Files</summary>
+
+| Status | File |
+|--------|------|
+| Added | `src/ui/icons/editor-icons.tsx` |
+| Added | `src/ui/icons/file-icons.tsx` |
+| Added | `src/ui/icons/ui-icons.tsx` |
+| Modified | `src/canvas/canvas-benchmark.test.ts` |
+| Modified | `src/canvas/render-helpers.ts` |
+| Modified | `src/canvas/renderers/constraint-renderer.ts` |
+| Modified | `src/canvas/renderers/registry.ts` |
+| Modified | `src/canvas/renderers/selection-renderer.ts` |
+| Modified | `src/canvas/renderers/shared.test.ts` |
+| Modified | `src/canvas/use-keyboard-shortcuts.ts` |
+| Modified | `src/canvas/use-viewport-interaction.ts` |
+| Modified | `src/core/entity.ts` |
+| Modified | `src/core/history.test.ts` |
+| Modified | `src/core/snap.ts` |
+| Modified | `src/core/solver.test.ts` |
+| Modified | `src/core/viewport-math.ts` |
+| Modified | `src/io/bounding-box.ts` |
+| Modified | `src/io/export-svg.test.ts` |
+| Modified | `src/io/serialize.test.ts` |
+| Modified | `src/state/constraint-actions.test.ts` |
+| Modified | `src/state/project-state.test.ts` |
+| Modified | `src/tools/door-tool.ts` |
+| Modified | `src/tools/select-tool.ts` |
+| Modified | `src/tools/wall-tool.ts` |
+| Modified | `src/tools/window-tool.ts` |
+| Modified | `src/ui/command-line.tsx` |
+| Modified | `src/ui/icons.tsx` |
+| Modified | `src/ui/properties/ConstraintProperties.tsx` |
+| Modified | `src/ui/properties/DoorParams.tsx` |
+| Modified | `src/ui/properties/GeometryProperties.tsx` |
+| Modified | `src/ui/properties/StairsParams.tsx` |
+| Modified | `src/ui/properties/WindowParams.tsx` |
+| Modified | `src/ui/properties/use-property-commit.ts` |
+
+</details>
+
+---
+
 ### [WARN-004] — Refactor oversized state slices and implement full actions test coverage
 - **Date**: 2026-06-26
 - **Commit**: `[Pending Commit]`
