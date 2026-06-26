@@ -1,16 +1,8 @@
 import {Tool} from './tool';
 import {Vec2, SnapResult, Entity, PointRef} from '../core/types';
 import {ViewportMath} from '../core/viewport-math';
-import {
-  dist,
-  distToSegment,
-  sub,
-  add,
-  normalize,
-  scale,
-  lerp,
-  projectPointT,
-} from '../core/geometry';
+import {dist, sub, add, lerp, projectPointT} from '../core/geometry';
+import {findEntityAt} from '../core/hit-test';
 import {solveConstraints} from '../core/solver';
 import {
   projectSignal,
@@ -99,7 +91,7 @@ export class SelectTool implements Tool {
     }
 
     // 2. Check if clicked on any entity (selection / drag)
-    const clickedEnt = this.findEntityAt(worldPos, page.entities, handleRadius);
+    const clickedEnt = findEntityAt(worldPos, page.entities, handleRadius);
     if (clickedEnt) {
       const isSelected = selectedIds.has(clickedEnt.id);
 
@@ -256,11 +248,7 @@ export class SelectTool implements Tool {
       const page = activePageSignal.value;
       const zoom = viewportSignal.value?.zoom || 100;
       const handleRadius = 8 / zoom;
-      const clickedEnt = this.findEntityAt(
-        worldPos,
-        page.entities,
-        handleRadius,
-      );
+      const clickedEnt = findEntityAt(worldPos, page.entities, handleRadius);
 
       if (clickedEnt) {
         const isSelected = selectionSignal.value.has(clickedEnt.id);
@@ -357,79 +345,6 @@ export class SelectTool implements Tool {
       ctx.stroke();
       ctx.restore();
     }
-  }
-
-  // Find entity under cursor
-  private findEntityAt(
-    pt: Vec2,
-    entities: Entity[],
-    hitRadius: number,
-  ): Entity | null {
-    let bestEnt: Entity | null = null;
-    let bestDist = hitRadius;
-
-    for (const ent of entities) {
-      if (ent.type === 'wall' || ent.type === 'line' || ent.type === 'stairs') {
-        const d = distToSegment(pt, (ent as any).start, (ent as any).end);
-        if (d < bestDist) {
-          bestDist = d;
-          bestEnt = ent;
-        }
-      } else if (ent.type === 'rect') {
-        const r = ent;
-        const d1 = distToSegment(pt, r.p1, {x: r.p2.x, y: r.p1.y});
-        const d2 = distToSegment(pt, {x: r.p2.x, y: r.p1.y}, r.p2);
-        const d3 = distToSegment(pt, r.p2, {x: r.p1.x, y: r.p2.y});
-        const d4 = distToSegment(pt, {x: r.p1.x, y: r.p2.y}, r.p1);
-        const d = Math.min(d1, d2, d3, d4);
-        if (d < bestDist) {
-          bestDist = d;
-          bestEnt = ent;
-        }
-      } else if (ent.type === 'circle' || ent.type === 'arc') {
-        const c = ent;
-        const d = Math.abs(dist(pt, c.center) - c.radius);
-        if (d < bestDist) {
-          bestDist = d;
-          bestEnt = ent;
-        }
-      } else if (ent.type === 'dimension') {
-        const dEnt = ent;
-        const u = normalize(sub(dEnt.p2, dEnt.p1));
-        const n = {x: -u.y, y: u.x};
-        const d1 = add(dEnt.p1, scale(n, dEnt.offset));
-        const d2 = add(dEnt.p2, scale(n, dEnt.offset));
-        const d = distToSegment(pt, d1, d2);
-        if (d < bestDist) {
-          bestDist = d;
-          bestEnt = ent;
-        }
-      } else if (ent.type === 'text') {
-        const d = dist(pt, ent.position);
-        if (d < bestDist) {
-          bestDist = d;
-          bestEnt = ent;
-        }
-      } else if (ent.type === 'door' || ent.type === 'window') {
-        const wall = entities.find(e => e.id === (ent as any).wallId) as any;
-        if (wall) {
-          const u = normalize(sub(wall.end, wall.start));
-          const center = lerp(wall.start, wall.end, (ent as any).position);
-          const w = (ent as any).width;
-          const d1 = sub(center, scale(u, w / 2));
-          const d2 = add(center, scale(u, w / 2));
-
-          // Bias distance slightly so doors/windows win over the underlying wall
-          const d = distToSegment(pt, d1, d2) - 0.001;
-          if (d < bestDist) {
-            bestDist = d;
-            bestEnt = ent;
-          }
-        }
-      }
-    }
-
-    return bestEnt;
   }
 
   private getEntityHandleKeys(entity: Entity): string[] {
