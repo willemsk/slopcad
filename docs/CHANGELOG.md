@@ -4,6 +4,30 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ---
 
+### [CRIT-007] & [CRIT-008] — Decompose monolithic Canvas component and extract Selection hit-testing
+- **Date**: 2026-06-26
+- **Commit**: `e8c5fb9`
+- **Files Changed**: 7 files, +481 insertions, -424 deletions
+- **Tests**: ✅ 112 passed, 0 failed (Added new test suite `src/core/hit-test.test.ts`)
+- **Details**: Refactored the monolithic `src/canvas/canvas-component.tsx` (which exceeded 550 lines) by decomposing it and separating concerns. Extracted mouse-based drag-to-pan/zoom viewport interactions into the `useViewportInteraction` hook, and keyboard listener interactions into the `useKeyboardShortcuts` hook. Deduplicated snapping logic using a central `computeEventSnap` helper function. Extracted selection hit-testing into a reusable core utility `src/core/hit-test.ts` (resolving CRIT-008) and integrated it into both the canvas component (hover detection) and `src/tools/select-tool.ts` (entity selection), keeping the canvas component under 290 lines.
+
+<details>
+<summary>Files</summary>
+
+| Status | File |
+|--------|------|
+| Modified | `src/canvas/canvas-component.tsx` |
+| Modified | `src/tools/select-tool.ts` |
+| Added | `src/core/hit-test.ts` |
+| Added | `src/core/hit-test.test.ts` |
+| Added | `src/canvas/snap-helper.ts` |
+| Added | `src/canvas/use-viewport-interaction.ts` |
+| Added | `src/canvas/use-keyboard-shortcuts.ts` |
+
+</details>
+
+---
+
 ### [CRIT-006] — Decompose monolithic toolbar component into sub-components
 - **Date**: 2026-06-26
 - **Commit**: `da10f7b00d18dbe99f0b5c72c78329f77b35b183`
