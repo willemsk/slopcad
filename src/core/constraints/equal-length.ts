@@ -36,8 +36,14 @@ export function solveEqualLength({
     if (lockedAB) targetL = lenAB;
     else if (lockedCD) targetL = lenCD;
 
-    const dirAB = normalize(sub(pB, pA));
-    const dirCD = normalize(sub(pD, pC));
+    let dirAB = normalize(sub(pB, pA));
+    if (dirAB.x === 0 && dirAB.y === 0) {
+      dirAB = {x: 1, y: 0};
+    }
+    let dirCD = normalize(sub(pD, pC));
+    if (dirCD.x === 0 && dirCD.y === 0) {
+      dirCD = {x: 1, y: 0};
+    }
 
     // Adjust AB
     if (!lockedAB) {
