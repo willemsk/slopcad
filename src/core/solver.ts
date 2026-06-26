@@ -1,4 +1,16 @@
-import {Entity, Constraint, PointRef, Vec2} from './types';
+import {
+  Entity,
+  Constraint,
+  PointRef,
+  Vec2,
+  WallEntity,
+  LineEntity,
+  StairsEntity,
+  RectEntity,
+  DimensionEntity,
+  CircleEntity,
+  ArcEntity,
+} from './types';
 import {cloneEntity} from './entity';
 import {
   dist,
@@ -28,16 +40,19 @@ export function getPointValue(entities: Entity[], ref: PointRef): Vec2 | null {
       entity.type === 'line' ||
       entity.type === 'stairs')
   ) {
-    return (entity as any)[key];
+    const segment = entity as WallEntity | LineEntity | StairsEntity;
+    return segment[key as 'start' | 'end'];
   }
   if (
     (key === 'p1' || key === 'p2') &&
     (entity.type === 'rect' || entity.type === 'dimension')
   ) {
-    return (entity as any)[key];
+    const rectOrDim = entity as RectEntity | DimensionEntity;
+    return rectOrDim[key as 'p1' | 'p2'];
   }
   if (key === 'center' && (entity.type === 'circle' || entity.type === 'arc')) {
-    return (entity as any).center;
+    const circleOrArc = entity as CircleEntity | ArcEntity;
+    return circleOrArc.center;
   }
   return null;
 }
@@ -62,18 +77,21 @@ export function setPointValue(
       entity.type === 'line' ||
       entity.type === 'stairs')
   ) {
-    (entity as any)[key] = {...val};
+    const segment = entity as WallEntity | LineEntity | StairsEntity;
+    segment[key as 'start' | 'end'] = {...val};
     return true;
   }
   if (
     (key === 'p1' || key === 'p2') &&
     (entity.type === 'rect' || entity.type === 'dimension')
   ) {
-    (entity as any)[key] = {...val};
+    const rectOrDim = entity as RectEntity | DimensionEntity;
+    rectOrDim[key as 'p1' | 'p2'] = {...val};
     return true;
   }
   if (key === 'center' && (entity.type === 'circle' || entity.type === 'arc')) {
-    (entity as any).center = {...val};
+    const circleOrArc = entity as CircleEntity | ArcEntity;
+    circleOrArc.center = {...val};
     return true;
   }
   return false;

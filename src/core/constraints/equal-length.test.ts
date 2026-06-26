@@ -48,4 +48,42 @@ describe('solveEqualLength', () => {
     // Target length is 15.
     expect(setPointValue).toHaveBeenCalledTimes(4);
   });
+
+  it('should handle zero-length/overlapping segments and move them to average length', () => {
+    const refA: PointRef = {entityId: 'e1', pointKey: 'start'};
+    const refB: PointRef = {entityId: 'e1', pointKey: 'end'};
+    const refC: PointRef = {entityId: 'e2', pointKey: 'start'};
+    const refD: PointRef = {entityId: 'e2', pointKey: 'end'};
+
+    const getPointValue = vi.fn((_, ref) => {
+      // e1 has zero length, e2 has length 10
+      if (ref === refA || ref === refB) return {x: 0, y: 0};
+      if (ref === refC) return {x: 10, y: 10};
+      if (ref === refD) return {x: 20, y: 10};
+      return null;
+    });
+    const setPointValue = vi.fn();
+    const isPointLocked = vi.fn(() => false);
+
+    const context = {
+      constraint: {
+        id: 'c1',
+        type: 'equal_length',
+        pointRefs: [refA, refB, refC, refD],
+      } as Constraint,
+      entities: [],
+      isPointLocked,
+      getPointValue,
+      setPointValue,
+    };
+
+    const error = solveEqualLength(context);
+    expect(error).toBe(10); // |0 - 10|
+
+    // Target length is (0 + 10) / 2 = 5.
+    // Midpoint of e1 is (0,0). Fallback direction is {x: 1, y: 0}.
+    // refA should move to -2.5, refB should move to 2.5.
+    expect(setPointValue).toHaveBeenCalledWith([], refA, {x: -2.5, y: 0});
+    expect(setPointValue).toHaveBeenCalledWith([], refB, {x: 2.5, y: 0});
+  });
 });
