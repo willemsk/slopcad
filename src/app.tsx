@@ -17,7 +17,7 @@ import {
   isLayerModalOpenSignal,
 } from './state/ui-state';
 import {clearSelection} from './state/selection-state';
-import {deleteSelectedAction} from './state/project-state';
+import {deleteSelectedAction} from './state/history-actions';
 import {DynamicPrompt} from './ui/dynamic-prompt';
 import {LayerModal} from './ui/layer-modal';
 import './app.css';

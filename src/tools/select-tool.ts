@@ -9,8 +9,8 @@ import {
   updateActivePage,
   activePageSignal,
   runSolverOnActivePage,
-  snapshotState,
 } from '../state/project-state';
+import {snapshotState} from '../state/history-actions';
 import {
   selectionSignal,
   clearSelection,

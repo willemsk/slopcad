@@ -5,9 +5,9 @@ import {createText} from '../core/entity';
 import {
   activePageSignal,
   updateActivePage,
-  snapshotState,
   projectSignal,
 } from '../state/project-state';
+import {snapshotState} from '../state/history-actions';
 import {selectEntity} from '../state/selection-state';
 import {requestPrompt} from '../state/ui-state';
 

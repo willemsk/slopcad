@@ -5,7 +5,7 @@ import {
   undoAction,
   redoAction,
   deleteSelectedAction,
-} from '../state/project-state';
+} from '../state/history-actions';
 import {
   isLayerModalOpenSignal,
   pushCommandMessage,

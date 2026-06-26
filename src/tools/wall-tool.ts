@@ -6,9 +6,9 @@ import {dist} from '../core/geometry';
 import {
   activePageSignal,
   updateActivePage,
-  snapshotState,
   projectSignal,
 } from '../state/project-state';
+import {snapshotState} from '../state/history-actions';
 import {previewEntitySignal, triggerRenderSignal} from '../state/ui-state';
 
 export class WallTool implements Tool {

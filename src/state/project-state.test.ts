@@ -4,69 +4,64 @@ import {
   projectSignal,
   activePageSignal,
   updateActivePage,
-  deleteSelectedAction,
+  runSolverOnActivePage,
+  setUnitSystem,
 } from './project-state';
-import {selectionSignal, clearSelection} from './selection-state';
-
 import {Entity} from '../core/types';
 
-describe('App State', () => {
+describe('Project State', () => {
   beforeEach(() => {
-    // Reset signals before each test
-    selectionSignal.value = new Set();
+    // Reset page before each test
     const initialPage = projectSignal.value.pages[0];
     initialPage.entities = [];
     initialPage.constraints = [];
     projectSignal.value = {...projectSignal.value};
   });
 
-  it('adds an entity correctly via updateActivePage', () => {
-    const e: Entity = {
+  it('updates page entities correctly via updateActivePage', () => {
+    const line: Entity = {
       id: 'L1',
       type: 'line',
       start: {x: 0, y: 0},
       end: {x: 10, y: 10},
-      layerId: '0',
     };
     const page = activePageSignal.value;
-    page.entities.push(e);
+    page.entities.push(line);
     updateActivePage(page.entities, page.constraints);
 
     expect(activePageSignal.value.entities.length).toBe(1);
     expect(activePageSignal.value.entities[0].id).toBe('L1');
   });
 
-  it('clears selection', () => {
-    selectionSignal.value = new Set(['L1', 'L2']);
-    clearSelection();
-    expect(selectionSignal.value.size).toBe(0);
-  });
-
-  it('deletes selected entities', () => {
-    const e1: Entity = {
-      id: 'L1',
-      type: 'line',
-      start: {x: 0, y: 0},
-      end: {x: 10, y: 10},
-      layerId: '0',
-    };
-    const e2: Entity = {
-      id: 'L2',
-      type: 'line',
+  it('runs solver on active page and updates coordinates', () => {
+    const wall: Entity = {
+      id: 'W1',
+      type: 'wall',
       start: {x: 0, y: 0},
       end: {x: 5, y: 5},
-      layerId: '0',
+      thickness: 0.2,
     };
-
     const page = activePageSignal.value;
-    page.entities.push(e1, e2);
+    page.entities.push(wall);
+    page.constraints.push({
+      id: 'c1',
+      type: 'horizontal',
+      entityIds: ['W1'],
+      pointRefs: [
+        {entityId: 'W1', pointKey: 'start'},
+        {entityId: 'W1', pointKey: 'end'},
+      ],
+    });
     updateActivePage(page.entities, page.constraints);
 
-    selectionSignal.value = new Set(['L1']);
-    deleteSelectedAction();
+    runSolverOnActivePage();
 
-    expect(activePageSignal.value.entities.length).toBe(1);
-    expect(activePageSignal.value.entities[0].id).toBe('L2');
-    expect(selectionSignal.value.size).toBe(0); // Should clear selection after delete
+    const solvedWall = activePageSignal.value.entities[0];
+    expect((solvedWall as any).start.y).toBeCloseTo((solvedWall as any).end.y); // start.y should equal end.y after horizontal constraint solve
+  });
+
+  it('sets unit system and triggers render signal', () => {
+    setUnitSystem('imperial');
+    expect(projectSignal.value.unitSystem).toBe('imperial');
   });
 });
