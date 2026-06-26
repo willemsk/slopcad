@@ -1,12 +1,9 @@
-import {Vec2} from '../core/types';
+import {Vec2, WallEntity, LineEntity} from '../core/types';
 import {generateId} from '../core/entity';
 import {solveConstraints} from '../core/solver';
 import {dist} from '../core/geometry';
-import {
-  activePageSignal,
-  snapshotState,
-  updateActivePage,
-} from './project-state';
+import {activePageSignal, updateActivePage} from './project-state';
+import {snapshotState} from './history-actions';
 import {selectionSignal} from './selection-state';
 import {viewportSignal} from './viewport-state';
 import {requestPrompt} from './ui-state';
@@ -89,14 +86,15 @@ export async function addLengthConstraintAction(targetVal?: number) {
   const ent = selectedEntities[0];
   if (!ent || (ent.type !== 'wall' && ent.type !== 'line')) return;
 
-  const currentLength = dist((ent as any).start, (ent as any).end);
+  const w = ent as WallEntity | LineEntity;
+  const currentLength = dist(w.start, w.end);
   let val = targetVal;
 
   if (val === undefined) {
     let screenPos: Vec2 | undefined;
     if (viewportSignal.value) {
-      const midX = ((ent as any).start.x + (ent as any).end.x) / 2;
-      const midY = ((ent as any).start.y + (ent as any).end.y) / 2;
+      const midX = (w.start.x + w.end.x) / 2;
+      const midY = (w.start.y + w.end.y) / 2;
       screenPos = viewportSignal.value.worldToScreen({x: midX, y: midY});
     }
 
@@ -131,74 +129,6 @@ export async function addLengthConstraintAction(targetVal?: number) {
   updateActivePage(solved, newConstraints);
 }
 
-export function addPerpendicularConstraintAction() {
-  const selection = selectionSignal.value;
-  const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter(
-    e => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
-  );
-
-  if (selectedEntities.length !== 2) {
-    window.alert(
-      'Please select exactly 2 walls/lines to make them perpendicular.',
-    );
-    return;
-  }
-
-  snapshotState();
-  const e1 = selectedEntities[0];
-  const e2 = selectedEntities[1];
-
-  const newConstraints = [...page.constraints];
-  newConstraints.push({
-    id: generateId(),
-    type: 'perpendicular',
-    entityIds: [e1.id, e2.id],
-    pointRefs: [
-      {entityId: e1.id, pointKey: 'start'},
-      {entityId: e1.id, pointKey: 'end'},
-      {entityId: e2.id, pointKey: 'start'},
-      {entityId: e2.id, pointKey: 'end'},
-    ],
-  });
-
-  const solved = solveConstraints(page.entities, newConstraints);
-  updateActivePage(solved, newConstraints);
-}
-
-export function addParallelConstraintAction() {
-  const selection = selectionSignal.value;
-  const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter(
-    e => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
-  );
-
-  if (selectedEntities.length !== 2) {
-    window.alert('Please select exactly 2 walls/lines to make them parallel.');
-    return;
-  }
-
-  snapshotState();
-  const e1 = selectedEntities[0];
-  const e2 = selectedEntities[1];
-
-  const newConstraints = [...page.constraints];
-  newConstraints.push({
-    id: generateId(),
-    type: 'parallel',
-    entityIds: [e1.id, e2.id],
-    pointRefs: [
-      {entityId: e1.id, pointKey: 'start'},
-      {entityId: e1.id, pointKey: 'end'},
-      {entityId: e2.id, pointKey: 'start'},
-      {entityId: e2.id, pointKey: 'end'},
-    ],
-  });
-
-  const solved = solveConstraints(page.entities, newConstraints);
-  updateActivePage(solved, newConstraints);
-}
-
 export function clearSelectedConstraintsAction() {
   const selection = selectionSignal.value;
   if (selection.size === 0) return;
@@ -210,165 +140,6 @@ export function clearSelectedConstraintsAction() {
   });
 
   updateActivePage(page.entities, newConstraints);
-}
-
-export function addCoincidentConstraintAction() {
-  const selection = selectionSignal.value;
-  const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter(
-    e =>
-      selection.has(e.id) &&
-      (e.type === 'wall' || e.type === 'line' || e.type === 'arc'),
-  );
-
-  if (selectedEntities.length !== 2) {
-    window.alert('Please select exactly 2 entities for coincident constraint.');
-    return;
-  }
-
-  snapshotState();
-  const e1 = selectedEntities[0] as any;
-  const e2 = selectedEntities[1] as any;
-
-  // For arcs/lines, check start and end
-  const getPts = (e: any) => {
-    const pts = [];
-    if (e.start) pts.push({key: 'start', pt: e.start});
-    if (e.end) pts.push({key: 'end', pt: e.end});
-    if (e.p1) pts.push({key: 'p1', pt: e.p1});
-    if (e.p2) pts.push({key: 'p2', pt: e.p2});
-    return pts;
-  };
-
-  const points1 = getPts(e1);
-  const points2 = getPts(e2);
-
-  let best = {p1: points1[0], p2: points2[0], d: Infinity};
-  for (const p1 of points1) {
-    for (const p2 of points2) {
-      const d = dist(p1.pt, p2.pt);
-      if (d < best.d) {
-        best = {p1, p2, d};
-      }
-    }
-  }
-
-  if (!best.p1 || !best.p2) return;
-
-  const newConstraints = [...page.constraints];
-  newConstraints.push({
-    id: generateId(),
-    type: 'coincident',
-    entityIds: [e1.id, e2.id],
-    pointRefs: [
-      {entityId: e1.id, pointKey: best.p1.key as any},
-      {entityId: e2.id, pointKey: best.p2.key as any},
-    ],
-  });
-
-  const solved = solveConstraints(page.entities, newConstraints);
-  updateActivePage(solved, newConstraints);
-}
-
-export function addCollinearConstraintAction() {
-  const selection = selectionSignal.value;
-  const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter(
-    e => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
-  );
-
-  if (selectedEntities.length !== 2) {
-    window.alert('Please select exactly 2 walls/lines to make them collinear.');
-    return;
-  }
-
-  snapshotState();
-  const e1 = selectedEntities[0];
-  const e2 = selectedEntities[1];
-
-  const newConstraints = [...page.constraints];
-  newConstraints.push({
-    id: generateId(),
-    type: 'collinear',
-    entityIds: [e1.id, e2.id],
-    pointRefs: [
-      {entityId: e1.id, pointKey: 'start'},
-      {entityId: e1.id, pointKey: 'end'},
-      {entityId: e2.id, pointKey: 'start'},
-      {entityId: e2.id, pointKey: 'end'},
-    ],
-  });
-
-  const solved = solveConstraints(page.entities, newConstraints);
-  updateActivePage(solved, newConstraints);
-}
-
-export function addConcentricConstraintAction() {
-  const selection = selectionSignal.value;
-  const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter(
-    e => selection.has(e.id) && (e.type === 'circle' || e.type === 'arc'),
-  );
-
-  if (selectedEntities.length !== 2) {
-    window.alert(
-      'Please select exactly 2 circles/arcs to make them concentric.',
-    );
-    return;
-  }
-
-  snapshotState();
-  const e1 = selectedEntities[0];
-  const e2 = selectedEntities[1];
-
-  const newConstraints = [...page.constraints];
-  newConstraints.push({
-    id: generateId(),
-    type: 'concentric',
-    entityIds: [e1.id, e2.id],
-    pointRefs: [
-      {entityId: e1.id, pointKey: 'center'},
-      {entityId: e2.id, pointKey: 'center'},
-    ],
-  });
-
-  const solved = solveConstraints(page.entities, newConstraints);
-  updateActivePage(solved, newConstraints);
-}
-
-export function addEqualLengthConstraintAction() {
-  const selection = selectionSignal.value;
-  const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter(
-    e => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
-  );
-
-  if (selectedEntities.length !== 2) {
-    window.alert(
-      'Please select exactly 2 walls/lines to make them equal length.',
-    );
-    return;
-  }
-
-  snapshotState();
-  const e1 = selectedEntities[0];
-  const e2 = selectedEntities[1];
-
-  const newConstraints = [...page.constraints];
-  newConstraints.push({
-    id: generateId(),
-    type: 'equal_length',
-    entityIds: [e1.id, e2.id],
-    pointRefs: [
-      {entityId: e1.id, pointKey: 'start'},
-      {entityId: e1.id, pointKey: 'end'},
-      {entityId: e2.id, pointKey: 'start'},
-      {entityId: e2.id, pointKey: 'end'},
-    ],
-  });
-
-  const solved = solveConstraints(page.entities, newConstraints);
-  updateActivePage(solved, newConstraints);
 }
 
 export async function addFixedAngleConstraintAction() {
@@ -383,7 +154,7 @@ export async function addFixedAngleConstraintAction() {
     return;
   }
 
-  const ent = selectedEntities[0] as any;
+  const ent = selectedEntities[0] as WallEntity | LineEntity;
   const currentAngleRad = Math.atan2(
     ent.end.y - ent.start.y,
     ent.end.x - ent.start.x,

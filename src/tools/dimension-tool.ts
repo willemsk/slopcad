@@ -6,9 +6,9 @@ import {dist, sub, dot, normalize} from '../core/geometry';
 import {
   activePageSignal,
   updateActivePage,
-  snapshotState,
   projectSignal,
 } from '../state/project-state';
+import {snapshotState} from '../state/history-actions';
 import {previewEntitySignal} from '../state/ui-state';
 
 export class DimensionTool implements Tool {

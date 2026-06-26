@@ -4,16 +4,18 @@ import {pushCommandMessage} from '../../state/ui-state';
 import {
   addHorizontalConstraintAction,
   addVerticalConstraintAction,
+  addLengthConstraintAction,
+  addFixedAngleConstraintAction,
+  clearSelectedConstraintsAction,
+} from '../../state/constraint-actions';
+import {
   addParallelConstraintAction,
   addPerpendicularConstraintAction,
   addCollinearConstraintAction,
   addCoincidentConstraintAction,
   addConcentricConstraintAction,
-  addLengthConstraintAction,
   addEqualLengthConstraintAction,
-  addFixedAngleConstraintAction,
-  clearSelectedConstraintsAction,
-} from '../../state/constraint-actions';
+} from '../../state/constraint-actions-relational';
 import {DimensionIcon, TextIcon} from '../icons';
 
 export function ConstraintsPanel() {

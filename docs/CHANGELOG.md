@@ -4,6 +4,49 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ---
 
+### [WARN-004] — Refactor oversized state slices and implement full actions test coverage
+- **Date**: 2026-06-26
+- **Commit**: `[Pending Commit]`
+- **Files Changed**: 26 files, +911 insertions, -471 deletions
+- **Tests**: ✅ 144 passed, 0 failed (Added new test suites `src/state/history-actions.test.ts`, `src/state/page-actions.test.ts`, and `src/state/constraint-actions-relational.test.ts`)
+- **Details**: Decomposed the oversized state slices `project-state.ts` and `constraint-actions.ts` to strictly satisfy the 300-line codebase threshold limit. Created dedicated sub-action modules: `history-actions.ts` (holding snapshots, undo, redo, and selected deletions), `page-actions.ts` (handling floor layout switching, additions, renaming, deletions, and overlay setups), and `constraint-actions-relational.ts` (handling coincident, collinear, concentric, equal length, perpendicular, and parallel constraints). Cleaned up type safety bypasses (`as any` casts) by using type checks and explicit interface casts. Finally, expanded the testing suite to include 5 robust test files in `src/state/` which assert undo/redo state restoration, layout CRUD flows, prompt/confirm dialog triggers, and all 10 constraint actions.
+
+<details>
+<summary>Files</summary>
+
+| Status | File |
+|--------|------|
+| Added | `src/state/history-actions.ts` |
+| Added | `src/state/history-actions.test.ts` |
+| Added | `src/state/page-actions.ts` |
+| Added | `src/state/page-actions.test.ts` |
+| Added | `src/state/constraint-actions-relational.ts` |
+| Added | `src/state/constraint-actions-relational.test.ts` |
+| Modified | `src/state/project-state.ts` |
+| Modified | `src/state/project-state.test.ts` |
+| Modified | `src/state/constraint-actions.ts` |
+| Modified | `src/state/constraint-actions.test.ts` |
+| Modified | `src/app.tsx` |
+| Modified | `src/canvas/use-keyboard-shortcuts.ts` |
+| Modified | `src/tools/circle-tool.ts` |
+| Modified | `src/tools/commands.ts` |
+| Modified | `src/tools/dimension-tool.ts` |
+| Modified | `src/tools/door-tool.ts` |
+| Modified | `src/tools/line-tool.ts` |
+| Modified | `src/tools/rect-tool.ts` |
+| Modified | `src/tools/select-tool.ts` |
+| Modified | `src/tools/stairs-tool.ts` |
+| Modified | `src/tools/text-tool.ts` |
+| Modified | `src/tools/wall-tool.ts` |
+| Modified | `src/tools/window-tool.ts` |
+| Modified | `src/ui/menu-actions.ts` |
+| Modified | `src/ui/page-tabs.tsx` |
+| Modified | `src/ui/toolbar/constraints-panel.tsx` |
+
+</details>
+
+---
+
 ### [WARN-001] & [WARN-002] — Unify rendering logic and implement IO test suites
 - **Date**: 2026-06-26
 - **Commit**: `[Pending Commit]`

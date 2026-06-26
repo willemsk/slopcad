@@ -1,12 +1,12 @@
 import {h} from 'preact';
+import {projectSignal} from '../state/project-state';
 import {
-  projectSignal,
   selectPageAction,
   addPageAction,
   renamePageAction,
   deletePageAction,
   setOverlayPageAction,
-} from '../state/project-state';
+} from '../state/page-actions';
 import {overlayPageIndexSignal} from '../state/ui-state';
 import './page-tabs.css';
 

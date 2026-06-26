@@ -1,10 +1,9 @@
+import {projectSignal, activePageSignal} from '../state/project-state';
 import {
-  projectSignal,
-  activePageSignal,
   undoAction,
   redoAction,
   deleteSelectedAction,
-} from '../state/project-state';
+} from '../state/history-actions';
 import {selectionSignal} from '../state/selection-state';
 import {pushCommandMessage, triggerRenderSignal} from '../state/ui-state';
 import {saveProjectToFile, loadProjectFromFile} from '../io/file-io';
