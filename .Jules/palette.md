@@ -17,3 +17,7 @@
 ## 2026-06-17 - [Extract File Menu]
 **Learning:** The ribbon component uses specific CSS structures. Adding a file menu tab requires using `.ribbon-tab` to look cohesive.
 **Action:** Use `.ribbon-tab` class for the File Menu button when integrating with the ribbon layout.
+
+## 2026-06-18 - Row-Specific ARIA Labels for Inputs Embedded in Tables
+**Learning:** `<input>` elements (radio, text, checkbox, color) embedded within table cells without explicit labeling elements were completely inaccessible to screen readers, announcing themselves vaguely like "checkbox" or "text edit" without any context indicating which row (e.g., which layer) they belonged to.
+**Action:** When adding inputs inside tables where layout precludes the use of standard `<label>` tags, always use row-specific dynamic `aria-label`s (e.g., `aria-label={"Toggle lock for " + layer.name}`) to provide adequate context for screen reader users.

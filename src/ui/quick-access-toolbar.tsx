@@ -1,6 +1,6 @@
-import { h } from 'preact';
-import { useState, useRef, useEffect } from 'preact/hooks';
-import { projectSignal, selectionSignal } from '../state/app-state';
+import {h} from 'preact';
+import {useState, useRef, useEffect} from 'preact/hooks';
+import {projectSignal, selectionSignal} from '../state/app-state';
 import {
   NewIcon,
   OpenIcon,
