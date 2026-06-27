@@ -17,3 +17,7 @@
 ## 2026-06-17 - [Extract File Menu]
 **Learning:** The ribbon component uses specific CSS structures. Adding a file menu tab requires using `.ribbon-tab` to look cohesive.
 **Action:** Use `.ribbon-tab` class for the File Menu button when integrating with the ribbon layout.
+
+## 2026-06-27 - Table Row Input Accessibility
+**Learning:** Inputs within table rows (like in the Layer Modal) that rely on column headers for context are entirely unreadable by screen readers without explicit ARIA labels. Because standard `<label>` tags are difficult to use in a dense table layout, screen reader users miss crucial context like "which layer is this for?".
+**Action:** Always add dynamic, row-specific `aria-label`s to inputs in table/list structures (e.g., `aria-label={"Toggle lock for " + layer.name}`) to ensure proper screen reader accessibility.
