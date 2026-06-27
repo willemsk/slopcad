@@ -10,9 +10,10 @@ import {
   undoAction,
   redoAction,
   deleteSelectedAction,
+  clearHistory,
 } from './history-actions';
 import {selectionSignal} from './selection-state';
-import {Entity} from '../core/types';
+import {Entity, Constraint} from '../core/types';
 
 describe('History Actions', () => {
   beforeEach(() => {
@@ -22,6 +23,7 @@ describe('History Actions', () => {
     initialPage.entities = [];
     initialPage.constraints = [];
     projectSignal.value = {...projectSignal.value};
+    clearHistory();
   });
 
   it('performs undo and redo operations correctly', () => {
@@ -81,5 +83,84 @@ describe('History Actions', () => {
 
     // Wall and the attached door should both be deleted
     expect(activePageSignal.value.entities.length).toBe(0);
+  });
+
+  it('handles undo with empty history stack as a no-op', () => {
+    const e1: Entity = {
+      id: 'L1',
+      type: 'line',
+      start: {x: 0, y: 0},
+      end: {x: 10, y: 10},
+    };
+    const page = activePageSignal.value;
+    page.entities.push(e1);
+    updateActivePage(page.entities, page.constraints);
+
+    // Call undo with no history snapshots saved
+    undoAction();
+
+    expect(activePageSignal.value.entities.length).toBe(1);
+    expect(activePageSignal.value.entities[0].id).toBe('L1');
+  });
+
+  it('handles redo with empty redo stack as a no-op', () => {
+    const e1: Entity = {
+      id: 'L1',
+      type: 'line',
+      start: {x: 0, y: 0},
+      end: {x: 10, y: 10},
+    };
+    const page = activePageSignal.value;
+    page.entities.push(e1);
+    updateActivePage(page.entities, page.constraints);
+
+    // Call redo with no redo snapshots saved
+    redoAction();
+
+    expect(activePageSignal.value.entities.length).toBe(1);
+    expect(activePageSignal.value.entities[0].id).toBe('L1');
+  });
+
+  it('handles deleteSelectedAction with empty selection as a no-op', () => {
+    const e1: Entity = {
+      id: 'L1',
+      type: 'line',
+      start: {x: 0, y: 0},
+      end: {x: 10, y: 10},
+    };
+    const page = activePageSignal.value;
+    page.entities.push(e1);
+    updateActivePage(page.entities, page.constraints);
+
+    selectionSignal.value = new Set();
+    deleteSelectedAction();
+
+    expect(activePageSignal.value.entities.length).toBe(1);
+  });
+
+  it('removes constraints referencing deleted entities (constraint cascade)', () => {
+    const e1: Entity = {
+      id: 'L1',
+      type: 'line',
+      start: {x: 0, y: 0},
+      end: {x: 10, y: 10},
+    };
+    const constraint: Constraint = {
+      id: 'c1',
+      type: 'horizontal',
+      entityIds: ['L1'],
+    };
+
+    const page = activePageSignal.value;
+    page.entities.push(e1);
+    page.constraints.push(constraint);
+    updateActivePage(page.entities, page.constraints);
+
+    // Select and delete L1
+    selectionSignal.value = new Set(['L1']);
+    deleteSelectedAction();
+
+    expect(activePageSignal.value.entities.length).toBe(0);
+    expect(activePageSignal.value.constraints.length).toBe(0);
   });
 });

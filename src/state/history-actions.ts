@@ -5,6 +5,10 @@ import {selectionSignal} from './selection-state';
 
 const historyManager = new HistoryManager();
 
+export function clearHistory() {
+  historyManager.clear();
+}
+
 export function snapshotState() {
   const page = activePageSignal.value;
   historyManager.pushState(page.entities, page.constraints);

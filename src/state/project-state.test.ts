@@ -64,4 +64,17 @@ describe('Project State', () => {
     setUnitSystem('imperial');
     expect(projectSignal.value.unitSystem).toBe('imperial');
   });
+
+  it('clears entities and constraints correctly via updateActivePage', () => {
+    updateActivePage([], []);
+    expect(activePageSignal.value.entities.length).toBe(0);
+    expect(activePageSignal.value.constraints.length).toBe(0);
+  });
+
+  it('toggles unit system back and forth cleanly', () => {
+    setUnitSystem('imperial');
+    expect(projectSignal.value.unitSystem).toBe('imperial');
+    setUnitSystem('metric');
+    expect(projectSignal.value.unitSystem).toBe('metric');
+  });
 });

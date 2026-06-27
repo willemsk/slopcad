@@ -116,7 +116,7 @@ export function setUnitSystem(unit: UnitSystem) {
 }
 
 // Autosave Effect
-let saveTimeout: any;
+let saveTimeout: ReturnType<typeof setTimeout>;
 effect(() => {
   const project = projectSignal.value;
   clearTimeout(saveTimeout);

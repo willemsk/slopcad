@@ -4,6 +4,31 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ---
 
+### [WARN-004] & [WARN-005] — Cleanup of state testing coverage and icon categories
+- **Date**: 2026-06-27
+- **Commit**: `[Pending Commit]`
+- **Files Changed**: 8 files, +198 insertions, -60 deletions
+- **Tests**: ✅ 153 passed, 0 failed (Added new test suites `src/state/viewport-state.test.ts` and `src/state/preferences.test.ts`)
+- **Details**: Resolved the remaining gaps identified in the post-remediation review of state actions and icon decomposition. Fixed the last `: any` type bypass on the `saveTimeout` debounce variable in `project-state.ts`. Added a `clearHistory` utility to decouple test states and expanded `history-actions.test.ts` with 4 new edge cases (empty history undo/redo, constraint deletion cascade, empty selection delete). Expanded `project-state.test.ts` with page clearing and unit round-trips. Created and implemented test coverage files for previously untested trivial state slices (`viewport-state.ts` and `preferences.ts`). Finally, moved the grid, snap, and ortho layout toggles from `file-icons.tsx` to `editor-icons.tsx` to align category semantics with their editor functions.
+
+<details>
+<summary>Files</summary>
+
+| Status | File |
+|--------|------|
+| Added | `src/state/viewport-state.test.ts` |
+| Added | `src/state/preferences.test.ts` |
+| Modified | `src/state/project-state.ts` |
+| Modified | `src/state/project-state.test.ts` |
+| Modified | `src/state/history-actions.ts` |
+| Modified | `src/state/history-actions.test.ts` |
+| Modified | `src/ui/icons/file-icons.tsx` |
+| Modified | `src/ui/icons/editor-icons.tsx` |
+
+</details>
+
+---
+
 ### [WARN-003] & [WARN-005] — Resolve type safety bypasses and decompose icons module
 - **Date**: 2026-06-26
 - **Commit**: `[Pending Commit]`
