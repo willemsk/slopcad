@@ -6,7 +6,7 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ### [WARN-004] & [WARN-005] — Cleanup of state testing coverage and icon categories
 - **Date**: 2026-06-27
-- **Commit**: `[Pending Commit]`
+- **Commit**: `aeae714`
 - **Files Changed**: 8 files, +198 insertions, -60 deletions
 - **Tests**: ✅ 153 passed, 0 failed (Added new test suites `src/state/viewport-state.test.ts` and `src/state/preferences.test.ts`)
 - **Details**: Resolved the remaining gaps identified in the post-remediation review of state actions and icon decomposition. Fixed the last `: any` type bypass on the `saveTimeout` debounce variable in `project-state.ts`. Added a `clearHistory` utility to decouple test states and expanded `history-actions.test.ts` with 4 new edge cases (empty history undo/redo, constraint deletion cascade, empty selection delete). Expanded `project-state.test.ts` with page clearing and unit round-trips. Created and implemented test coverage files for previously untested trivial state slices (`viewport-state.ts` and `preferences.ts`). Finally, moved the grid, snap, and ortho layout toggles from `file-icons.tsx` to `editor-icons.tsx` to align category semantics with their editor functions.
@@ -31,7 +31,7 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ### [WARN-003] & [WARN-005] — Resolve type safety bypasses and decompose icons module
 - **Date**: 2026-06-26
-- **Commit**: `[Pending Commit]`
+- **Commit**: `91c913b`
 - **Files Changed**: 33 files, +873 insertions, -718 deletions
 - **Tests**: ✅ 144 passed, 0 failed
 - **Details**: Resolved all type safety bypasses (`as any` casts) across the entire codebase (including core, state, canvas, tools, UI, and test suites) to ensure 100% strict type safety compliance. Replaced unsafe casts with type-safe discriminated union checks and explicit, safe castings to specialized entity interfaces (e.g., `WallEntity` or `LineEntity`). Introduced `getEntityPoint` as a clean, type-safe point lookup helper and refactored `cloneEntity` with a type-safe `switch` statement to prevent spread mutation properties corruption. Additionally, decomposed the oversized `src/ui/icons.tsx` file (which exceeded 490 lines) into modular sub-files under a new `src/ui/icons/` directory: `editor-icons.tsx`, `file-icons.tsx`, and `ui-icons.tsx`. The main `src/ui/icons.tsx` file now acts as a clean, 3-line re-export hub to guarantee absolute zero disruption to importing consumer components.
@@ -81,7 +81,7 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ### [WARN-004] — Refactor oversized state slices and implement full actions test coverage
 - **Date**: 2026-06-26
-- **Commit**: `[Pending Commit]`
+- **Commit**: `5311d14`
 - **Files Changed**: 26 files, +911 insertions, -471 deletions
 - **Tests**: ✅ 144 passed, 0 failed (Added new test suites `src/state/history-actions.test.ts`, `src/state/page-actions.test.ts`, and `src/state/constraint-actions-relational.test.ts`)
 - **Details**: Decomposed the oversized state slices `project-state.ts` and `constraint-actions.ts` to strictly satisfy the 300-line codebase threshold limit. Created dedicated sub-action modules: `history-actions.ts` (holding snapshots, undo, redo, and selected deletions), `page-actions.ts` (handling floor layout switching, additions, renaming, deletions, and overlay setups), and `constraint-actions-relational.ts` (handling coincident, collinear, concentric, equal length, perpendicular, and parallel constraints). Cleaned up type safety bypasses (`as any` casts) by using type checks and explicit interface casts. Finally, expanded the testing suite to include 5 robust test files in `src/state/` which assert undo/redo state restoration, layout CRUD flows, prompt/confirm dialog triggers, and all 10 constraint actions.
@@ -124,7 +124,7 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ### [WARN-001] & [WARN-002] — Unify rendering logic and implement IO test suites
 - **Date**: 2026-06-26
-- **Commit**: `[Pending Commit]`
+- **Commit**: `82494ca`
 - **Files Changed**: 18 files, +1148 insertions, -798 deletions
 - **Tests**: ✅ 129 passed, 0 failed (Added new test suites `src/io/serialize.test.ts`, `src/io/entity-renderers.test.ts`, `src/io/export-svg.test.ts`)
 - **Details**: Unified rendering logic between the main editor viewport (Canvas2D) and SVG export using a generic `Renderer` interface. Implemented the `Canvas2DRenderer` class under `src/canvas/canvas-renderer.ts` to map the generic interface calls to the HTML5 Canvas 2D API, while handling selection and hover style overrides. Ported and consolidated wall corner mitering and T-junction gap calculations to the batch `renderWalls` function in `src/io/entity-renderers.ts` to ensure SVG export matches the canvas view perfectly. Deleted 10 redundant Canvas2D-specific entity renderers under `src/canvas/renderers/` and refactored the drawing registry to use the unified entity rendering functions. Finally, introduced 3 new Vitest suites under `src/io/` covering serialization validation, SVG page export generation, and comprehensive coordinates/primitives mock rendering.
