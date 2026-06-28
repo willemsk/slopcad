@@ -17,3 +17,7 @@
 ## 2026-06-17 - [Extract File Menu]
 **Learning:** The ribbon component uses specific CSS structures. Adding a file menu tab requires using `.ribbon-tab` to look cohesive.
 **Action:** Use `.ribbon-tab` class for the File Menu button when integrating with the ribbon layout.
+
+## 2026-06-28 - Form Inputs in Table Layouts Missing ARIA Labels
+**Learning:** Forms constructed within table layouts (like the layer modal) inherently lack proper `<label>` associations because structural table elements often break `<label>` to `id` mappings and make the HTML unwieldy. As a result, screen reader users encounter form elements (like checkboxes, radio buttons, color pickers, etc.) without any descriptive context.
+**Action:** When adding form inputs inside tables where layout precludes the use of standard `<label>` tags, always use row-specific dynamic `aria-label`s (e.g., `aria-label={"Toggle lock for " + layer.name}`) for proper screen reader accessibility.
