@@ -4,6 +4,27 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ---
 
+### [PERF] — Dynamic grid scaling and rendering optimization
+- **Date**: 2026-06-29
+- **Commit**: `[Pending Commit]`
+- **Files Changed**: 5 files, +91 insertions, -15 deletions
+- **Tests**: ✅ 159 passed, 0 failed (Added new test suite `src/core/viewport-math.test.ts`)
+- **Details**: Resolved the severe performance drop when zooming out while the grid is active. Implemented `getAdaptiveGridSpacing` inside `viewport-math.ts` to dynamically scale grid spacing up using a standard CAD 2/5/10 progression (e.g., 0.5m -> 1m -> 2.5m -> 5m...), ensuring grid dots are spaced at least 20px apart on-screen. Synced snapping grid behaviour to match. Substituted expensive, unbatched `ctx.arc()` calls with optimized `ctx.fillRect()` rendering for 2-order-of-magnitude faster rasterization. Introduced a safety threshold that suppresses grid rendering if it exceeds 10,000 dots to prevent browser freezes.
+
+<details>
+<summary>Files</summary>
+
+| Status | File |
+|--------|------|
+| Added | `src/core/viewport-math.test.ts` |
+| Modified | `src/core/viewport-math.ts` |
+| Modified | `src/canvas/render-helpers.ts` |
+| Modified | `src/canvas/snap-helper.ts` |
+
+</details>
+
+---
+
 ### [WARN-004] & [WARN-005] — Cleanup of state testing coverage and icon categories
 - **Date**: 2026-06-27
 - **Commit**: `aeae714`

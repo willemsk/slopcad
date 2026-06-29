@@ -1,5 +1,5 @@
 import {Entity, Constraint, Layer, UnitSystem} from '../core/types';
-import {ViewportMath} from '../core/viewport-math';
+import {ViewportMath, getAdaptiveGridSpacing} from '../core/viewport-math';
 import {drawSelectionHandles} from './renderers/selection-renderer';
 import {drawConstraint} from './renderers/constraint-renderer';
 import {RendererRegistry} from './renderers/registry';
@@ -20,23 +20,31 @@ export function drawGrid(
   height: number,
   spacing: number,
 ) {
+  const adaptiveSpacing = getAdaptiveGridSpacing(spacing, viewport.zoom);
   const topLeft = viewport.screenToWorld({x: 0, y: 0});
   const bottomRight = viewport.screenToWorld({x: width, y: height});
 
-  const startX = Math.floor(topLeft.x / spacing) * spacing;
-  const endX = Math.ceil(bottomRight.x / spacing) * spacing;
-  const startY = Math.floor(topLeft.y / spacing) * spacing;
-  const endY = Math.ceil(bottomRight.y / spacing) * spacing;
+  const startX = Math.floor(topLeft.x / adaptiveSpacing) * adaptiveSpacing;
+  const endX = Math.ceil(bottomRight.x / adaptiveSpacing) * adaptiveSpacing;
+  const startY = Math.floor(topLeft.y / adaptiveSpacing) * adaptiveSpacing;
+  const endY = Math.ceil(bottomRight.y / adaptiveSpacing) * adaptiveSpacing;
+
+  const cols = Math.floor((endX - startX) / adaptiveSpacing) + 1;
+  const rows = Math.floor((endY - startY) / adaptiveSpacing) + 1;
+
+  const MAX_GRID_DOTS = 10000;
+  if (cols * rows > MAX_GRID_DOTS) {
+    return; // Safety bail-out to prevent browser freeze
+  }
 
   ctx.fillStyle = 'rgba(200, 202, 212, 0.08)'; // extremely subtle grid dots
 
   const dotSize = 1.5 / viewport.zoom; // keep dot size constant on screen
+  const halfDot = dotSize / 2;
 
-  for (let x = startX; x <= endX; x += spacing) {
-    for (let y = startY; y <= endY; y += spacing) {
-      ctx.beginPath();
-      ctx.arc(x, y, dotSize, 0, Math.PI * 2);
-      ctx.fill();
+  for (let x = startX; x <= endX; x += adaptiveSpacing) {
+    for (let y = startY; y <= endY; y += adaptiveSpacing) {
+      ctx.fillRect(x - halfDot, y - halfDot, dotSize, dotSize);
     }
   }
 }
