@@ -16,8 +16,13 @@ import {
 export function getDistanceToEntity(
   pt: Vec2,
   ent: Entity,
-  entities: Entity[],
+  entitiesOrMap: Entity[] | Map<string, Entity>,
 ): number | null {
+  const entityMap =
+    entitiesOrMap instanceof Map
+      ? entitiesOrMap
+      : new Map(entitiesOrMap.map(e => [e.id, e]));
+
   switch (ent.type) {
     case 'wall':
     case 'line':
@@ -47,9 +52,7 @@ export function getDistanceToEntity(
     }
     case 'door':
     case 'window': {
-      const wall = entities.find(e => e.id === ent.wallId) as
-        | WallEntity
-        | undefined;
+      const wall = entityMap.get(ent.wallId) as WallEntity | undefined;
       if (wall && wall.type === 'wall') {
         const u = normalize(sub(wall.end, wall.start));
         const center = lerp(wall.start, wall.end, ent.position);
@@ -73,12 +76,15 @@ export function findEntityAt(
   pt: Vec2,
   entities: Entity[],
   hitRadius: number,
+  entityMap?: Map<string, Entity>,
 ): Entity | null {
   let bestEnt: Entity | null = null;
   let bestDist = hitRadius;
 
+  const map = entityMap || new Map(entities.map(e => [e.id, e]));
+
   for (const ent of entities) {
-    const d = getDistanceToEntity(pt, ent, entities);
+    const d = getDistanceToEntity(pt, ent, map);
     if (d !== null && d < bestDist) {
       bestDist = d;
       bestEnt = ent;

@@ -10,6 +10,7 @@ import {
   updateActivePage,
   activePageSignal,
   runSolverOnActivePage,
+  entityMap,
 } from '../state/project-state';
 import {snapshotState} from '../state/history-actions';
 import {
@@ -95,7 +96,12 @@ export class SelectTool implements Tool {
     }
 
     // 2. Check if clicked on any entity (selection / drag)
-    const clickedEnt = findEntityAt(worldPos, page.entities, handleRadius);
+    const clickedEnt = findEntityAt(
+      worldPos,
+      page.entities,
+      handleRadius,
+      entityMap.value,
+    );
     if (clickedEnt) {
       const isSelected = selectedIds.has(clickedEnt.id);
 
@@ -265,7 +271,12 @@ export class SelectTool implements Tool {
       const page = activePageSignal.value;
       const zoom = viewportSignal.value?.zoom || 100;
       const handleRadius = 8 / zoom;
-      const clickedEnt = findEntityAt(worldPos, page.entities, handleRadius);
+      const clickedEnt = findEntityAt(
+        worldPos,
+        page.entities,
+        handleRadius,
+        entityMap.value,
+      );
 
       if (clickedEnt) {
         const isSelected = selectionSignal.value.has(clickedEnt.id);

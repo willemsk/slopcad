@@ -75,6 +75,24 @@ export const activePageSignal = computed<Page>(() => {
   return proj.pages[proj.activePageIndex] || proj.pages[0];
 });
 
+// Computes a map of layer IDs to Layer objects for O(1) lookups
+export const layerMap = computed(() => {
+  const map = new Map<string, Layer>();
+  for (const l of projectSignal.value.layers) {
+    map.set(l.id, l);
+  }
+  return map;
+});
+
+// Computes a map of entity IDs to Entity objects for O(1) lookups
+export const entityMap = computed(() => {
+  const map = new Map<string, Entity>();
+  for (const e of activePageSignal.value.entities) {
+    map.set(e.id, e);
+  }
+  return map;
+});
+
 // Modify current page entities and constraints, then trigger solver
 export function updateActivePage(
   entities: Entity[],
