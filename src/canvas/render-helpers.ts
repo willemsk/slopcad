@@ -78,13 +78,15 @@ export function drawOverlayFloor(
   ctx: CanvasRenderingContext2D,
   overlayEntities: Entity[],
   layers: Layer[],
+  layerMap: Map<string, Layer>,
   unitSystem: UnitSystem,
   zoom: number,
 ) {
   ctx.save();
   ctx.globalAlpha = 0.15; // very faint transparency
+  const firstLayer = layers[0];
   for (const ent of overlayEntities) {
-    const layer = layers.find(l => l.id === ent.layerId) || layers[0];
+    const layer = layerMap.get(ent.layerId) || firstLayer;
     const color = layer?.color || '#c8cad4';
     drawEntity(
       ctx,
@@ -106,6 +108,7 @@ export function drawAllEntities(
   selection: Set<string>,
   hoveredEntityId: string | null,
   layers: Layer[],
+  layerMap: Map<string, Layer>,
   unitSystem: UnitSystem,
   zoom: number,
 ) {
@@ -121,12 +124,12 @@ export function drawAllEntities(
     'text',
   ];
 
-  const sortedEntities = [...entities].sort((a, b) => {
-    return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
-  });
+  const firstLayer = layers[0];
 
-  const walls = entities.filter(e => e.type === 'wall');
-  for (const wall of walls) {
+  // 1. Draw walls first
+  for (const wall of entities) {
+    if (wall.type !== 'wall') continue;
+
     const isSelected = selection.has(wall.id);
     const isHovered = wall.id === hoveredEntityId;
 
@@ -136,7 +139,7 @@ export function drawAllEntities(
       ctx.shadowBlur = 10 / zoom;
     }
 
-    const layer = layers.find(l => l.id === wall.layerId) || layers[0];
+    const layer = layerMap.get(wall.layerId) || firstLayer;
     let color = layer?.color || '#c8cad4';
     if (wall.color) color = wall.color;
     if (isHovered && !isSelected) {
@@ -159,25 +162,37 @@ export function drawAllEntities(
     }
   }
 
-  for (const ent of sortedEntities) {
-    if (ent.type === 'wall') continue;
+  // 2. Draw all other entities in type order
+  for (const type of typeOrder) {
+    for (const ent of entities) {
+      if (ent.type !== type) continue;
 
-    const isSelected = selection.has(ent.id);
-    const isHovered = ent.id === hoveredEntityId;
+      const isSelected = selection.has(ent.id);
+      const isHovered = ent.id === hoveredEntityId;
 
-    if (isHovered && !isSelected) {
-      ctx.save();
-      ctx.shadowColor = '#22d3ee';
-      ctx.shadowBlur = 10 / zoom;
-    }
+      if (isHovered && !isSelected) {
+        ctx.save();
+        ctx.shadowColor = '#22d3ee';
+        ctx.shadowBlur = 10 / zoom;
+      }
 
-    const layer = layers.find(l => l.id === ent.layerId) || layers[0];
-    const color = layer?.color || '#c8cad4';
+      const layer = layerMap.get(ent.layerId) || firstLayer;
+      const color = layer?.color || '#c8cad4';
 
-    drawEntity(ctx, ent, entities, isSelected, color, unitSystem, zoom, layers);
+      drawEntity(
+        ctx,
+        ent,
+        entities,
+        isSelected,
+        color,
+        unitSystem,
+        zoom,
+        layers,
+      );
 
-    if (isHovered && !isSelected) {
-      ctx.restore();
+      if (isHovered && !isSelected) {
+        ctx.restore();
+      }
     }
   }
 }
@@ -187,12 +202,14 @@ export function drawPreviewEntity(
   previewEntity: Entity,
   entities: Entity[],
   layers: Layer[],
+  layerMap: Map<string, Layer>,
   unitSystem: UnitSystem,
   zoom: number,
 ) {
   ctx.save();
   ctx.globalAlpha = 0.6;
-  const layer = layers.find(l => l.id === previewEntity.layerId) || layers[0];
+  const firstLayer = layers[0];
+  const layer = layerMap.get(previewEntity.layerId) || firstLayer;
   const color = layer?.color || '#c8cad4';
   drawEntity(
     ctx,

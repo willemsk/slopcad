@@ -22,6 +22,7 @@ export function computeEventSnap(
   gridSpacing: number | null,
   gridEnabled: boolean,
   activeToolType?: string,
+  entityMap?: Map<string, Entity>,
 ): SnapComputationResult {
   let targetPos = worldPos;
   let activeSnap: SnapResult | null = null;

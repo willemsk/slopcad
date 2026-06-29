@@ -20,6 +20,7 @@ export interface RenderState {
   entities: Entity[];
   constraints: Constraint[];
   layers: Layer[];
+  layerMap: Map<string, Layer>;
   selection: Set<string>;
   snapResult: SnapResult | null;
   gridEnabled: boolean;
@@ -40,6 +41,7 @@ export function render(state: RenderState) {
     entities,
     constraints,
     layers,
+    layerMap,
     selection,
     snapResult,
     gridEnabled,
@@ -66,7 +68,14 @@ export function render(state: RenderState) {
 
   // 3b. Draw Ghost Overlay Floor
   if (overlayEntities && overlayEntities.length > 0) {
-    drawOverlayFloor(ctx, overlayEntities, layers, unitSystem, viewport.zoom);
+    drawOverlayFloor(
+      ctx,
+      overlayEntities,
+      layers,
+      layerMap,
+      unitSystem,
+      viewport.zoom,
+    );
   }
 
   // 4. Draw Entities
@@ -76,6 +85,7 @@ export function render(state: RenderState) {
     selection,
     hoveredEntityId,
     layers,
+    layerMap,
     unitSystem,
     viewport.zoom,
   );
@@ -87,6 +97,7 @@ export function render(state: RenderState) {
       previewEntity,
       entities,
       layers,
+      layerMap,
       unitSystem,
       viewport.zoom,
     );

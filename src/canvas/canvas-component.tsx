@@ -9,7 +9,7 @@ import {findEntityAt} from '../core/hit-test';
 import {computeEventSnap} from './snap-helper';
 import {useViewportInteraction} from './use-viewport-interaction';
 import {useKeyboardShortcuts} from './use-keyboard-shortcuts';
-import {projectSignal} from '../state/project-state';
+import {projectSignal, layerMap, entityMap} from '../state/project-state';
 import {
   activeToolNameSignal,
   snapEnabledSignal,
@@ -115,6 +115,7 @@ export function CanvasComponent() {
       gridSpacingSignal.value,
       gridEnabledSignal.value,
       activeTool?.name,
+      entityMap.value,
     );
 
     const overlayIdx = overlayPageIndexSignal.value;
@@ -131,6 +132,7 @@ export function CanvasComponent() {
       entities: visibleEntities,
       constraints: activePage.constraints,
       layers: project.layers,
+      layerMap: layerMap.value,
       selection: selectionSignal.value,
       snapResult: snapRes,
       gridEnabled: gridEnabledSignal.value,
@@ -211,6 +213,7 @@ export function CanvasComponent() {
       gridSpacingSignal.value,
       gridEnabledSignal.value,
       activeTool?.name,
+      entityMap.value,
     );
 
     if (activeTool) {
@@ -246,7 +249,12 @@ export function CanvasComponent() {
     if (activeTool && activeTool.name === 'select') {
       const hoverRadiusWorld = 8 / viewportRef.current.zoom;
       hoveredEntityIdSignal.value =
-        findEntityAt(worldPos, visibleEntities, hoverRadiusWorld)?.id ?? null;
+        findEntityAt(
+          worldPos,
+          visibleEntities,
+          hoverRadiusWorld,
+          entityMap.value,
+        )?.id ?? null;
     }
 
     const {targetPos, activeSnap} = computeEventSnap(
@@ -257,6 +265,7 @@ export function CanvasComponent() {
       gridSpacingSignal.value,
       gridEnabledSignal.value,
       activeTool?.name,
+      entityMap.value,
     );
 
     if (activeTool) {
@@ -291,6 +300,7 @@ export function CanvasComponent() {
       gridSpacingSignal.value,
       gridEnabledSignal.value,
       activeTool?.name,
+      entityMap.value,
     );
 
     if (activeTool) {
