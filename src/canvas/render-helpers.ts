@@ -39,7 +39,7 @@ export function drawGrid(
 
   ctx.fillStyle = 'rgba(200, 202, 212, 0.08)'; // extremely subtle grid dots
 
-  const dotSize = 1.5 / viewport.zoom; // keep dot size constant on screen
+  const dotSize = 3.0 / viewport.zoom; // keep dot size constant on screen (3px diameter equivalent)
   const halfDot = dotSize / 2;
 
   for (let x = startX; x <= endX; x += adaptiveSpacing) {
