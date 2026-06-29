@@ -1,5 +1,5 @@
 import {Vec2, Entity, SnapResult} from '../core/types';
-import {ViewportMath} from '../core/viewport-math';
+import {ViewportMath, getAdaptiveGridSpacing} from '../core/viewport-math';
 import {getSnapPoint, SnapSettings} from '../core/snap';
 import {dist} from '../core/geometry';
 
@@ -36,10 +36,15 @@ export function computeEventSnap(
       wallAlign: true,
     };
 
+    const effectiveGridSpacing =
+      gridSpacing !== null
+        ? getAdaptiveGridSpacing(gridSpacing, viewport.zoom)
+        : null;
+
     const snap = getSnapPoint(
       worldPos,
       entities,
-      gridSpacing,
+      effectiveGridSpacing,
       snapSettings,
       snapRadiusWorld,
       activeToolType,

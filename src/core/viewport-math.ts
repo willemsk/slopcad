@@ -120,3 +120,29 @@ export class ViewportMath {
     };
   }
 }
+
+/**
+ * Calculates adaptive grid spacing that guarantees the visual on-screen spacing
+ * between dots is at least 20px, following a standard CAD 2/5/10 progression.
+ */
+export function getAdaptiveGridSpacing(spacing: number, zoom: number): number {
+  if (spacing <= 0 || zoom <= 0) return spacing;
+
+  const minPixels = 20;
+  let multiplier = 1;
+
+  while (spacing * multiplier * zoom < minPixels) {
+    const firstDigit = parseInt(multiplier.toFixed(0)[0], 10);
+    if (firstDigit === 1) {
+      multiplier *= 2;
+    } else if (firstDigit === 2) {
+      multiplier = (multiplier / 2) * 5;
+    } else if (firstDigit === 5) {
+      multiplier = (multiplier / 5) * 10;
+    } else {
+      multiplier *= 10;
+    }
+  }
+
+  return spacing * multiplier;
+}
