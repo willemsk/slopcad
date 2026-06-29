@@ -11,17 +11,28 @@ import {
   setUiScale,
 } from '../state/ui-state';
 import {formatLength} from '../core/units';
+import {UnitSystem} from '../core/types';
 import {GridIcon, SnapIcon, ConstraintIcon} from './icons';
 import './status-bar.css';
+
+function MouseCoordsDisplay({unitSystem}: {unitSystem: UnitSystem}) {
+  const mouseCoords = mouseCoordsSignal.value;
+  const xStr = formatLength(mouseCoords.x, unitSystem, 3);
+  const yStr = formatLength(mouseCoords.y, unitSystem, 3);
+
+  return (
+    <div className="status-section coords">
+      <span>X: {xStr}</span>
+      <span>Y: {yStr}</span>
+      <span>Z: 0.000</span>
+    </div>
+  );
+}
 
 export function StatusBar() {
   const project = projectSignal.value;
   const page = activePageSignal.value;
-  const mouseCoords = mouseCoordsSignal.value;
   const viewport = viewportSignal.value;
-
-  const xStr = formatLength(mouseCoords.x, project.unitSystem, 3);
-  const yStr = formatLength(mouseCoords.y, project.unitSystem, 3);
 
   const zoomPercent = viewport ? Math.round(viewport.zoom) : 100;
   const entityCount = page.entities.length;
@@ -61,11 +72,7 @@ export function StatusBar() {
 
   return (
     <div className="status-bar">
-      <div className="status-section coords">
-        <span>X: {xStr}</span>
-        <span>Y: {yStr}</span>
-        <span>Z: 0.000</span>
-      </div>
+      <MouseCoordsDisplay unitSystem={project.unitSystem} />
 
       <div className="status-toggles">
         <button

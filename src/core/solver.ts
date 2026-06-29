@@ -25,9 +25,15 @@ import {
 } from './geometry';
 import {ConstraintRegistry} from './constraints/registry';
 
-// Get coordinate reference from entity list
-export function getPointValue(entities: Entity[], ref: PointRef): Vec2 | null {
-  const entity = entities.find(e => e.id === ref.entityId);
+// Get coordinate reference from entity list or map
+export function getPointValue(
+  entitiesOrMap: Entity[] | Map<string, Entity>,
+  ref: PointRef,
+): Vec2 | null {
+  const entity =
+    entitiesOrMap instanceof Map
+      ? entitiesOrMap.get(ref.entityId)
+      : entitiesOrMap.find(e => e.id === ref.entityId);
   if (!entity) return null;
 
   const key = ref.pointKey;
@@ -57,13 +63,16 @@ export function getPointValue(entities: Entity[], ref: PointRef): Vec2 | null {
   return null;
 }
 
-// Set coordinate reference in entity list
+// Set coordinate reference in entity list or map
 export function setPointValue(
-  entities: Entity[],
+  entitiesOrMap: Entity[] | Map<string, Entity>,
   ref: PointRef,
   val: Vec2,
 ): boolean {
-  const entity = entities.find(e => e.id === ref.entityId);
+  const entity =
+    entitiesOrMap instanceof Map
+      ? entitiesOrMap.get(ref.entityId)
+      : entitiesOrMap.find(e => e.id === ref.entityId);
   if (!entity || entity.locked) return false;
 
   const key = ref.pointKey;
@@ -110,13 +119,18 @@ export function solveConstraints(
   // Deep copy entities so we don't mutate state prematurely
   const solvedEntities = entities.map(cloneEntity);
 
+  const solvedEntityMap = new Map<string, Entity>();
+  for (const ent of solvedEntities) {
+    solvedEntityMap.set(ent.id, ent);
+  }
+
   // Keep track of locked points. Entity locked flag or pinnedRefs
   const isPointLocked = (ref: PointRef): boolean => {
     // Check if pinned by user drag
     if (pinnedRefs.some(p => isRefEqual(p, ref))) return true;
 
     // Check if parent entity is locked
-    const ent = solvedEntities.find(e => e.id === ref.entityId);
+    const ent = solvedEntityMap.get(ref.entityId);
     return ent ? !!ent.locked : false;
   };
 
@@ -132,8 +146,9 @@ export function solveConstraints(
           constraint: c,
           entities: solvedEntities,
           isPointLocked,
-          getPointValue,
-          setPointValue,
+          getPointValue: (dummy, ref) => getPointValue(solvedEntityMap, ref),
+          setPointValue: (dummy, ref, val) =>
+            setPointValue(solvedEntityMap, ref, val),
         });
         maxError = Math.max(maxError, error);
       }

@@ -11,6 +11,16 @@ export interface RendererOptions {
   textAnchor?: string;
   dominantBaseline?: string;
 }
+export interface RotationTransform {
+  angle: number; // in degrees
+  cx?: number;
+  cy?: number;
+}
+
+export interface TransformOptions {
+  translate?: Vec2;
+  rotate?: RotationTransform;
+}
 
 export interface Renderer {
   // Setup and structure
@@ -18,7 +28,7 @@ export interface Renderer {
   end(): string | Uint8Array | void;
 
   // Grouping / Transforms
-  pushGroup(options?: {transform?: string}): void;
+  pushGroup(options?: {transform?: string | TransformOptions}): void;
   popGroup(): void;
 
   // Drawing primitives
@@ -62,6 +72,6 @@ export interface Renderer {
     text: string,
     position: Vec2,
     options?: RendererOptions,
-    transform?: string,
+    transform?: string | TransformOptions,
   ): void;
 }

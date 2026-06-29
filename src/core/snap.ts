@@ -1,6 +1,7 @@
 import {Vec2, Entity, SnapResult} from './types';
 import {
   dist,
+  distSq,
   closestPointOnSegment,
   projectPointOnLine,
   sub,
@@ -25,7 +26,8 @@ export function getSnapPoint(
   activeToolType?: string,
 ): SnapResult {
   let bestSnap: SnapResult = {point: {...mousePos}, type: 'grid'}; // default fallback
-  let bestDist = snapRadiusWorld;
+  const snapRadiusWorldSq = snapRadiusWorld * snapRadiusWorld;
+  let bestDistSq = snapRadiusWorldSq;
 
   // 1. Special wall-align snap for Door and Window tools
   // These MUST snap to walls, so wall-align takes priority
@@ -33,7 +35,7 @@ export function getSnapPoint(
     settings.wallAlign &&
     (activeToolType === 'door' || activeToolType === 'window')
   ) {
-    let bestWallDist = Infinity;
+    let bestWallDistSq = Infinity;
     let bestWallProj: Vec2 | null = null;
     let bestWallId: string | null = null;
     let bestT = 0.5;
@@ -42,9 +44,9 @@ export function getSnapPoint(
       if (ent.type === 'wall') {
         const wall = ent;
         const proj = closestPointOnSegment(mousePos, wall.start, wall.end);
-        const d = dist(mousePos, proj);
-        if (d < bestWallDist) {
-          bestWallDist = d;
+        const dSq = distSq(mousePos, proj);
+        if (dSq < bestWallDistSq) {
+          bestWallDistSq = dSq;
           bestWallProj = proj;
           bestWallId = wall.id;
 
@@ -60,7 +62,11 @@ export function getSnapPoint(
     }
 
     // If we found a wall and it's within snap radius or if we are forced to place on walls
-    if (bestWallProj && bestWallId && bestWallDist < snapRadiusWorld * 2.0) {
+    if (
+      bestWallProj &&
+      bestWallId &&
+      bestWallDistSq < snapRadiusWorldSq * 4.0
+    ) {
       return {
         point: bestWallProj,
         type: 'wall-align',
@@ -90,9 +96,9 @@ export function getSnapPoint(
       }
 
       for (const pt of endpoints) {
-        const d = dist(mousePos, pt);
-        if (d < bestDist) {
-          bestDist = d;
+        const dSq = distSq(mousePos, pt);
+        if (dSq < bestDistSq) {
+          bestDistSq = dSq;
           bestSnap = {point: {...pt}, type: 'endpoint', entityId: ent.id};
         }
       }
@@ -116,9 +122,9 @@ export function getSnapPoint(
       }
 
       for (const pt of midpoints) {
-        const d = dist(mousePos, pt);
-        if (d < bestDist) {
-          bestDist = d;
+        const dSq = distSq(mousePos, pt);
+        if (dSq < bestDistSq) {
+          bestDistSq = dSq;
           bestSnap = {point: {...pt}, type: 'midpoint', entityId: ent.id};
         }
       }
@@ -130,14 +136,14 @@ export function getSnapPoint(
     settings.grid &&
     gridSpacing !== null &&
     gridSpacing > 0 &&
-    bestDist === snapRadiusWorld
+    bestDistSq === snapRadiusWorldSq
   ) {
     const snapX = Math.round(mousePos.x / gridSpacing) * gridSpacing;
     const snapY = Math.round(mousePos.y / gridSpacing) * gridSpacing;
     const gridPt = {x: snapX, y: snapY};
-    const d = dist(mousePos, gridPt);
-    if (d < snapRadiusWorld) {
-      bestDist = d;
+    const dSq = distSq(mousePos, gridPt);
+    if (dSq < snapRadiusWorldSq) {
+      bestDistSq = dSq;
       bestSnap = {point: gridPt, type: 'grid'};
     }
   }

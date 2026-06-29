@@ -1,9 +1,10 @@
-import {Entity, Layer, UnitSystem} from '../core/types';
+import {Entity, Layer, UnitSystem, EntityType} from '../core/types';
 
 /** Shared rendering context passed to all renderers. */
 export interface RenderContext {
   ctx: CanvasRenderingContext2D;
-  entities: Entity[];
+  entityMap: Map<string, Entity>;
+  entitiesByType?: Map<EntityType, Entity[]>;
   layers: Layer[];
   unitSystem: UnitSystem;
   zoom: number;

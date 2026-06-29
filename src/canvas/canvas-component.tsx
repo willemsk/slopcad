@@ -4,12 +4,17 @@ import {ViewportMath} from '../core/viewport-math';
 import {toolsMap} from '../tools/tool-registry';
 import {render, RenderState} from './renderer';
 import {Entity, SnapResult} from '../core/types';
-import {getVisibleEntities} from '../core/entity';
 import {findEntityAt} from '../core/hit-test';
 import {computeEventSnap} from './snap-helper';
 import {useViewportInteraction} from './use-viewport-interaction';
 import {useKeyboardShortcuts} from './use-keyboard-shortcuts';
-import {projectSignal, layerMap, entityMap} from '../state/project-state';
+import {
+  projectSignal,
+  layerMap,
+  entityMap,
+  visibleEntitiesSignal,
+  entitiesByTypeSignal,
+} from '../state/project-state';
 import {
   activeToolNameSignal,
   snapEnabledSignal,
@@ -18,7 +23,7 @@ import {
   gridSpacingSignal,
   previewEntitySignal,
   hoveredEntityIdSignal,
-  triggerRenderSignal,
+  renderDirtySignal,
   overlayPageIndexSignal,
   mouseCoordsSignal,
 } from '../state/ui-state';
@@ -48,7 +53,14 @@ export function CanvasComponent() {
 
   const activeTool = toolsMap[activeToolNameSignal.value];
 
-  useKeyboardShortcuts(activeTool, () => draw(), canvasRef, isPanningRef);
+  useKeyboardShortcuts(
+    activeTool,
+    () => {
+      renderDirtySignal.value = true;
+    },
+    canvasRef,
+    isPanningRef,
+  );
 
   // Track window resizing
   useEffect(() => {
@@ -82,7 +94,7 @@ export function CanvasComponent() {
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.scale(dpr, dpr);
-      draw();
+      renderDirtySignal.value = true;
     }
   }, [dimensions]);
 
@@ -102,10 +114,7 @@ export function CanvasComponent() {
       currentMousePosScreen,
     );
 
-    const visibleEntities = getVisibleEntities(
-      activePage.entities,
-      project.layers,
-    );
+    const visibleEntities = visibleEntitiesSignal.value;
 
     const {activeSnap: snapRes} = computeEventSnap(
       currentMousePosWorld,
@@ -129,7 +138,8 @@ export function CanvasComponent() {
       width: dimensions.width,
       height: dimensions.height,
       viewport: viewportRef.current,
-      entities: visibleEntities,
+      entitiesByType: entitiesByTypeSignal.value,
+      entityMap: entityMap.value,
       constraints: activePage.constraints,
       layers: project.layers,
       layerMap: layerMap.value,
@@ -163,9 +173,25 @@ export function CanvasComponent() {
     }
   };
 
-  // Re-draw when dependencies change
+  // scheduler loop using requestAnimationFrame
   useEffect(() => {
-    draw();
+    let animFrameId: number;
+
+    const renderLoop = () => {
+      if (renderDirtySignal.value) {
+        renderDirtySignal.value = false;
+        draw();
+      }
+      animFrameId = requestAnimationFrame(renderLoop);
+    };
+
+    animFrameId = requestAnimationFrame(renderLoop);
+    return () => cancelAnimationFrame(animFrameId);
+  }, [dimensions]);
+
+  // Re-draw dirty flag setter when dependencies change
+  useEffect(() => {
+    renderDirtySignal.value = true;
   }, [
     projectSignal.value,
     activeTool,
@@ -176,8 +202,6 @@ export function CanvasComponent() {
     gridSpacingSignal.value,
     previewEntitySignal.value,
     hoveredEntityIdSignal.value,
-    triggerRenderSignal.value,
-    dimensions,
   ]);
 
   // Hook up viewport ref to the signal so external code can view/set zoom
@@ -198,12 +222,7 @@ export function CanvasComponent() {
     }
 
     const worldPos = viewportRef.current.screenToWorld(screenPos);
-    const project = projectSignal.value;
-    const activePage = project.pages[project.activePageIndex];
-    const visibleEntities = getVisibleEntities(
-      activePage.entities,
-      project.layers,
-    );
+    const visibleEntities = visibleEntitiesSignal.value;
 
     const {targetPos, activeSnap} = computeEventSnap(
       worldPos,
@@ -218,7 +237,7 @@ export function CanvasComponent() {
 
     if (activeTool) {
       activeTool.onMouseDown(targetPos, e, activeSnap);
-      draw();
+      renderDirtySignal.value = true;
     }
   };
 
@@ -238,12 +257,7 @@ export function CanvasComponent() {
     const worldPos = viewportRef.current.screenToWorld(screenPos);
     mouseCoordsSignal.value = worldPos;
 
-    const project = projectSignal.value;
-    const activePage = project.pages[project.activePageIndex];
-    const visibleEntities = getVisibleEntities(
-      activePage.entities,
-      project.layers,
-    );
+    const visibleEntities = visibleEntitiesSignal.value;
 
     // Calculate hover entity for Select tool
     if (activeTool && activeTool.name === 'select') {
@@ -270,7 +284,7 @@ export function CanvasComponent() {
 
     if (activeTool) {
       activeTool.onMouseMove(targetPos, e, activeSnap);
-      draw();
+      renderDirtySignal.value = true;
     }
   };
 
@@ -285,12 +299,7 @@ export function CanvasComponent() {
     const rect = canvas.getBoundingClientRect();
     const screenPos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
     const worldPos = viewportRef.current.screenToWorld(screenPos);
-    const project = projectSignal.value;
-    const activePage = project.pages[project.activePageIndex];
-    const visibleEntities = getVisibleEntities(
-      activePage.entities,
-      project.layers,
-    );
+    const visibleEntities = visibleEntitiesSignal.value;
 
     const {targetPos, activeSnap} = computeEventSnap(
       worldPos,
@@ -305,7 +314,7 @@ export function CanvasComponent() {
 
     if (activeTool) {
       activeTool.onMouseUp(targetPos, e, activeSnap);
-      draw();
+      renderDirtySignal.value = true;
     }
   };
 

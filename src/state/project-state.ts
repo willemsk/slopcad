@@ -7,10 +7,10 @@ import {
   PointRef,
   UnitSystem,
   Layer,
+  EntityType,
 } from '../core/types';
-import {generateId} from '../core/entity';
+import {generateId, getVisibleEntities} from '../core/entity';
 import {solveConstraints} from '../core/solver';
-import {triggerRenderSignal} from './ui-state';
 
 // Initial default page
 const defaultPage: Page = {
@@ -93,6 +93,28 @@ export const entityMap = computed(() => {
   return map;
 });
 
+// Computes only the visible entities on the active page
+export const visibleEntitiesSignal = computed<Entity[]>(() => {
+  return getVisibleEntities(
+    activePageSignal.value.entities,
+    projectSignal.value.layers,
+  );
+});
+
+// Groups visible entities by type for efficient lookup during rendering
+export const entitiesByTypeSignal = computed<Map<EntityType, Entity[]>>(() => {
+  const map = new Map<EntityType, Entity[]>();
+  for (const ent of visibleEntitiesSignal.value) {
+    let list = map.get(ent.type);
+    if (!list) {
+      list = [];
+      map.set(ent.type, list);
+    }
+    list.push(ent);
+  }
+  return map;
+});
+
 // Modify current page entities and constraints, then trigger solver
 export function updateActivePage(
   entities: Entity[],
@@ -113,8 +135,6 @@ export function updateActivePage(
     modified: Date.now(),
     pages: newPages,
   };
-
-  triggerRenderSignal.value = {};
 }
 
 // Helper to run solver on active page
@@ -130,7 +150,6 @@ export function setUnitSystem(unit: UnitSystem) {
     ...projectSignal.value,
     unitSystem: unit,
   };
-  triggerRenderSignal.value = {};
 }
 
 // Autosave Effect

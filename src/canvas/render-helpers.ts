@@ -1,8 +1,25 @@
-import {Entity, Constraint, Layer, UnitSystem} from '../core/types';
+import {Entity, Constraint, Layer, UnitSystem, EntityType} from '../core/types';
 import {ViewportMath, getAdaptiveGridSpacing} from '../core/viewport-math';
+import {
+  AABB,
+  computeEntityAABB,
+  aabbIntersects,
+} from '../core/bounding-box-cache';
 import {drawSelectionHandles} from './renderers/selection-renderer';
 import {drawConstraint} from './renderers/constraint-renderer';
 import {RendererRegistry} from './renderers/registry';
+
+const TYPE_ORDER = [
+  'line',
+  'rect',
+  'circle',
+  'arc',
+  'door',
+  'window',
+  'stairs',
+  'dimension',
+  'text',
+];
 
 export function clearCanvas(
   ctx: CanvasRenderingContext2D,
@@ -37,34 +54,38 @@ export function drawGrid(
     return; // Safety bail-out to prevent browser freeze
   }
 
-  ctx.fillStyle = 'rgba(200, 202, 212, 0.08)'; // extremely subtle grid dots
+  ctx.fillStyle = 'rgba(200, 202, 212, 0.15)'; // subtle grid dots, slightly increased opacity
 
   const dotSize = 3.0 / viewport.zoom; // keep dot size constant on screen (3px diameter equivalent)
   const halfDot = dotSize / 2;
 
+  ctx.beginPath();
   for (let x = startX; x <= endX; x += adaptiveSpacing) {
     for (let y = startY; y <= endY; y += adaptiveSpacing) {
-      ctx.fillRect(x - halfDot, y - halfDot, dotSize, dotSize);
+      ctx.rect(x - halfDot, y - halfDot, dotSize, dotSize);
     }
   }
+  ctx.fill();
 }
 
 export function drawEntity(
   ctx: CanvasRenderingContext2D,
   ent: Entity,
-  entities: Entity[],
+  entityMap: Map<string, Entity>,
   isSelected: boolean,
   color: string,
   unitSystem: UnitSystem,
   zoom: number,
   layers: Layer[],
+  entitiesByType?: Map<EntityType, Entity[]>,
 ) {
   const renderer = RendererRegistry[ent.type];
   if (renderer) {
     renderer({
       ctx,
       entity: ent,
-      entities,
+      entityMap,
+      entitiesByType,
       layers,
       unitSystem,
       zoom,
@@ -85,50 +106,41 @@ export function drawOverlayFloor(
   ctx.save();
   ctx.globalAlpha = 0.15; // very faint transparency
   const firstLayer = layers[0];
+  const overlayMap = new Map<string, Entity>();
   for (const ent of overlayEntities) {
-    const layer = layerMap.get(ent.layerId) || firstLayer;
+    overlayMap.set(ent.id, ent);
+  }
+  for (const ent of overlayEntities) {
+    const layer = layerMap.get(ent.layerId ?? '0') || firstLayer;
     const color = layer?.color || '#c8cad4';
-    drawEntity(
-      ctx,
-      ent,
-      overlayEntities,
-      false,
-      color,
-      unitSystem,
-      zoom,
-      layers,
-    );
+    drawEntity(ctx, ent, overlayMap, false, color, unitSystem, zoom, layers);
   }
   ctx.restore();
 }
 
 export function drawAllEntities(
   ctx: CanvasRenderingContext2D,
-  entities: Entity[],
+  entitiesByType: Map<EntityType, Entity[]>,
+  entityMap: Map<string, Entity>,
   selection: Set<string>,
   hoveredEntityId: string | null,
   layers: Layer[],
   layerMap: Map<string, Layer>,
   unitSystem: UnitSystem,
   zoom: number,
+  viewportAABB?: AABB,
 ) {
-  const typeOrder = [
-    'line',
-    'rect',
-    'circle',
-    'arc',
-    'door',
-    'window',
-    'stairs',
-    'dimension',
-    'text',
-  ];
-
   const firstLayer = layers[0];
 
   // 1. Draw walls first
-  for (const wall of entities) {
-    if (wall.type !== 'wall') continue;
+  const walls = entitiesByType.get('wall') || [];
+  for (const wall of walls) {
+    if (viewportAABB) {
+      const aabb = computeEntityAABB(wall, entityMap);
+      if (!aabbIntersects(aabb, viewportAABB)) {
+        continue;
+      }
+    }
 
     const isSelected = selection.has(wall.id);
     const isHovered = wall.id === hoveredEntityId;
@@ -139,7 +151,7 @@ export function drawAllEntities(
       ctx.shadowBlur = 10 / zoom;
     }
 
-    const layer = layerMap.get(wall.layerId) || firstLayer;
+    const layer = layerMap.get(wall.layerId ?? '0') || firstLayer;
     let color = layer?.color || '#c8cad4';
     if (wall.color) color = wall.color;
     if (isHovered && !isSelected) {
@@ -149,12 +161,13 @@ export function drawAllEntities(
     drawEntity(
       ctx,
       wall,
-      entities,
+      entityMap,
       isSelected,
       color,
       unitSystem,
       zoom,
       layers,
+      entitiesByType,
     );
 
     if (isHovered && !isSelected) {
@@ -163,9 +176,15 @@ export function drawAllEntities(
   }
 
   // 2. Draw all other entities in type order
-  for (const type of typeOrder) {
-    for (const ent of entities) {
-      if (ent.type !== type) continue;
+  for (const type of TYPE_ORDER) {
+    const list = entitiesByType.get(type as EntityType) || [];
+    for (const ent of list) {
+      if (viewportAABB) {
+        const aabb = computeEntityAABB(ent, entityMap);
+        if (!aabbIntersects(aabb, viewportAABB)) {
+          continue;
+        }
+      }
 
       const isSelected = selection.has(ent.id);
       const isHovered = ent.id === hoveredEntityId;
@@ -176,18 +195,19 @@ export function drawAllEntities(
         ctx.shadowBlur = 10 / zoom;
       }
 
-      const layer = layerMap.get(ent.layerId) || firstLayer;
+      const layer = layerMap.get(ent.layerId ?? '0') || firstLayer;
       const color = layer?.color || '#c8cad4';
 
       drawEntity(
         ctx,
         ent,
-        entities,
+        entityMap,
         isSelected,
         color,
         unitSystem,
         zoom,
         layers,
+        entitiesByType,
       );
 
       if (isHovered && !isSelected) {
@@ -200,7 +220,7 @@ export function drawAllEntities(
 export function drawPreviewEntity(
   ctx: CanvasRenderingContext2D,
   previewEntity: Entity,
-  entities: Entity[],
+  entityMap: Map<string, Entity>,
   layers: Layer[],
   layerMap: Map<string, Layer>,
   unitSystem: UnitSystem,
@@ -209,12 +229,12 @@ export function drawPreviewEntity(
   ctx.save();
   ctx.globalAlpha = 0.6;
   const firstLayer = layers[0];
-  const layer = layerMap.get(previewEntity.layerId) || firstLayer;
+  const layer = layerMap.get(previewEntity.layerId ?? '0') || firstLayer;
   const color = layer?.color || '#c8cad4';
   drawEntity(
     ctx,
     previewEntity,
-    entities,
+    entityMap,
     false,
     color,
     unitSystem,
@@ -227,26 +247,74 @@ export function drawPreviewEntity(
 export function drawAllConstraints(
   ctx: CanvasRenderingContext2D,
   constraints: Constraint[],
-  entities: Entity[],
+  entityMap: Map<string, Entity>,
   selection: Set<string>,
   unitSystem: UnitSystem,
   zoom: number,
+  viewportAABB?: AABB,
 ) {
   for (const c of constraints) {
-    const isSelected = c.entityIds.some(id => selection.has(id));
-    drawConstraint(ctx, c, entities, isSelected, unitSystem, zoom);
+    if (viewportAABB) {
+      let isVisible = false;
+      const pointRefs = c.pointRefs || [];
+      const entityIds = c.entityIds || [];
+
+      if (pointRefs.length > 0) {
+        for (let i = 0; i < pointRefs.length; i++) {
+          const ent = entityMap.get(pointRefs[i].entityId);
+          if (ent) {
+            const aabb = computeEntityAABB(ent, entityMap);
+            if (aabbIntersects(aabb, viewportAABB)) {
+              isVisible = true;
+              break;
+            }
+          }
+        }
+      } else if (entityIds.length > 0) {
+        for (let i = 0; i < entityIds.length; i++) {
+          const ent = entityMap.get(entityIds[i]);
+          if (ent) {
+            const aabb = computeEntityAABB(ent, entityMap);
+            if (aabbIntersects(aabb, viewportAABB)) {
+              isVisible = true;
+              break;
+            }
+          }
+        }
+      } else {
+        isVisible = true;
+      }
+
+      if (!isVisible) {
+        continue;
+      }
+    }
+
+    let isSelected = false;
+    if (c.entityIds) {
+      for (let i = 0; i < c.entityIds.length; i++) {
+        if (selection.has(c.entityIds[i])) {
+          isSelected = true;
+          break;
+        }
+      }
+    }
+    drawConstraint(ctx, c, entityMap, isSelected, unitSystem, zoom);
   }
 }
 
 export function drawAllSelectionHandles(
   ctx: CanvasRenderingContext2D,
-  entities: Entity[],
+  entitiesByType: Map<EntityType, Entity[]>,
   selection: Set<string>,
   zoom: number,
+  entityMap: Map<string, Entity>,
 ) {
-  for (const ent of entities) {
-    if (selection.has(ent.id)) {
-      drawSelectionHandles(ctx, ent, zoom, entities);
+  for (const list of entitiesByType.values()) {
+    for (const ent of list) {
+      if (selection.has(ent.id)) {
+        drawSelectionHandles(ctx, ent, zoom, entityMap);
+      }
     }
   }
 }

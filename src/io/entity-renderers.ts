@@ -476,7 +476,13 @@ export function renderStairs(st: StairsEntity, renderer: Renderer): void {
       textAnchor: 'middle',
       dominantBaseline: 'middle',
     },
-    `rotate(${textAngleDeg}, ${textX}, ${textY})`,
+    {
+      rotate: {
+        angle: textAngleDeg,
+        cx: textX,
+        cy: textY,
+      },
+    },
   );
 }
 
@@ -569,9 +575,13 @@ export function renderDimension(
       ? (angRad + Math.PI) * (180 / Math.PI)
       : angRad * (180 / Math.PI);
 
-  // Push a group with rotation and position for text drawing
   renderer.pushGroup({
-    transform: `translate(${center.x}, ${center.y}) rotate(${textAngleDeg})`,
+    transform: {
+      translate: center,
+      rotate: {
+        angle: textAngleDeg,
+      },
+    },
   });
   renderer.drawRect(-0.4, -0.08, 0.8, 0.16, {fill: '#1e2028'}); // simple mask box
   renderer.drawText(

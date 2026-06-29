@@ -1,7 +1,8 @@
 import {Entity, Vec2, WallEntity} from './types';
 import {
   dist,
-  distToSegment,
+  distSq,
+  distToSegmentSq,
   normalize,
   sub,
   add,
@@ -11,9 +12,9 @@ import {
 
 /**
  * Checks if a point hits a given entity within a radius.
- * Returns the distance to the entity if it hit, or null if it didn't.
+ * Returns the squared distance to the entity if it hit, or null if it didn't.
  */
-export function getDistanceToEntity(
+export function getDistanceSqToEntity(
   pt: Vec2,
   ent: Entity,
   entitiesOrMap: Entity[] | Map<string, Entity>,
@@ -27,28 +28,29 @@ export function getDistanceToEntity(
     case 'wall':
     case 'line':
     case 'stairs': {
-      return distToSegment(pt, ent.start, ent.end);
+      return distToSegmentSq(pt, ent.start, ent.end);
     }
     case 'rect': {
-      const d1 = distToSegment(pt, ent.p1, {x: ent.p2.x, y: ent.p1.y});
-      const d2 = distToSegment(pt, {x: ent.p2.x, y: ent.p1.y}, ent.p2);
-      const d3 = distToSegment(pt, ent.p2, {x: ent.p1.x, y: ent.p2.y});
-      const d4 = distToSegment(pt, {x: ent.p1.x, y: ent.p2.y}, ent.p1);
+      const d1 = distToSegmentSq(pt, ent.p1, {x: ent.p2.x, y: ent.p1.y});
+      const d2 = distToSegmentSq(pt, {x: ent.p2.x, y: ent.p1.y}, ent.p2);
+      const d3 = distToSegmentSq(pt, ent.p2, {x: ent.p1.x, y: ent.p2.y});
+      const d4 = distToSegmentSq(pt, {x: ent.p1.x, y: ent.p2.y}, ent.p1);
       return Math.min(d1, d2, d3, d4);
     }
     case 'circle':
     case 'arc': {
-      return Math.abs(dist(pt, ent.center) - ent.radius);
+      const d = dist(pt, ent.center) - ent.radius;
+      return d * d;
     }
     case 'dimension': {
       const u = normalize(sub(ent.p2, ent.p1));
       const n = {x: -u.y, y: u.x};
       const d1 = add(ent.p1, scale(n, ent.offset));
       const d2 = add(ent.p2, scale(n, ent.offset));
-      return distToSegment(pt, d1, d2);
+      return distToSegmentSq(pt, d1, d2);
     }
     case 'text': {
-      return dist(pt, ent.position);
+      return distSq(pt, ent.position);
     }
     case 'door':
     case 'window': {
@@ -60,13 +62,25 @@ export function getDistanceToEntity(
         const d1 = sub(center, scale(u, w / 2));
         const d2 = add(center, scale(u, w / 2));
         // Bias distance slightly so doors/windows win over the underlying wall
-        return distToSegment(pt, d1, d2) - 0.001;
+        return Math.max(0, distToSegmentSq(pt, d1, d2) - 1e-6);
       }
       return null;
     }
     default:
       return null;
   }
+}
+
+/**
+ * Compatibility wrapper returning linear distance (non-squared)
+ */
+export function getDistanceToEntity(
+  pt: Vec2,
+  ent: Entity,
+  entitiesOrMap: Entity[] | Map<string, Entity>,
+): number | null {
+  const dSq = getDistanceSqToEntity(pt, ent, entitiesOrMap);
+  return dSq !== null ? Math.sqrt(dSq) : null;
 }
 
 /**
@@ -79,14 +93,15 @@ export function findEntityAt(
   entityMap?: Map<string, Entity>,
 ): Entity | null {
   let bestEnt: Entity | null = null;
-  let bestDist = hitRadius;
+  const hitRadiusSq = hitRadius * hitRadius;
+  let bestDistSq = hitRadiusSq;
 
   const map = entityMap || new Map(entities.map(e => [e.id, e]));
 
   for (const ent of entities) {
-    const d = getDistanceToEntity(pt, ent, map);
-    if (d !== null && d < bestDist) {
-      bestDist = d;
+    const dSq = getDistanceSqToEntity(pt, ent, map);
+    if (dSq !== null && dSq < bestDistSq) {
+      bestDistSq = dSq;
       bestEnt = ent;
     }
   }

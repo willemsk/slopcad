@@ -1,5 +1,13 @@
-import {Entity, SnapResult, UnitSystem, Constraint, Layer} from '../core/types';
+import {
+  Entity,
+  SnapResult,
+  UnitSystem,
+  Constraint,
+  Layer,
+  EntityType,
+} from '../core/types';
 import {ViewportMath} from '../core/viewport-math';
+import {computeViewportAABB} from '../core/bounding-box-cache';
 import {
   clearCanvas,
   drawGrid,
@@ -17,7 +25,8 @@ export interface RenderState {
   width: number;
   height: number;
   viewport: ViewportMath;
-  entities: Entity[];
+  entitiesByType: Map<EntityType, Entity[]>;
+  entityMap: Map<string, Entity>;
   constraints: Constraint[];
   layers: Layer[];
   layerMap: Map<string, Layer>;
@@ -38,7 +47,8 @@ export function render(state: RenderState) {
     width,
     height,
     viewport,
-    entities,
+    entitiesByType,
+    entityMap,
     constraints,
     layers,
     layerMap,
@@ -52,6 +62,8 @@ export function render(state: RenderState) {
     hoveredEntityId,
     overlayEntities,
   } = state;
+
+  const viewportAABB = computeViewportAABB(viewport, width, height);
 
   // 1. Clear canvas
   clearCanvas(ctx, width, height);
@@ -81,13 +93,15 @@ export function render(state: RenderState) {
   // 4. Draw Entities
   drawAllEntities(
     ctx,
-    entities,
+    entitiesByType,
+    entityMap,
     selection,
     hoveredEntityId,
     layers,
     layerMap,
     unitSystem,
     viewport.zoom,
+    viewportAABB,
   );
 
   // 5. Draw Active Tool Preview (Ghost/Helper)
@@ -95,7 +109,7 @@ export function render(state: RenderState) {
     drawPreviewEntity(
       ctx,
       previewEntity,
-      entities,
+      entityMap,
       layers,
       layerMap,
       unitSystem,
@@ -108,15 +122,22 @@ export function render(state: RenderState) {
     drawAllConstraints(
       ctx,
       constraints,
-      entities,
+      entityMap,
       selection,
       unitSystem,
       viewport.zoom,
+      viewportAABB,
     );
   }
 
   // 7. Draw Selection Handles on Top
-  drawAllSelectionHandles(ctx, entities, selection, viewport.zoom);
+  drawAllSelectionHandles(
+    ctx,
+    entitiesByType,
+    selection,
+    viewport.zoom,
+    entityMap,
+  );
 
   // 8. Draw Snap Indicator
   if (snapResult) {

@@ -34,7 +34,7 @@ describe('render-helpers', () => {
       drawEntity(
         mockCtx as CanvasRenderingContext2D,
         mockLine,
-        [mockLine],
+        new Map([['1', mockLine]]),
         true,
         '#fff',
         'metric',
