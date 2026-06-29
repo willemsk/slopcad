@@ -1,5 +1,47 @@
-import {Renderer, RendererOptions} from '../io/renderer-interface';
+import {
+  Renderer,
+  RendererOptions,
+  TransformOptions,
+} from '../io/renderer-interface';
 import {Vec2} from '../core/types';
+
+function applyTransform(
+  ctx: CanvasRenderingContext2D,
+  t: string | TransformOptions,
+) {
+  if (typeof t === 'string') {
+    const rotateMatch = t.match(/rotate\(([^,]+),\s*([^,]+),\s*([^)]+)\)/);
+    if (rotateMatch) {
+      const deg = parseFloat(rotateMatch[1]);
+      const cx = parseFloat(rotateMatch[2]);
+      const cy = parseFloat(rotateMatch[3]);
+      ctx.translate(cx, cy);
+      ctx.rotate((deg * Math.PI) / 180);
+      ctx.translate(-cx, -cy);
+    }
+    const translateMatch = t.match(/translate\(([^,]+),\s*([^)]+)\)/);
+    if (translateMatch) {
+      const tx = parseFloat(translateMatch[1]);
+      const ty = parseFloat(translateMatch[2]);
+      ctx.translate(tx, ty);
+    }
+  } else {
+    if (t.translate) {
+      ctx.translate(t.translate.x, t.translate.y);
+    }
+    if (t.rotate) {
+      const cx = t.rotate.cx ?? 0;
+      const cy = t.rotate.cy ?? 0;
+      if (cx !== 0 || cy !== 0) {
+        ctx.translate(cx, cy);
+      }
+      ctx.rotate((t.rotate.angle * Math.PI) / 180);
+      if (cx !== 0 || cy !== 0) {
+        ctx.translate(-cx, -cy);
+      }
+    }
+  }
+}
 
 /**
  * Implementation of the generic Renderer interface for drawing to HTML5 Canvas2D context.
@@ -11,6 +53,8 @@ export class Canvas2DRenderer implements Renderer {
   private zoom: number;
   private isSelected: boolean;
   private colorOverride: string;
+  private lastDashStr = '';
+  private lastDashArray: number[] = [];
 
   constructor(
     ctx: CanvasRenderingContext2D,
@@ -24,24 +68,19 @@ export class Canvas2DRenderer implements Renderer {
     this.colorOverride = colorOverride;
   }
 
+  configure(zoom: number, isSelected: boolean, colorOverride: string) {
+    this.zoom = zoom;
+    this.isSelected = isSelected;
+    this.colorOverride = colorOverride;
+  }
+
   begin(): void {}
   end(): void {}
 
-  pushGroup(options?: {transform?: string}): void {
+  pushGroup(options?: {transform?: string | TransformOptions}): void {
     this.ctx.save();
     if (options?.transform) {
-      // Simple transform parser for rotation
-      const rotateMatch = options.transform.match(
-        /rotate\(([^,]+),\s*([^,]+),\s*([^)]+)\)/,
-      );
-      if (rotateMatch) {
-        const deg = parseFloat(rotateMatch[1]);
-        const cx = parseFloat(rotateMatch[2]);
-        const cy = parseFloat(rotateMatch[3]);
-        this.ctx.translate(cx, cy);
-        this.ctx.rotate((deg * Math.PI) / 180);
-        this.ctx.translate(-cx, -cy);
-      }
+      applyTransform(this.ctx, options.transform);
     }
   }
 
@@ -89,10 +128,16 @@ export class Canvas2DRenderer implements Renderer {
 
     // 3. Resolve Stroke Dasharray
     if (options?.strokeDasharray) {
-      const dashes = options.strokeDasharray
-        .split(',')
-        .map(s => parseFloat(s.trim()));
-      this.ctx.setLineDash(dashes);
+      if (options.strokeDasharray === this.lastDashStr) {
+        this.ctx.setLineDash(this.lastDashArray);
+      } else {
+        const dashes = options.strokeDasharray
+          .split(',')
+          .map(s => parseFloat(s.trim()));
+        this.lastDashStr = options.strokeDasharray;
+        this.lastDashArray = dashes;
+        this.ctx.setLineDash(dashes);
+      }
     } else {
       this.ctx.setLineDash([]);
     }
@@ -201,7 +246,7 @@ export class Canvas2DRenderer implements Renderer {
     text: string,
     position: Vec2,
     options?: RendererOptions,
-    transform?: string,
+    transform?: string | TransformOptions,
   ): void {
     this.applyStyles(options);
     this.ctx.save();
@@ -240,17 +285,7 @@ export class Canvas2DRenderer implements Renderer {
     }
 
     if (transform) {
-      const rotateMatch = transform.match(
-        /rotate\(([^,]+),\s*([^,]+),\s*([^)]+)\)/,
-      );
-      if (rotateMatch) {
-        const deg = parseFloat(rotateMatch[1]);
-        const cx = parseFloat(rotateMatch[2]);
-        const cy = parseFloat(rotateMatch[3]);
-        this.ctx.translate(cx, cy);
-        this.ctx.rotate((deg * Math.PI) / 180);
-        this.ctx.translate(-cx, -cy);
-      }
+      applyTransform(this.ctx, transform);
     }
 
     this.ctx.fillText(text, position.x, position.y);

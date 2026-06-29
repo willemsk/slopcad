@@ -42,16 +42,21 @@ export function exportPageToSVG(page: Page, unitSystem: UnitSystem): string {
   }
 
   // Pass 2: Draw doors & windows (with background masks that cut walls)
+  const wallMap = new Map<string, WallEntity>();
+  for (const w of walls) {
+    wallMap.set(w.id, w);
+  }
+
   for (const ent of page.entities) {
     if (ent.type === 'door') {
       const door = ent as DoorEntity;
-      const wall = page.entities.find(e => e.id === door.wallId) as WallEntity;
+      const wall = wallMap.get(door.wallId);
       if (wall) {
         renderDoor(door, wall, renderer);
       }
     } else if (ent.type === 'window') {
       const wind = ent as WindowEntity;
-      const wall = page.entities.find(e => e.id === wind.wallId) as WallEntity;
+      const wall = wallMap.get(wind.wallId);
       if (wall) {
         renderWindow(wind, wall, renderer);
       }

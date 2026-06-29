@@ -12,6 +12,7 @@ import {
   TextEntity,
   Vec2,
   Layer,
+  Constraint,
 } from './types';
 
 // Helper to generate a simple unique ID
@@ -294,4 +295,16 @@ export function getVisibleEntities(
     }
     return defaultVisibility;
   });
+}
+
+export function cloneConstraint(c: Constraint): Constraint {
+  return {
+    ...c,
+    entityIds: [...c.entityIds],
+    pointRefs: c.pointRefs ? c.pointRefs.map(pr => ({...pr})) : undefined,
+  };
+}
+
+export function cloneConstraints(cs: Constraint[]): Constraint[] {
+  return cs.map(cloneConstraint);
 }

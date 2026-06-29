@@ -8,7 +8,15 @@ export const showConstraintsSignal = signal<boolean>(true);
 export const gridSpacingSignal = signal<number>(0.5); // 0.5 meters default grid spacing
 export const previewEntitySignal = signal<Entity | null>(null);
 export const hoveredEntityIdSignal = signal<string | null>(null);
-export const triggerRenderSignal = signal<{}>({});
+export const renderDirtySignal = signal<boolean>(true);
+export const triggerRenderSignal = {
+  get value() {
+    return renderDirtySignal.value;
+  },
+  set value(v: unknown) {
+    renderDirtySignal.value = true;
+  },
+};
 export const overlayPageIndexSignal = signal<number | null>(null);
 export const mouseCoordsSignal = signal<Vec2>({x: 0, y: 0});
 

@@ -16,8 +16,16 @@ export function len(v: Vec2): number {
   return Math.sqrt(v.x * v.x + v.y * v.y);
 }
 
+export function lenSq(v: Vec2): number {
+  return v.x * v.x + v.y * v.y;
+}
+
 export function dist(v1: Vec2, v2: Vec2): number {
   return Math.sqrt((v1.x - v2.x) ** 2 + (v1.y - v2.y) ** 2);
+}
+
+export function distSq(v1: Vec2, v2: Vec2): number {
+  return (v1.x - v2.x) ** 2 + (v1.y - v2.y) ** 2;
 }
 
 export function normalize(v: Vec2): Vec2 {
@@ -77,6 +85,15 @@ export function closestPointOnSegment(
 export function distToSegment(p: Vec2, lineStart: Vec2, lineEnd: Vec2): number {
   const cp = closestPointOnSegment(p, lineStart, lineEnd);
   return dist(p, cp);
+}
+
+export function distToSegmentSq(
+  p: Vec2,
+  lineStart: Vec2,
+  lineEnd: Vec2,
+): number {
+  const cp = closestPointOnSegment(p, lineStart, lineEnd);
+  return distSq(p, cp);
 }
 
 export function lineIntersection(

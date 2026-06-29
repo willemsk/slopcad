@@ -1,5 +1,25 @@
-import {Renderer, RendererOptions} from './renderer-interface';
+import {
+  Renderer,
+  RendererOptions,
+  TransformOptions,
+} from './renderer-interface';
 import {Vec2} from '../core/types';
+
+function formatTransform(t: string | TransformOptions): string {
+  if (typeof t === 'string') {
+    return t;
+  }
+  const parts = [];
+  if (t.translate) {
+    parts.push(`translate(${t.translate.x}, ${t.translate.y})`);
+  }
+  if (t.rotate) {
+    const rx = t.rotate.cx !== undefined ? `, ${t.rotate.cx}` : '';
+    const ry = t.rotate.cy !== undefined ? `, ${t.rotate.cy}` : '';
+    parts.push(`rotate(${t.rotate.angle}${rx}${ry})`);
+  }
+  return parts.join(' ');
+}
 
 export class SVGRenderer implements Renderer {
   private elements: string[] = [];
@@ -31,9 +51,11 @@ export class SVGRenderer implements Renderer {
     ].join('\n');
   }
 
-  pushGroup(options?: {transform?: string}): void {
+  pushGroup(options?: {transform?: string | TransformOptions}): void {
     const attrs = [];
-    if (options?.transform) attrs.push(`transform="${options.transform}"`);
+    if (options?.transform) {
+      attrs.push(`transform="${formatTransform(options.transform)}"`);
+    }
     this.elements.push(`  <g ${attrs.join(' ')}>`);
   }
 
@@ -115,10 +137,12 @@ export class SVGRenderer implements Renderer {
     text: string,
     position: Vec2,
     options?: RendererOptions,
-    transform?: string,
+    transform?: string | TransformOptions,
   ): void {
     const attrStr = this.buildAttrs(options);
-    const transformStr = transform ? ` transform="${transform}"` : '';
+    const transformStr = transform
+      ? ` transform="${formatTransform(transform)}"`
+      : '';
     this.elements.push(
       `  <text x="${position.x}" y="${position.y}" ${attrStr}${transformStr}>${text}</text>`,
     );

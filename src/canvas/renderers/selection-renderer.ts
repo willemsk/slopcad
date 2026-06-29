@@ -5,7 +5,7 @@ export function drawSelectionHandles(
   ctx: CanvasRenderingContext2D,
   entity: Entity,
   zoom: number,
-  entities: Entity[] = [],
+  entityMap?: Map<string, Entity>,
 ) {
   const pts: Vec2[] = [];
   if (
@@ -31,7 +31,7 @@ export function drawSelectionHandles(
   } else if (entity.type === 'text') {
     pts.push(entity.position);
   } else if (entity.type === 'door' || entity.type === 'window') {
-    const wall = entities.find(e => e.id === entity.wallId);
+    const wall = entityMap?.get(entity.wallId);
     if (wall && wall.type === 'wall') {
       pts.push(lerp(wall.start, wall.end, entity.position));
     }

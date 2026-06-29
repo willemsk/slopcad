@@ -14,14 +14,14 @@ import {getEntityPoint} from '../../core/entity';
 export function drawConstraint(
   ctx: CanvasRenderingContext2D,
   constraint: Constraint,
-  entities: Entity[],
+  entityMap: Map<string, Entity>,
   isSelected: boolean,
   unitSystem: UnitSystem,
   zoom: number,
 ) {
   const points: Vec2[] = [];
   for (const ref of constraint.pointRefs || []) {
-    const ent = entities.find(e => e.id === ref.entityId);
+    const ent = entityMap.get(ref.entityId);
     if (!ent) continue;
     const pt = getEntityPoint(ent, ref.pointKey);
     if (pt) points.push(pt);

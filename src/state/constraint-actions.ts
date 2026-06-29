@@ -2,7 +2,7 @@ import {Vec2, WallEntity, LineEntity} from '../core/types';
 import {generateId} from '../core/entity';
 import {solveConstraints} from '../core/solver';
 import {dist} from '../core/geometry';
-import {activePageSignal, updateActivePage} from './project-state';
+import {activePageSignal, updateActivePage, entityMap} from './project-state';
 import {snapshotState} from './history-actions';
 import {selectionSignal} from './selection-state';
 import {viewportSignal} from './viewport-state';
@@ -11,7 +11,14 @@ import {requestPrompt} from './ui-state';
 export function addHorizontalConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter(e => selection.has(e.id));
+  const map = entityMap.value;
+  const selectedEntities: (WallEntity | LineEntity)[] = [];
+  for (const id of selection) {
+    const ent = map.get(id);
+    if (ent && (ent.type === 'wall' || ent.type === 'line')) {
+      selectedEntities.push(ent as WallEntity | LineEntity);
+    }
+  }
 
   let added = false;
   const newConstraints = [...page.constraints];
@@ -46,7 +53,14 @@ export function addHorizontalConstraintAction() {
 export function addVerticalConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter(e => selection.has(e.id));
+  const map = entityMap.value;
+  const selectedEntities: (WallEntity | LineEntity)[] = [];
+  for (const id of selection) {
+    const ent = map.get(id);
+    if (ent && (ent.type === 'wall' || ent.type === 'line')) {
+      selectedEntities.push(ent as WallEntity | LineEntity);
+    }
+  }
 
   let added = false;
   const newConstraints = [...page.constraints];
@@ -81,7 +95,14 @@ export function addVerticalConstraintAction() {
 export async function addLengthConstraintAction(targetVal?: number) {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter(e => selection.has(e.id));
+  const map = entityMap.value;
+  const selectedEntities: (WallEntity | LineEntity)[] = [];
+  for (const id of selection) {
+    const ent = map.get(id);
+    if (ent && (ent.type === 'wall' || ent.type === 'line')) {
+      selectedEntities.push(ent as WallEntity | LineEntity);
+    }
+  }
 
   const ent = selectedEntities[0];
   if (!ent || (ent.type !== 'wall' && ent.type !== 'line')) return;
@@ -145,9 +166,14 @@ export function clearSelectedConstraintsAction() {
 export async function addFixedAngleConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
-  const selectedEntities = page.entities.filter(
-    e => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
-  );
+  const map = entityMap.value;
+  const selectedEntities: (WallEntity | LineEntity)[] = [];
+  for (const id of selection) {
+    const ent = map.get(id);
+    if (ent && (ent.type === 'wall' || ent.type === 'line')) {
+      selectedEntities.push(ent as WallEntity | LineEntity);
+    }
+  }
 
   if (selectedEntities.length !== 1) {
     window.alert('Please select exactly 1 wall/line to fix its angle.');

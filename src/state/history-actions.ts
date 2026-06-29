@@ -39,15 +39,15 @@ export function deleteSelectedAction() {
   const page = activePageSignal.value;
   snapshotState();
 
-  const newEntities = page.entities.filter(e => !selection.has(e.id));
+  const wallIdsDeleted = new Set<string>();
+  for (const ent of page.entities) {
+    if (ent.type === 'wall' && selection.has(ent.id)) {
+      wallIdsDeleted.add(ent.id);
+    }
+  }
 
-  const wallIdsDeleted = new Set(
-    page.entities
-      .filter(e => selection.has(e.id) && e.type === 'wall')
-      .map(e => e.id),
-  );
-
-  const finalEntities = newEntities.filter(e => {
+  const finalEntities = page.entities.filter(e => {
+    if (selection.has(e.id)) return false;
     if (e.type === 'door' || e.type === 'window') {
       const de = e as DoorEntity | WindowEntity;
       return !wallIdsDeleted.has(de.wallId);
@@ -56,10 +56,14 @@ export function deleteSelectedAction() {
   });
 
   const newConstraints = page.constraints.filter(c => {
-    return c.entityIds.every(id => {
-      const isEntityDeleted = selection.has(id) || wallIdsDeleted.has(id);
-      return !isEntityDeleted;
-    });
+    if (!c.entityIds) return true;
+    for (let i = 0; i < c.entityIds.length; i++) {
+      const id = c.entityIds[i];
+      if (selection.has(id) || wallIdsDeleted.has(id)) {
+        return false;
+      }
+    }
+    return true;
   });
 
   updateActivePage(finalEntities, newConstraints);

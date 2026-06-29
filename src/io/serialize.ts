@@ -8,6 +8,15 @@ export function serializeProject(project: Project): string {
     timestamp: Date.now(),
     project,
   };
+  return JSON.stringify(data);
+}
+
+export function serializeProjectPretty(project: Project): string {
+  const data = {
+    schemaVersion: SCHEMA_VERSION,
+    timestamp: Date.now(),
+    project,
+  };
   return JSON.stringify(data, null, 2);
 }
 

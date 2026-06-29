@@ -4,6 +4,46 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ---
 
+### [PERF-001] — Codebase Audit & Performance Optimization Pass
+- **Date**: 2026-06-29
+- **Commit**: `cb20412`
+- **Files Changed**: 18 files, +480 insertions, -145 deletions
+- **Tests**: ✅ 159 passed, 0 failed
+- **Details**: Executed a comprehensive codebase-wide performance optimization pass:
+  - Phase 1: Added squared-distance geometry helpers, fast non-JSON constraint cloning, and precomputed layer/entity visible signals.
+  - Phase 2: Implemented a requestAnimationFrame render dirty scheduling loop, single-pass render loops, cached single Canvas2DRenderer configuration, structured transform API, and Map-backed O(1) solver snap/hit-test lookups.
+  - Phase 3: Added O(1) history state comparisons, single-pass entity deletion actions, extracted coordinate tracking components, minified JSON serialization, and SVG wallMap precomputations.
+  - Phase 4: Created an AABB bounding box cache and integrated frustum culling to skip off-screen entity rendering.
+  - Phase 5: Fixed grid invisibility by batching dots into a single path and increasing opacity to 15%. Integrated visibility constraints for selection handles and wall intersection lookups to prevent hidden entities from causing interactions. Corrected culling logic for constraints lacking point references.
+
+<details>
+<summary>Files</summary>
+
+| Status | File |
+|--------|------|
+| Added | `src/core/bounding-box-cache.ts` |
+| Modified | `src/core/geometry.ts` |
+| Modified | `src/core/entity.ts` |
+| Modified | `src/core/solver.ts` |
+| Modified | `src/core/snap.ts` |
+| Modified | `src/core/hit-test.ts` |
+| Modified | `src/state/project-state.ts` |
+| Modified | `src/state/history-actions.ts` |
+| Modified | `src/state/constraint-actions.ts` |
+| Modified | `src/canvas/canvas-component.tsx` |
+| Modified | `src/canvas/render-helpers.ts` |
+| Modified | `src/canvas/renderer.ts` |
+| Modified | `src/canvas/canvas-renderer.ts` |
+| Modified | `src/canvas/renderers/registry.ts` |
+| Modified | `src/canvas/renderers/constraint-renderer.ts` |
+| Modified | `src/ui/status-bar.tsx` |
+| Modified | `src/io/serialize.ts` |
+| Modified | `src/io/export-svg.ts` |
+
+</details>
+
+---
+
 ### [PERF] — Render Loop & Hit-Testing Algorithmic Optimizations
 - **Date**: 2026-06-29
 - **Commit**: `e10b2b3`
