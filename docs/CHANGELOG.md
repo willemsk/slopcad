@@ -4,6 +4,33 @@ All notable changes to the Antigravity CAD project will be documented in this fi
 
 ---
 
+### [PERF] — Render Loop & Hit-Testing Algorithmic Optimizations
+- **Date**: 2026-06-29
+- **Commit**: `e10b2b3`
+- **Files Changed**: 7 files, +106 insertions, -32 deletions
+- **Tests**: ✅ 159 passed, 0 failed
+- **Details**: Eliminated three major algorithmic scaling bottlenecks that degraded performance in complex plans:
+  - Replaced $O(N \log N)$ sorting and frame array allocations inside the canvas rendering loop with a zero-allocation, 9-pass rendering sequence that iterates over entities once per type.
+  - Implemented a computed signal-backed `layerMap` (`Map<string, Layer>`) in the state layer to replace linear array lookups inside the renderer, converting lookups from $O(M)$ to $O(1)$.
+  - Implemented a computed signal-backed `entityMap` (`Map<string, Entity>`) in the state layer to replace linear parent wall lookups when hit-testing doors and windows, transforming the hit-testing complexity on mouse moves from $O(N^2)$ to $O(N)$ with zero allocations.
+
+<details>
+<summary>Files</summary>
+
+| Status | File |
+|--------|------|
+| Modified | `src/state/project-state.ts` |
+| Modified | `src/canvas/renderer.ts` |
+| Modified | `src/canvas/render-helpers.ts` |
+| Modified | `src/canvas/canvas-component.tsx` |
+| Modified | `src/canvas/snap-helper.ts` |
+| Modified | `src/core/hit-test.ts` |
+| Modified | `src/tools/select-tool.ts` |
+
+</details>
+
+---
+
 ### [PERF] — Dynamic grid scaling and rendering optimization
 - **Date**: 2026-06-29
 - **Commits**:
