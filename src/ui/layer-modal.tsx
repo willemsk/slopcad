@@ -65,6 +65,7 @@ export function LayerModal() {
                   <input
                     type="radio"
                     name="activeLayer"
+                    aria-label={`Set active layer to ${layer.name}`}
                     checked={project.activeLayerId === layer.id}
                     onChange={() => setActiveLayerAction(layer.id)}
                   />
@@ -73,6 +74,7 @@ export function LayerModal() {
                   <input
                     type="text"
                     value={layer.name}
+                    aria-label={`Name for layer ${layer.name}`}
                     className="layer-name-input"
                     onChange={e =>
                       updateLayerAction(layer.id, {
@@ -85,6 +87,7 @@ export function LayerModal() {
                   <input
                     type="checkbox"
                     checked={layer.visible}
+                    aria-label={`Toggle visibility for ${layer.name}`}
                     onChange={() =>
                       updateLayerAction(layer.id, {visible: !layer.visible})
                     }
@@ -94,6 +97,7 @@ export function LayerModal() {
                   <input
                     type="checkbox"
                     checked={layer.locked}
+                    aria-label={`Toggle lock for ${layer.name}`}
                     onChange={() =>
                       updateLayerAction(layer.id, {locked: !layer.locked})
                     }
@@ -103,6 +107,7 @@ export function LayerModal() {
                   <input
                     type="color"
                     value={layer.color}
+                    aria-label={`Color for ${layer.name}`}
                     onChange={e =>
                       updateLayerAction(layer.id, {
                         color: (e.target as HTMLInputElement).value,
