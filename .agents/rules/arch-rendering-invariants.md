@@ -16,10 +16,14 @@ These rules enforce the rendering logic constraints for the HTML5 Canvas 2D pipe
 - **DO**: Draw screen-space overlays (e.g., crosshairs, snap indicators, UCS) AFTER calling `ctx.restore()` to revert world-space transforms.
 - **DO**: Account for `viewport.zoom` when performing hit-testing (e.g., handle radius in screen space vs world space).
 - **DO**: Split entity rendering logic into focused, single-responsibility files (e.g., `draw-wall.ts`, `draw-dimension.ts`) rather than a monolithic file.
+- **DO**: Batch high-frequency geometric components (such as grid dots or repeated markers) into a *single path* using `ctx.beginPath() ... ctx.rect(...) ... ctx.fill()` instead of issuing individual stroke/fill/fillRect calls in loops.
+- **DO**: Ensure that grid dots and other sub-pixel elements have sufficient opacity (e.g., >= 15% on dark background) and appropriate pixel thickness to prevent them from disappearing due to sub-pixel rasterization and anti-aliasing.
+- **DO**: Restrict drawing of interactive overlays (such as selection handles or constraints) and calculation queries (such as wall junctions) to *visible* entities (`entitiesByType` or `visibleEntities`) to prevent hidden layer entities from creating ghost interactions.
 
 ### Prohibited Patterns
 - ❌ Do not apply CSS `zoom` to the `<canvas>` element itself, as it causes blurring and breaks coordinate calculations.
 - ❌ Do not mix rendering logic with business logic or state mutation.
+- ❌ Do not draw or check coordinates for hidden layer entities in selection handles or wall join intersection logic.
 
 ## Known Violations (as of 2026-06-18)
 
