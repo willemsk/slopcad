@@ -68,6 +68,7 @@ export function LayerModal() {
                     aria-label={'Set active layer to ' + layer.name}
                     checked={project.activeLayerId === layer.id}
                     onChange={() => setActiveLayerAction(layer.id)}
+                    aria-label={'Set active layer to ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-name">
@@ -81,6 +82,7 @@ export function LayerModal() {
                         name: (e.target as HTMLInputElement).value,
                       })
                     }
+                    aria-label={'Rename layer ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-toggle">
@@ -91,6 +93,7 @@ export function LayerModal() {
                     onChange={() =>
                       updateLayerAction(layer.id, {visible: !layer.visible})
                     }
+                    aria-label={'Toggle visibility for ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-toggle">
@@ -101,6 +104,7 @@ export function LayerModal() {
                     onChange={() =>
                       updateLayerAction(layer.id, {locked: !layer.locked})
                     }
+                    aria-label={'Toggle lock for ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-color">
@@ -113,6 +117,7 @@ export function LayerModal() {
                         color: (e.target as HTMLInputElement).value,
                       })
                     }
+                    aria-label={'Change color for ' + layer.name}
                   />
                 </td>
               </tr>
