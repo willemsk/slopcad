@@ -20,6 +20,10 @@
 **Learning:** The ribbon component uses specific CSS structures. Adding a file menu tab requires using `.ribbon-tab` to look cohesive.
 **Action:** Use `.ribbon-tab` class for the File Menu button when integrating with the ribbon layout.
 
+## 2026-06-18 - Missing context on tabular form inputs
+**Learning:** Form inputs embedded directly within data tables (like the layer properties table) often lack explicit `<label>` elements due to visual space constraints. This leaves screen reader users completely disoriented, as they only hear "checkbox" or "text input" without knowing which row (e.g., which specific layer) the input controls.
+**Action:** Always use dynamically generated, row-specific `aria-label` attributes (e.g., `aria-label={"Toggle visibility for " + layer.name}`) for any interactive form element embedded within a table row that lacks a visual, dedicated `<label>` element.
+
 ## 2026-06-18 - Dynamic ARIA labels in tables
 **Learning:** When form inputs are placed inside tables, the layout often precludes the use of standard `<label>` tags.
 **Action:** Always use row-specific dynamic `aria-label`s (e.g., `aria-label={"Toggle lock for " + layer.name}`) for proper screen reader accessibility in these situations.

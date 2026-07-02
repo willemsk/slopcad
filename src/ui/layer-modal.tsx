@@ -65,6 +65,7 @@ export function LayerModal() {
                   <input
                     type="radio"
                     name="activeLayer"
+                    aria-label={'Set active layer to ' + layer.name}
                     checked={project.activeLayerId === layer.id}
                     onChange={() => setActiveLayerAction(layer.id)}
                     aria-label={'Set active layer to ' + layer.name}
@@ -75,6 +76,7 @@ export function LayerModal() {
                     type="text"
                     aria-label={'Rename layer ' + layer.name}
                     value={layer.name}
+                    aria-label={'Edit name for ' + layer.name}
                     className="layer-name-input"
                     onChange={e =>
                       updateLayerAction(layer.id, {
