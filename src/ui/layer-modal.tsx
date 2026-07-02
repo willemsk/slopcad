@@ -68,11 +68,13 @@ export function LayerModal() {
                     aria-label={'Set active layer to ' + layer.name}
                     checked={project.activeLayerId === layer.id}
                     onChange={() => setActiveLayerAction(layer.id)}
+                    aria-label={'Set active layer to ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-name">
                   <input
                     type="text"
+                    aria-label={'Rename layer ' + layer.name}
                     value={layer.name}
                     aria-label={'Name for layer ' + layer.name}
                     className="layer-name-input"
@@ -81,6 +83,7 @@ export function LayerModal() {
                         name: (e.target as HTMLInputElement).value,
                       })
                     }
+                    aria-label={'Rename layer ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-toggle">
@@ -88,9 +91,11 @@ export function LayerModal() {
                     type="checkbox"
                     aria-label={'Toggle visibility for ' + layer.name}
                     checked={layer.visible}
+                    aria-label={`Toggle visibility for ${layer.name}`}
                     onChange={() =>
                       updateLayerAction(layer.id, {visible: !layer.visible})
                     }
+                    aria-label={'Toggle visibility for ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-toggle">
@@ -98,9 +103,11 @@ export function LayerModal() {
                     type="checkbox"
                     aria-label={'Toggle lock for ' + layer.name}
                     checked={layer.locked}
+                    aria-label={`Toggle lock for ${layer.name}`}
                     onChange={() =>
                       updateLayerAction(layer.id, {locked: !layer.locked})
                     }
+                    aria-label={'Toggle lock for ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-color">
@@ -113,6 +120,7 @@ export function LayerModal() {
                         color: (e.target as HTMLInputElement).value,
                       })
                     }
+                    aria-label={'Change color for ' + layer.name}
                   />
                 </td>
               </tr>
