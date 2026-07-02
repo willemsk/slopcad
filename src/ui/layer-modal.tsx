@@ -76,7 +76,7 @@ export function LayerModal() {
                     type="text"
                     aria-label={'Rename layer ' + layer.name}
                     value={layer.name}
-                    aria-label={'Edit name for ' + layer.name}
+                    aria-label={'Name for layer ' + layer.name}
                     className="layer-name-input"
                     onChange={e =>
                       updateLayerAction(layer.id, {
@@ -114,7 +114,7 @@ export function LayerModal() {
                   <input
                     type="color"
                     value={layer.color}
-                    aria-label={'Choose color for ' + layer.name}
+                    aria-label={'Color for ' + layer.name}
                     onChange={e =>
                       updateLayerAction(layer.id, {
                         color: (e.target as HTMLInputElement).value,

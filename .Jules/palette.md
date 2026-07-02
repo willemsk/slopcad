@@ -31,3 +31,7 @@
 ## 2026-06-18 - Missing ARIA Labels on Table Form Inputs
 **Learning:** Form input elements rendered inside table cells (like radios, checkboxes, text inputs, and color pickers) frequently cannot be wrapped in standard `<label>` tags due to strict table layout constraints. This leaves these inputs completely inaccessible to screen reader users, who will just hear "checkbox" or "text input" with no context of what row or entity it applies to.
 **Action:** When adding form inputs inside tables where layout precludes standard `<label>` tags, always use row-specific, dynamic `aria-label` attributes (e.g., `aria-label={"Toggle lock for " + layer.name}`) to provide essential context for assistive technologies.
+
+## 2026-06-28 - Form Inputs in Table Layouts Missing ARIA Labels
+**Learning:** Forms constructed within table layouts (like the layer modal) inherently lack proper `<label>` associations because structural table elements often break `<label>` to `id` mappings and make the HTML unwieldy. As a result, screen reader users encounter form elements (like checkboxes, radio buttons, color pickers, etc.) without any descriptive context.
+**Action:** When adding form inputs inside tables where layout precludes the use of standard `<label>` tags, always use row-specific dynamic `aria-label`s (e.g., `aria-label={"Toggle lock for " + layer.name}`) for proper screen reader accessibility.
