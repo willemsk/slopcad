@@ -5,8 +5,8 @@ import {
   pushCommandMessage,
   activePromptSignal,
   isLayerModalOpenSignal,
-} from '../state/app-state';
-import {dispatchCommand} from '../core/commands';
+} from '../state/ui-state';
+import {dispatchCommand} from '../tools/commands';
 import './command-line.css';
 
 export function CommandLine() {
@@ -88,10 +88,10 @@ export function CommandLine() {
     <div className="command-line-area" style={{height: `${height}px`}}>
       <div
         className="command-line-drag-handle"
-        onPointerDown={handlePointerDown as any}
-        onPointerMove={handlePointerMove as any}
-        onPointerUp={handlePointerUp as any}
-        onPointerCancel={handlePointerUp as any}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
       >
         <div className="drag-lines"></div>
       </div>

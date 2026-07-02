@@ -1,34 +1,32 @@
 import {Tool} from './tool';
-import {Vec2, SnapResult, Entity, PointRef} from '../core/types';
-import {Viewport} from '../canvas/viewport';
-import {
-  dist,
-  distToSegment,
-  sub,
-  add,
-  normalize,
-  scale,
-  lerp,
-  projectPointT,
-} from '../core/geometry';
+import {Vec2, SnapResult, Entity, PointRef, WallEntity} from '../core/types';
+import {getEntityPoint} from '../core/entity';
+import {ViewportMath} from '../core/viewport-math';
+import {dist, sub, add, lerp, projectPointT} from '../core/geometry';
+import {findEntityAt} from '../core/hit-test';
 import {solveConstraints} from '../core/solver';
 import {
   projectSignal,
-  selectionSignal,
-  clearSelection,
-  selectEntity,
   updateActivePage,
   activePageSignal,
   runSolverOnActivePage,
-  snapshotState,
-  triggerRenderSignal,
-  viewportSignal,
-} from '../state/app-state';
+} from '../state/project-state';
+import {snapshotState} from '../state/history-actions';
+import {
+  selectionSignal,
+  clearSelection,
+  selectEntity,
+} from '../state/selection-state';
+import {triggerRenderSignal} from '../state/ui-state';
+import {viewportSignal} from '../state/viewport-state';
 
 export class SelectTool implements Tool {
   name = 'select';
 
-  private draggingHandle: {entityId: string; pointKey: string} | null = null;
+  private draggingHandle: {
+    entityId: string;
+    pointKey: 'start' | 'end' | 'center' | 'p1' | 'p2' | 'position';
+  } | null = null;
   private draggingEntities: Entity[] = [];
   private dragStartPos: Vec2 = {x: 0, y: 0};
   private dragLastPos: Vec2 = {x: 0, y: 0};
@@ -79,12 +77,12 @@ export class SelectTool implements Tool {
             key === 'position' &&
             (ent.type === 'door' || ent.type === 'window')
           ) {
-            const wall = page.entities.find(
-              e => e.id === (ent as any).wallId,
-            ) as any;
-            if (wall) pt = lerp(wall.start, wall.end, (ent as any).position);
+            const wall = page.entities.find(e => e.id === ent.wallId) as
+              | WallEntity
+              | undefined;
+            if (wall) pt = lerp(wall.start, wall.end, ent.position);
           } else {
-            pt = (ent as any)[key];
+            pt = getEntityPoint(ent, key);
           }
 
           if (pt && dist(worldPos, pt) < handleRadius) {
@@ -97,7 +95,7 @@ export class SelectTool implements Tool {
     }
 
     // 2. Check if clicked on any entity (selection / drag)
-    const clickedEnt = this.findEntityAt(worldPos, page.entities, handleRadius);
+    const clickedEnt = findEntityAt(worldPos, page.entities, handleRadius);
     if (clickedEnt) {
       const isSelected = selectedIds.has(clickedEnt.id);
 
@@ -152,7 +150,9 @@ export class SelectTool implements Tool {
             this.draggingHandle!.pointKey === 'position' &&
             (copy.type === 'door' || copy.type === 'window')
           ) {
-            const wall = page.entities.find(w => w.id === copy.wallId) as any;
+            const wall = page.entities.find(w => w.id === copy.wallId) as
+              | WallEntity
+              | undefined;
             if (wall) {
               const pT = projectPointT(worldPos, wall.start, wall.end);
               const wallLength = dist(wall.start, wall.end);
@@ -161,7 +161,15 @@ export class SelectTool implements Tool {
               copy.position = Math.max(minT, Math.min(maxT, pT));
             }
           } else {
-            copy[this.draggingHandle!.pointKey] = {...targetPos};
+            const key = this.draggingHandle!.pointKey;
+            if (key === 'start' && 'start' in copy) copy.start = {...targetPos};
+            else if (key === 'end' && 'end' in copy) copy.end = {...targetPos};
+            else if (key === 'p1' && 'p1' in copy) copy.p1 = {...targetPos};
+            else if (key === 'p2' && 'p2' in copy) copy.p2 = {...targetPos};
+            else if (key === 'center' && 'center' in copy)
+              copy.center = {...targetPos};
+            else if (key === 'position' && copy.type === 'text')
+              copy.position = {...targetPos};
           }
           return copy;
         }
@@ -179,7 +187,7 @@ export class SelectTool implements Tool {
           ? null
           : {
               entityId: this.draggingHandle.entityId,
-              pointKey: this.draggingHandle.pointKey as any,
+              pointKey: this.draggingHandle.pointKey,
             };
 
       // Run solver
@@ -201,16 +209,19 @@ export class SelectTool implements Tool {
         const dragStartEnt = this.draggingEntities.find(e => e.id === ent.id);
         if (dragStartEnt) {
           const copy = JSON.parse(JSON.stringify(ent));
-          const dragStartAny = dragStartEnt as any;
-
           // Move start/end points
-          if (copy.start) copy.start = add(dragStartAny.start, totalDelta);
-          if (copy.end) copy.end = add(dragStartAny.end, totalDelta);
-          if (copy.p1) copy.p1 = add(dragStartAny.p1, totalDelta);
-          if (copy.p2) copy.p2 = add(dragStartAny.p2, totalDelta);
-          if (copy.center) copy.center = add(dragStartAny.center, totalDelta);
-          if (copy.position && copy.type === 'text')
-            copy.position = add(dragStartAny.position, totalDelta);
+          if ('start' in copy && 'start' in dragStartEnt)
+            copy.start = add(dragStartEnt.start, totalDelta);
+          if ('end' in copy && 'end' in dragStartEnt)
+            copy.end = add(dragStartEnt.end, totalDelta);
+          if ('p1' in copy && 'p1' in dragStartEnt)
+            copy.p1 = add(dragStartEnt.p1, totalDelta);
+          if ('p2' in copy && 'p2' in dragStartEnt)
+            copy.p2 = add(dragStartEnt.p2, totalDelta);
+          if ('center' in copy && 'center' in dragStartEnt)
+            copy.center = add(dragStartEnt.center, totalDelta);
+          if (copy.type === 'text' && dragStartEnt.type === 'text')
+            copy.position = add(dragStartEnt.position, totalDelta);
 
           return copy;
         }
@@ -222,7 +233,7 @@ export class SelectTool implements Tool {
       for (const ent of this.draggingEntities) {
         const keys = this.getEntityHandleKeys(ent);
         for (const k of keys) {
-          pinnedRefs.push({entityId: ent.id, pointKey: k as any});
+          pinnedRefs.push({entityId: ent.id, pointKey: k});
         }
       }
 
@@ -254,11 +265,7 @@ export class SelectTool implements Tool {
       const page = activePageSignal.value;
       const zoom = viewportSignal.value?.zoom || 100;
       const handleRadius = 8 / zoom;
-      const clickedEnt = this.findEntityAt(
-        worldPos,
-        page.entities,
-        handleRadius,
-      );
+      const clickedEnt = findEntityAt(worldPos, page.entities, handleRadius);
 
       if (clickedEnt) {
         const isSelected = selectionSignal.value.has(clickedEnt.id);
@@ -300,22 +307,19 @@ export class SelectTool implements Tool {
           ent.type === 'line' ||
           ent.type === 'stairs'
         ) {
-          matches =
-            withinBox((ent as any).start) || withinBox((ent as any).end);
+          matches = withinBox(ent.start) || withinBox(ent.end);
         } else if (ent.type === 'rect') {
-          matches = withinBox((ent as any).p1) || withinBox((ent as any).p2);
+          matches = withinBox(ent.p1) || withinBox(ent.p2);
         } else if (ent.type === 'circle' || ent.type === 'arc') {
-          matches = withinBox((ent as any).center);
+          matches = withinBox(ent.center);
         } else if (ent.type === 'text') {
           matches = withinBox(ent.position);
         } else if (ent.type === 'door' || ent.type === 'window') {
-          const wall = page.entities.find(
-            e => e.id === (ent as any).wallId,
-          ) as any;
+          const wall = page.entities.find(e => e.id === ent.wallId) as
+            | WallEntity
+            | undefined;
           if (wall) {
-            matches = withinBox(
-              lerp(wall.start, wall.end, (ent as any).position),
-            );
+            matches = withinBox(lerp(wall.start, wall.end, ent.position));
           }
         }
 
@@ -335,7 +339,7 @@ export class SelectTool implements Tool {
 
   renderPreview(
     ctx: CanvasRenderingContext2D,
-    viewport: Viewport,
+    viewport: ViewportMath,
     currentWorldPos: Vec2,
   ) {
     // Draw Box Selection rectangle
@@ -357,80 +361,9 @@ export class SelectTool implements Tool {
     }
   }
 
-  // Find entity under cursor
-  private findEntityAt(
-    pt: Vec2,
-    entities: Entity[],
-    hitRadius: number,
-  ): Entity | null {
-    let bestEnt: Entity | null = null;
-    let bestDist = hitRadius;
-
-    for (const ent of entities) {
-      if (ent.type === 'wall' || ent.type === 'line' || ent.type === 'stairs') {
-        const d = distToSegment(pt, (ent as any).start, (ent as any).end);
-        if (d < bestDist) {
-          bestDist = d;
-          bestEnt = ent;
-        }
-      } else if (ent.type === 'rect') {
-        const r = ent;
-        const d1 = distToSegment(pt, r.p1, {x: r.p2.x, y: r.p1.y});
-        const d2 = distToSegment(pt, {x: r.p2.x, y: r.p1.y}, r.p2);
-        const d3 = distToSegment(pt, r.p2, {x: r.p1.x, y: r.p2.y});
-        const d4 = distToSegment(pt, {x: r.p1.x, y: r.p2.y}, r.p1);
-        const d = Math.min(d1, d2, d3, d4);
-        if (d < bestDist) {
-          bestDist = d;
-          bestEnt = ent;
-        }
-      } else if (ent.type === 'circle' || ent.type === 'arc') {
-        const c = ent;
-        const d = Math.abs(dist(pt, c.center) - c.radius);
-        if (d < bestDist) {
-          bestDist = d;
-          bestEnt = ent;
-        }
-      } else if (ent.type === 'dimension') {
-        const dEnt = ent;
-        const u = normalize(sub(dEnt.p2, dEnt.p1));
-        const n = {x: -u.y, y: u.x};
-        const d1 = add(dEnt.p1, scale(n, dEnt.offset));
-        const d2 = add(dEnt.p2, scale(n, dEnt.offset));
-        const d = distToSegment(pt, d1, d2);
-        if (d < bestDist) {
-          bestDist = d;
-          bestEnt = ent;
-        }
-      } else if (ent.type === 'text') {
-        const d = dist(pt, ent.position);
-        if (d < bestDist) {
-          bestDist = d;
-          bestEnt = ent;
-        }
-      } else if (ent.type === 'door' || ent.type === 'window') {
-        const wall = entities.find(e => e.id === (ent as any).wallId) as any;
-        if (wall) {
-          const u = normalize(sub(wall.end, wall.start));
-          const center = lerp(wall.start, wall.end, (ent as any).position);
-          const w = (ent as any).width;
-          const d1 = sub(center, scale(u, w / 2));
-          const d2 = add(center, scale(u, w / 2));
-
-          // Bias distance slightly so doors/windows win over the underlying wall
-          const d = distToSegment(pt, d1, d2) - 0.001;
-          if (d < bestDist) {
-            bestDist = d;
-            bestEnt = ent;
-          }
-        }
-      }
-    }
-
-    return bestEnt;
-  }
-
-  private getEntityHandleKeys(entity: Entity): string[] {
+  private getEntityHandleKeys(
+    entity: Entity,
+  ): Array<'start' | 'end' | 'center' | 'p1' | 'p2' | 'position'> {
     switch (entity.type) {
       case 'wall':
       case 'line':

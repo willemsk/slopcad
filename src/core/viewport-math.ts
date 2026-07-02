@@ -1,6 +1,6 @@
-import {Vec2, Entity} from '../core/types';
+import {Vec2, Entity} from './types';
 
-export class Viewport {
+export class ViewportMath {
   // zoom is screen pixels per world unit (meter)
   // e.g., zoom = 100 means 1 meter = 100 pixels
   zoom = 100;
@@ -68,9 +68,8 @@ export class Viewport {
 
     for (const ent of entities) {
       if (ent.type === 'wall' || ent.type === 'line' || ent.type === 'stairs') {
-        const e = ent as any;
-        expandBBox(e.start);
-        expandBBox(e.end);
+        expandBBox(ent.start);
+        expandBBox(ent.end);
       } else if (ent.type === 'rect') {
         const r = ent;
         expandBBox(r.p1);

@@ -1,10 +1,8 @@
 import {Project} from '../core/types';
 import {serializeProject, deserializeProject} from './serialize';
-import {
-  projectSignal,
-  selectionSignal,
-  triggerRenderSignal,
-} from '../state/app-state';
+import {projectSignal} from '../state/project-state';
+import {selectionSignal} from '../state/selection-state';
+import {triggerRenderSignal} from '../state/ui-state';
 
 export function saveProjectToFile(project: Project) {
   const jsonStr = serializeProject(project);

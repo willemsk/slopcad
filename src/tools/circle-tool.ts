@@ -1,15 +1,15 @@
 import {Tool} from './tool';
 import {Vec2, SnapResult} from '../core/types';
-import {Viewport} from '../canvas/viewport';
+import {ViewportMath} from '../core/viewport-math';
 import {createCircle} from '../core/entity';
 import {dist} from '../core/geometry';
 import {
   activePageSignal,
   updateActivePage,
-  previewEntitySignal,
-  snapshotState,
   projectSignal,
-} from '../state/app-state';
+} from '../state/project-state';
+import {snapshotState} from '../state/history-actions';
+import {previewEntitySignal} from '../state/ui-state';
 
 export class CircleTool implements Tool {
   name = 'circle';

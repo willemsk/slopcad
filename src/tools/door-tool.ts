@@ -1,14 +1,14 @@
 import {Tool} from './tool';
-import {Vec2, SnapResult, DoorEntity} from '../core/types';
-import {Viewport} from '../canvas/viewport';
+import {Vec2, SnapResult, DoorEntity, WallEntity} from '../core/types';
+import {ViewportMath} from '../core/viewport-math';
 import {createDoor} from '../core/entity';
 import {
   activePageSignal,
   updateActivePage,
-  previewEntitySignal,
-  snapshotState,
   projectSignal,
-} from '../state/app-state';
+} from '../state/project-state';
+import {snapshotState} from '../state/history-actions';
+import {previewEntitySignal} from '../state/ui-state';
 
 export class DoorTool implements Tool {
   name = 'door';
@@ -39,7 +39,9 @@ export class DoorTool implements Tool {
 
       const page = activePageSignal.value;
       let t = snapResult.extra?.t ?? 0.5;
-      const wall = page.entities.find(e => e.id === snapResult.entityId) as any;
+      const wall = page.entities.find(e => e.id === snapResult.entityId) as
+        | WallEntity
+        | undefined;
       if (wall) {
         const length = Math.hypot(
           wall.end.x - wall.start.x,
@@ -96,7 +98,9 @@ export class DoorTool implements Tool {
     if (snapResult && snapResult.type === 'wall-align' && snapResult.entityId) {
       let t = snapResult.extra?.t ?? 0.5;
       const page = activePageSignal.value;
-      const wall = page.entities.find(e => e.id === snapResult.entityId) as any;
+      const wall = page.entities.find(e => e.id === snapResult.entityId) as
+        | WallEntity
+        | undefined;
       if (wall) {
         const length = Math.hypot(
           wall.end.x - wall.start.x,

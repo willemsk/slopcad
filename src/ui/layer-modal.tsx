@@ -1,13 +1,13 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
+import {projectSignal} from '../state/project-state';
+import {isLayerModalOpenSignal} from '../state/ui-state';
 import {
-  projectSignal,
-  isLayerModalOpenSignal,
   addLayerAction,
   updateLayerAction,
   deleteLayerAction,
   setActiveLayerAction,
-} from '../state/app-state';
+} from '../state/layer-actions';
 import './layer-modal.css';
 
 export function LayerModal() {
@@ -73,6 +73,7 @@ export function LayerModal() {
                 <td className="layer-cell-name">
                   <input
                     type="text"
+                    aria-label={'Rename layer ' + layer.name}
                     value={layer.name}
                     className="layer-name-input"
                     aria-label="Layer name"
@@ -81,6 +82,7 @@ export function LayerModal() {
                         name: (e.target as HTMLInputElement).value,
                       })
                     }
+                    aria-label={'Rename layer ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-toggle">
@@ -91,6 +93,7 @@ export function LayerModal() {
                     onChange={() =>
                       updateLayerAction(layer.id, {visible: !layer.visible})
                     }
+                    aria-label={'Toggle visibility for ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-toggle">
@@ -101,6 +104,7 @@ export function LayerModal() {
                     onChange={() =>
                       updateLayerAction(layer.id, {locked: !layer.locked})
                     }
+                    aria-label={'Toggle lock for ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-color">
@@ -108,11 +112,13 @@ export function LayerModal() {
                     type="color"
                     aria-label={`Change color for ${layer.name}`}
                     value={layer.color}
+                    aria-label={'Color for ' + layer.name}
                     onChange={e =>
                       updateLayerAction(layer.id, {
                         color: (e.target as HTMLInputElement).value,
                       })
                     }
+                    aria-label={'Change color for ' + layer.name}
                   />
                 </td>
               </tr>

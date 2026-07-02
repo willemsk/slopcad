@@ -76,7 +76,7 @@ export function getSnapPoint(
     if (settings.endpoints) {
       const endpoints: Vec2[] = [];
       if (ent.type === 'wall' || ent.type === 'line' || ent.type === 'stairs') {
-        endpoints.push((ent as any).start, (ent as any).end);
+        endpoints.push(ent.start, ent.end);
       } else if (ent.type === 'rect') {
         const r = ent;
         endpoints.push(
@@ -86,7 +86,7 @@ export function getSnapPoint(
           {x: r.p2.x, y: r.p1.y},
         );
       } else if (ent.type === 'circle' || ent.type === 'arc') {
-        endpoints.push((ent as any).center);
+        endpoints.push(ent.center);
       }
 
       for (const pt of endpoints) {
@@ -102,8 +102,8 @@ export function getSnapPoint(
     if (settings.midpoints) {
       const midpoints: Vec2[] = [];
       if (ent.type === 'wall' || ent.type === 'line' || ent.type === 'stairs') {
-        const start = (ent as any).start;
-        const end = (ent as any).end;
+        const start = ent.start;
+        const end = ent.end;
         midpoints.push({x: (start.x + end.x) / 2, y: (start.y + end.y) / 2});
       } else if (ent.type === 'rect') {
         const r = ent;
