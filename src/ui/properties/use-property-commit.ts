@@ -1,10 +1,10 @@
 import {useState, useEffect} from 'preact/hooks';
 import {
   activePageSignal,
-  snapshotState,
   updateActivePage,
   runSolverOnActivePage,
-} from '../../state/app-state';
+} from '../../state/project-state';
+import {snapshotState} from '../../state/history-actions';
 import {Entity} from '../../core/types';
 
 export function usePropertyCommit(activeEntity: Entity | null) {

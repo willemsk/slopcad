@@ -1,24 +1,17 @@
 import {h} from 'preact';
 import {useEffect, useRef, useState} from 'preact/hooks';
-import {Viewport} from './viewport';
+import {ViewportMath} from '../core/viewport-math';
+import {toolsMap} from '../tools/tool-registry';
 import {render, RenderState} from './renderer';
-import {Entity, Vec2, SnapResult, PointRef} from '../core/types';
-import {getSnapPoint, SnapSettings} from '../core/snap';
-import {
-  dist,
-  distToSegment,
-  normalize,
-  sub,
-  add,
-  scale,
-} from '../core/geometry';
-import {Tool} from '../tools/tool';
+import {Entity, SnapResult} from '../core/types';
 import {getVisibleEntities} from '../core/entity';
+import {findEntityAt} from '../core/hit-test';
+import {computeEventSnap} from './snap-helper';
+import {useViewportInteraction} from './use-viewport-interaction';
+import {useKeyboardShortcuts} from './use-keyboard-shortcuts';
+import {projectSignal} from '../state/project-state';
 import {
-  projectSignal,
-  activeToolSignal,
-  selectionSignal,
-  viewportSignal,
+  activeToolNameSignal,
   snapEnabledSignal,
   gridEnabledSignal,
   showConstraintsSignal,
@@ -26,35 +19,36 @@ import {
   previewEntitySignal,
   hoveredEntityIdSignal,
   triggerRenderSignal,
-  undoAction,
-  redoAction,
-  deleteSelectedAction,
   overlayPageIndexSignal,
   mouseCoordsSignal,
-  pushCommandMessage,
-  isLayerModalOpenSignal,
-} from '../state/app-state';
+} from '../state/ui-state';
+import {selectionSignal} from '../state/selection-state';
+import {viewportSignal} from '../state/viewport-state';
 
+/**
+ * Main CAD canvas rendering component. Handles dimensions, render loops,
+ * and mouse event dispatching.
+ */
 export function CanvasComponent() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dimensions, setDimensions] = useState({width: 800, height: 600});
 
   // Viewport instance
-  const viewportRef = useRef<Viewport>(new Viewport());
+  const viewportRef = useRef<ViewportMath>(viewportSignal.value);
 
-  // Mouse pan state
-  const isPanningRef = useRef(false);
-  const lastMousePosRef = useRef<Vec2>({x: 0, y: 0});
+  // Hook up hooks
+  const {
+    isPanningRef,
+    lastMousePosRef,
+    startPanning,
+    updatePanning,
+    stopPanning,
+  } = useViewportInteraction(canvasRef, viewportRef);
 
-  // Snap Settings from signals
-  const getSnapSettings = (): SnapSettings => ({
-    grid: gridEnabledSignal.value,
-    endpoints: true,
-    midpoints: true,
-    intersections: true,
-    wallAlign: true,
-  });
+  const activeTool = toolsMap[activeToolNameSignal.value];
+
+  useKeyboardShortcuts(activeTool, () => draw(), canvasRef, isPanningRef);
 
   // Track window resizing
   useEffect(() => {
@@ -79,7 +73,6 @@ export function CanvasComponent() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Support High-DPI screens
     const dpr = window.devicePixelRatio || 1;
     canvas.width = dimensions.width * dpr;
     canvas.height = dimensions.height * dpr;
@@ -104,8 +97,6 @@ export function CanvasComponent() {
     const project = projectSignal.value;
     const activePage = project.pages[project.activePageIndex];
 
-    // Compute snap result based on current mouse position (world space)
-    const dpr = window.devicePixelRatio || 1;
     const currentMousePosScreen = lastMousePosRef.current;
     const currentMousePosWorld = viewportRef.current.screenToWorld(
       currentMousePosScreen,
@@ -116,19 +107,15 @@ export function CanvasComponent() {
       project.layers,
     );
 
-    let snapRes: SnapResult | null = null;
-    if (snapEnabledSignal.value && activeToolSignal.value) {
-      // 10 pixels screen-space snap radius converted to world
-      const snapRadiusWorld = 12 / viewportRef.current.zoom;
-      snapRes = getSnapPoint(
-        currentMousePosWorld,
-        visibleEntities,
-        gridSpacingSignal.value,
-        getSnapSettings(),
-        snapRadiusWorld,
-        activeToolSignal.value.name,
-      );
-    }
+    const {activeSnap: snapRes} = computeEventSnap(
+      currentMousePosWorld,
+      viewportRef.current,
+      visibleEntities,
+      snapEnabledSignal.value,
+      gridSpacingSignal.value,
+      gridEnabledSignal.value,
+      activeTool?.name,
+    );
 
     const overlayIdx = overlayPageIndexSignal.value;
     const overlayEntities =
@@ -157,15 +144,15 @@ export function CanvasComponent() {
 
     render(renderState);
 
-    // Also draw tool-specific SVG/overlay graphics if any
-    if (activeToolSignal.value && activeToolSignal.value.renderPreview) {
+    // Draw tool-specific preview/overlay graphics
+    if (activeTool && activeTool.renderPreview) {
       ctx.save();
       ctx.translate(
         viewportRef.current.panOffset.x,
         viewportRef.current.panOffset.y,
       );
       ctx.scale(viewportRef.current.zoom, viewportRef.current.zoom);
-      activeToolSignal.value.renderPreview(
+      activeTool.renderPreview(
         ctx,
         viewportRef.current,
         snapRes ? snapRes.point : currentMousePosWorld,
@@ -179,7 +166,7 @@ export function CanvasComponent() {
     draw();
   }, [
     projectSignal.value,
-    activeToolSignal.value,
+    activeTool,
     selectionSignal.value,
     snapEnabledSignal.value,
     gridEnabledSignal.value,
@@ -191,60 +178,43 @@ export function CanvasComponent() {
     dimensions,
   ]);
 
-  // Hook up viewport ref to the signal so external code can view or set zoom/pan
+  // Hook up viewport ref to the signal so external code can view/set zoom
   useEffect(() => {
     viewportSignal.value = viewportRef.current;
   }, []);
 
-  // Event handlers
+  // Mouse handlers
   const handleMouseDown = (e: MouseEvent) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
     const screenPos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
-    lastMousePosRef.current = screenPos;
 
-    // Middle button or Space+LeftClick pans
-    const isSpacePressed = (window as any).isSpacePressed;
-    if (e.button === 1 || (e.button === 0 && isSpacePressed)) {
-      isPanningRef.current = true;
-      canvas.style.cursor = 'grabbing';
+    if (startPanning(e, screenPos)) {
       return;
     }
 
     const worldPos = viewportRef.current.screenToWorld(screenPos);
+    const project = projectSignal.value;
+    const activePage = project.pages[project.activePageIndex];
+    const visibleEntities = getVisibleEntities(
+      activePage.entities,
+      project.layers,
+    );
 
-    // Apply Snapping
-    let targetPos = worldPos;
-    let activeSnap: SnapResult | null = null;
-    if (snapEnabledSignal.value) {
-      const project = projectSignal.value;
-      const activePage = project.pages[project.activePageIndex];
-      const visibleEntities = getVisibleEntities(
-        activePage.entities,
-        project.layers,
-      );
-      const snapRadiusWorld = 12 / viewportRef.current.zoom;
-      const snap = getSnapPoint(
-        worldPos,
-        visibleEntities,
-        gridSpacingSignal.value,
-        getSnapSettings(),
-        snapRadiusWorld,
-        activeToolSignal.value?.name,
-      );
-      targetPos = snap.point;
-      if (
-        snap.type !== 'grid' ||
-        dist(worldPos, snap.point) < snapRadiusWorld
-      ) {
-        activeSnap = snap;
-      }
-    }
+    const {targetPos, activeSnap} = computeEventSnap(
+      worldPos,
+      viewportRef.current,
+      visibleEntities,
+      snapEnabledSignal.value,
+      gridSpacingSignal.value,
+      gridEnabledSignal.value,
+      activeTool?.name,
+    );
 
-    if (activeToolSignal.value) {
-      activeToolSignal.value.onMouseDown(targetPos, e, activeSnap);
+    if (activeTool) {
+      activeTool.onMouseDown(targetPos, e, activeSnap);
       draw();
     }
   };
@@ -257,127 +227,40 @@ export function CanvasComponent() {
     const screenPos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
     const dx = screenPos.x - lastMousePosRef.current.x;
     const dy = screenPos.y - lastMousePosRef.current.y;
-    lastMousePosRef.current = screenPos;
 
-    if (isPanningRef.current) {
-      viewportRef.current.pan(dx, dy);
-      triggerRenderSignal.value = {}; // force redraw
+    if (updatePanning(dx, dy)) {
       return;
     }
 
     const worldPos = viewportRef.current.screenToWorld(screenPos);
     mouseCoordsSignal.value = worldPos;
 
+    const project = projectSignal.value;
+    const activePage = project.pages[project.activePageIndex];
+    const visibleEntities = getVisibleEntities(
+      activePage.entities,
+      project.layers,
+    );
+
     // Calculate hover entity for Select tool
-    if (activeToolSignal.value && activeToolSignal.value.name === 'select') {
-      const project = projectSignal.value;
-      const activePage = project.pages[project.activePageIndex];
+    if (activeTool && activeTool.name === 'select') {
       const hoverRadiusWorld = 8 / viewportRef.current.zoom;
-
-      const visibleEntities = getVisibleEntities(
-        activePage.entities,
-        project.layers,
-      );
-
-      let hoverId: string | null = null;
-      let minHoverDist = hoverRadiusWorld;
-
-      for (const ent of visibleEntities) {
-        if (
-          ent.type === 'wall' ||
-          ent.type === 'line' ||
-          ent.type === 'stairs'
-        ) {
-          const d = distToSegment(
-            worldPos,
-            (ent as any).start,
-            (ent as any).end,
-          );
-          if (d < minHoverDist) {
-            minHoverDist = d;
-            hoverId = ent.id;
-          }
-        } else if (ent.type === 'rect') {
-          const r = ent;
-          // Check hover near 4 segments of rectangle
-          const d1 = distToSegment(worldPos, r.p1, {x: r.p2.x, y: r.p1.y});
-          const d2 = distToSegment(worldPos, {x: r.p2.x, y: r.p1.y}, r.p2);
-          const d3 = distToSegment(worldPos, r.p2, {x: r.p1.x, y: r.p2.y});
-          const d4 = distToSegment(worldPos, {x: r.p1.x, y: r.p2.y}, r.p1);
-          const d = Math.min(d1, d2, d3, d4);
-          if (d < minHoverDist) {
-            minHoverDist = d;
-            hoverId = ent.id;
-          }
-        } else if (ent.type === 'circle') {
-          const c = ent;
-          const d = Math.abs(dist(worldPos, c.center) - c.radius);
-          if (d < minHoverDist) {
-            minHoverDist = d;
-            hoverId = ent.id;
-          }
-        } else if (ent.type === 'arc') {
-          const a = ent;
-          const d = Math.abs(dist(worldPos, a.center) - a.radius);
-          if (d < minHoverDist) {
-            minHoverDist = d;
-            hoverId = ent.id;
-          }
-        } else if (ent.type === 'dimension') {
-          // Hover near the measured line
-          const u = normalize(sub((ent as any).p2, (ent as any).p1));
-          const n = {x: -u.y, y: u.x};
-          const offset = (ent as any).offset;
-          const d1 = add((ent as any).p1, scale(n, offset));
-          const d2 = add((ent as any).p2, scale(n, offset));
-          const d = distToSegment(worldPos, d1, d2);
-          if (d < minHoverDist) {
-            minHoverDist = d;
-            hoverId = ent.id;
-          }
-        } else if (ent.type === 'text') {
-          // check if close to insertion position
-          const d = dist(worldPos, ent.position);
-          if (d < minHoverDist) {
-            minHoverDist = d;
-            hoverId = ent.id;
-          }
-        }
-      }
-
-      hoveredEntityIdSignal.value = hoverId;
+      hoveredEntityIdSignal.value =
+        findEntityAt(worldPos, visibleEntities, hoverRadiusWorld)?.id ?? null;
     }
 
-    // Apply Snapping
-    let targetPos = worldPos;
-    let activeSnap: SnapResult | null = null;
-    if (snapEnabledSignal.value) {
-      const project = projectSignal.value;
-      const activePage = project.pages[project.activePageIndex];
-      const visibleEntities = getVisibleEntities(
-        activePage.entities,
-        project.layers,
-      );
-      const snapRadiusWorld = 12 / viewportRef.current.zoom;
-      const snap = getSnapPoint(
-        worldPos,
-        visibleEntities,
-        gridSpacingSignal.value,
-        getSnapSettings(),
-        snapRadiusWorld,
-        activeToolSignal.value?.name,
-      );
-      targetPos = snap.point;
-      if (
-        snap.type !== 'grid' ||
-        dist(worldPos, snap.point) < snapRadiusWorld
-      ) {
-        activeSnap = snap;
-      }
-    }
+    const {targetPos, activeSnap} = computeEventSnap(
+      worldPos,
+      viewportRef.current,
+      visibleEntities,
+      snapEnabledSignal.value,
+      gridSpacingSignal.value,
+      gridEnabledSignal.value,
+      activeTool?.name,
+    );
 
-    if (activeToolSignal.value) {
-      activeToolSignal.value.onMouseMove(targetPos, e, activeSnap);
+    if (activeTool) {
+      activeTool.onMouseMove(targetPos, e, activeSnap);
       draw();
     }
   };
@@ -386,144 +269,35 @@ export function CanvasComponent() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    if (isPanningRef.current) {
-      isPanningRef.current = false;
-      const isSpacePressed = (window as any).isSpacePressed;
-      canvas.style.cursor = isSpacePressed ? 'grab' : 'default';
+    if (stopPanning()) {
       return;
     }
 
     const rect = canvas.getBoundingClientRect();
     const screenPos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
     const worldPos = viewportRef.current.screenToWorld(screenPos);
+    const project = projectSignal.value;
+    const activePage = project.pages[project.activePageIndex];
+    const visibleEntities = getVisibleEntities(
+      activePage.entities,
+      project.layers,
+    );
 
-    // Apply Snapping
-    let targetPos = worldPos;
-    let activeSnap: SnapResult | null = null;
-    if (snapEnabledSignal.value) {
-      const project = projectSignal.value;
-      const activePage = project.pages[project.activePageIndex];
-      const visibleEntities = getVisibleEntities(
-        activePage.entities,
-        project.layers,
-      );
-      const snapRadiusWorld = 12 / viewportRef.current.zoom;
-      const snap = getSnapPoint(
-        worldPos,
-        visibleEntities,
-        gridSpacingSignal.value,
-        getSnapSettings(),
-        snapRadiusWorld,
-        activeToolSignal.value?.name,
-      );
-      targetPos = snap.point;
-      if (
-        snap.type !== 'grid' ||
-        dist(worldPos, snap.point) < snapRadiusWorld
-      ) {
-        activeSnap = snap;
-      }
-    }
+    const {targetPos, activeSnap} = computeEventSnap(
+      worldPos,
+      viewportRef.current,
+      visibleEntities,
+      snapEnabledSignal.value,
+      gridSpacingSignal.value,
+      gridEnabledSignal.value,
+      activeTool?.name,
+    );
 
-    if (activeToolSignal.value) {
-      activeToolSignal.value.onMouseUp(targetPos, e, activeSnap);
+    if (activeTool) {
+      activeTool.onMouseUp(targetPos, e, activeSnap);
       draw();
     }
   };
-
-  const handleWheel = (e: WheelEvent) => {
-    e.preventDefault();
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const screenPos = {x: e.clientX - rect.left, y: e.clientY - rect.top};
-
-    const zoomFactor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
-    viewportRef.current.zoomAt(screenPos, zoomFactor);
-
-    // Trigger render update
-    triggerRenderSignal.value = {};
-  };
-
-  // Keyboard events listener
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is editing text inputs or typing text
-      if (
-        document.activeElement?.tagName === 'INPUT' ||
-        document.activeElement?.tagName === 'TEXTAREA' ||
-        document.activeElement?.getAttribute('contenteditable') === 'true' ||
-        isLayerModalOpenSignal.value
-      ) {
-        return;
-      }
-
-      if (e.code === 'Space') {
-        e.preventDefault();
-        (window as any).isSpacePressed = true;
-        if (canvasRef.current && !isPanningRef.current) {
-          canvasRef.current.style.cursor = 'grab';
-        }
-      }
-
-      // Undo: Ctrl+Z
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
-        e.preventDefault();
-        undoAction();
-        pushCommandMessage('Command: UNDO - Reverted last drawing operation.');
-      }
-
-      // Redo: Ctrl+Y
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
-        e.preventDefault();
-        redoAction();
-        pushCommandMessage('Command: REDO - Redoing last drawing operation.');
-      }
-
-      // Delete key deletes selection
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        deleteSelectedAction();
-        pushCommandMessage(
-          'Command: ERASE - Deleted selected drawing elements.',
-        );
-      }
-
-      // Escape cancels current tool operations or sets active tool to select
-      if (e.key === 'Escape') {
-        pushCommandMessage('Command: *Cancel*');
-        if (activeToolSignal.value) {
-          activeToolSignal.value.deactivate();
-          activeToolSignal.value.activate(); // re-init active tool (resets substate)
-          previewEntitySignal.value = null;
-          triggerRenderSignal.value = {};
-        }
-      }
-
-      // Route to active tool
-      if (activeToolSignal.value && activeToolSignal.value.onKeyDown) {
-        activeToolSignal.value.onKeyDown(e);
-        draw();
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
-        (window as any).isSpacePressed = false;
-        if (canvasRef.current) {
-          canvasRef.current.style.cursor = 'default';
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
 
   return (
     <div
@@ -541,7 +315,6 @@ export function CanvasComponent() {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onWheel={handleWheel}
         style={{display: 'block'}}
       />
     </div>

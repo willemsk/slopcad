@@ -1,6 +1,6 @@
 import {h} from 'preact';
 import {useEffect, useRef, useState} from 'preact/hooks';
-import {activePromptSignal} from '../state/app-state';
+import {activePromptSignal} from '../state/ui-state';
 import './dynamic-prompt.css';
 
 export function DynamicPrompt() {

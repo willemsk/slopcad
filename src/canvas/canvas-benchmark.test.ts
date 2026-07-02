@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {Entity, Layer, Page, Project} from '../core/types';
+import {Entity, Layer, Page, Project, LineEntity} from '../core/types';
 import {getVisibleEntities} from '../core/entity';
 
 describe('Canvas Entity Filtering Performance Benchmark', () => {
@@ -26,7 +26,7 @@ describe('Canvas Entity Filtering Performance Benchmark', () => {
         layerId: `layer-${Math.floor(Math.random() * layerCount)}`,
         start: {x: 0, y: 0},
         end: {x: 10, y: 10},
-      } as any);
+      } as LineEntity);
     }
 
     const project: Project = {

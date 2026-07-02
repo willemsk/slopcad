@@ -1,18 +1,8 @@
 import {Entity, Constraint, Layer, UnitSystem} from '../core/types';
-import {Viewport} from './viewport';
-import {drawWalls, drawSelectionHandles, drawConstraint} from './draw-helpers';
-
-import {
-  drawDoor,
-  drawWindow,
-  drawStairs,
-  drawLine,
-  drawRect,
-  drawCircle,
-  drawArc,
-  drawDimension,
-  drawText,
-} from './draw-helpers';
+import {ViewportMath} from '../core/viewport-math';
+import {drawSelectionHandles} from './renderers/selection-renderer';
+import {drawConstraint} from './renderers/constraint-renderer';
+import {RendererRegistry} from './renderers/registry';
 
 export function clearCanvas(
   ctx: CanvasRenderingContext2D,
@@ -25,7 +15,7 @@ export function clearCanvas(
 
 export function drawGrid(
   ctx: CanvasRenderingContext2D,
-  viewport: Viewport,
+  viewport: ViewportMath,
   width: number,
   height: number,
   spacing: number,
@@ -61,43 +51,18 @@ export function drawEntity(
   zoom: number,
   layers: Layer[],
 ) {
-  switch (ent.type) {
-    case 'wall':
-      drawWalls(
-        ctx,
-        [ent as any],
-        new Set(isSelected ? [ent.id] : []),
-        layers,
-        zoom,
-      );
-      break;
-    case 'door':
-      drawDoor(ctx, ent, entities, isSelected, color, zoom);
-      break;
-    case 'window':
-      drawWindow(ctx, ent, entities, isSelected, color, zoom);
-      break;
-    case 'stairs':
-      drawStairs(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'line':
-      drawLine(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'rect':
-      drawRect(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'circle':
-      drawCircle(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'arc':
-      drawArc(ctx, ent, isSelected, color, zoom);
-      break;
-    case 'dimension':
-      drawDimension(ctx, ent, isSelected, color, unitSystem, zoom);
-      break;
-    case 'text':
-      drawText(ctx, ent, isSelected, color, zoom);
-      break;
+  const renderer = RendererRegistry[ent.type];
+  if (renderer) {
+    renderer({
+      ctx,
+      entity: ent,
+      entities,
+      layers,
+      unitSystem,
+      zoom,
+      isSelected,
+      color,
+    });
   }
 }
 
@@ -152,9 +117,38 @@ export function drawAllEntities(
     return typeOrder.indexOf(a.type) - typeOrder.indexOf(b.type);
   });
 
-  const walls = entities.filter(e => e.type === 'wall') as any[];
-  if (walls.length > 0) {
-    drawWalls(ctx, walls, selection, layers, zoom);
+  const walls = entities.filter(e => e.type === 'wall');
+  for (const wall of walls) {
+    const isSelected = selection.has(wall.id);
+    const isHovered = wall.id === hoveredEntityId;
+
+    if (isHovered && !isSelected) {
+      ctx.save();
+      ctx.shadowColor = '#22d3ee';
+      ctx.shadowBlur = 10 / zoom;
+    }
+
+    const layer = layers.find(l => l.id === wall.layerId) || layers[0];
+    let color = layer?.color || '#c8cad4';
+    if (wall.color) color = wall.color;
+    if (isHovered && !isSelected) {
+      color = '#67e8f9';
+    }
+
+    drawEntity(
+      ctx,
+      wall,
+      entities,
+      isSelected,
+      color,
+      unitSystem,
+      zoom,
+      layers,
+    );
+
+    if (isHovered && !isSelected) {
+      ctx.restore();
+    }
   }
 
   for (const ent of sortedEntities) {

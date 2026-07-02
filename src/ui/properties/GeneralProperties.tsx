@@ -1,7 +1,7 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
 import {Entity} from '../../core/types';
-import {projectSignal} from '../../state/app-state';
+import {projectSignal} from '../../state/project-state';
 import {ChevronDownIcon, ChevronRightIcon} from '../icons';
 
 interface Props {
