@@ -65,54 +65,60 @@ export function LayerModal() {
                   <input
                     type="radio"
                     name="activeLayer"
-                    aria-label={`Set active layer to ${layer.name}`}
                     checked={project.activeLayerId === layer.id}
                     onChange={() => setActiveLayerAction(layer.id)}
+                    aria-label={'Set active layer to ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-name">
                   <input
                     type="text"
+                    aria-label={'Rename layer ' + layer.name}
                     value={layer.name}
-                    aria-label={`Name for layer ${layer.name}`}
                     className="layer-name-input"
                     onChange={e =>
                       updateLayerAction(layer.id, {
                         name: (e.target as HTMLInputElement).value,
                       })
                     }
+                    aria-label={'Rename layer ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-toggle">
                   <input
                     type="checkbox"
+                    aria-label={'Toggle visibility for ' + layer.name}
                     checked={layer.visible}
                     aria-label={`Toggle visibility for ${layer.name}`}
                     onChange={() =>
                       updateLayerAction(layer.id, {visible: !layer.visible})
                     }
+                    aria-label={'Toggle visibility for ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-toggle">
                   <input
                     type="checkbox"
+                    aria-label={'Toggle lock for ' + layer.name}
                     checked={layer.locked}
                     aria-label={`Toggle lock for ${layer.name}`}
                     onChange={() =>
                       updateLayerAction(layer.id, {locked: !layer.locked})
                     }
+                    aria-label={'Toggle lock for ' + layer.name}
                   />
                 </td>
                 <td className="layer-cell-color">
                   <input
                     type="color"
                     value={layer.color}
-                    aria-label={`Color for ${layer.name}`}
+                    aria-label={'Choose color for ' + layer.name}
                     onChange={e =>
                       updateLayerAction(layer.id, {
                         color: (e.target as HTMLInputElement).value,
                       })
                     }
+                    aria-label={'Change color for ' + layer.name}
                   />
                 </td>
               </tr>
