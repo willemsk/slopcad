@@ -1,3 +1,5 @@
+
+
 ## 2026-06-15 - Status Bar and File Menu Accessibility Enhancements
 **Learning:** Icon-only toggle buttons in the status bar and the application's file menu dropdown were missing critical ARIA attributes. Without `aria-label` and `aria-pressed`, screen reader users had no context for the Grid, Snap, and Constraint toggle states. Additionally, the File menu button lacked `aria-expanded` and `aria-haspopup`, making it impossible for screen reader users to understand it was a dropdown menu or know its current open/closed state.
 **Action:** When adding icon-only buttons or toggleable UI elements, always pair them with appropriate `aria-label` and `aria-pressed` or `aria-expanded` attributes tied to the component's state to ensure complete keyboard and screen reader accessibility.
@@ -17,6 +19,10 @@
 ## 2026-06-17 - [Extract File Menu]
 **Learning:** The ribbon component uses specific CSS structures. Adding a file menu tab requires using `.ribbon-tab` to look cohesive.
 **Action:** Use `.ribbon-tab` class for the File Menu button when integrating with the ribbon layout.
+
+## 2026-06-18 - Dynamic ARIA labels in tables
+**Learning:** When form inputs are placed inside tables, the layout often precludes the use of standard `<label>` tags.
+**Action:** Always use row-specific dynamic `aria-label`s (e.g., `aria-label={"Toggle lock for " + layer.name}`) for proper screen reader accessibility in these situations.
 
 ## 2026-06-18 - Missing ARIA Labels on Table Form Inputs
 **Learning:** Form input elements rendered inside table cells (like radios, checkboxes, text inputs, and color pickers) frequently cannot be wrapped in standard `<label>` tags due to strict table layout constraints. This leaves these inputs completely inaccessible to screen reader users, who will just hear "checkbox" or "text input" with no context of what row or entity it applies to.
