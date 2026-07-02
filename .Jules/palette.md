@@ -1,3 +1,5 @@
+
+
 ## 2026-06-15 - Status Bar and File Menu Accessibility Enhancements
 **Learning:** Icon-only toggle buttons in the status bar and the application's file menu dropdown were missing critical ARIA attributes. Without `aria-label` and `aria-pressed`, screen reader users had no context for the Grid, Snap, and Constraint toggle states. Additionally, the File menu button lacked `aria-expanded` and `aria-haspopup`, making it impossible for screen reader users to understand it was a dropdown menu or know its current open/closed state.
 **Action:** When adding icon-only buttons or toggleable UI elements, always pair them with appropriate `aria-label` and `aria-pressed` or `aria-expanded` attributes tied to the component's state to ensure complete keyboard and screen reader accessibility.
@@ -21,3 +23,11 @@
 ## 2026-06-18 - Missing context on tabular form inputs
 **Learning:** Form inputs embedded directly within data tables (like the layer properties table) often lack explicit `<label>` elements due to visual space constraints. This leaves screen reader users completely disoriented, as they only hear "checkbox" or "text input" without knowing which row (e.g., which specific layer) the input controls.
 **Action:** Always use dynamically generated, row-specific `aria-label` attributes (e.g., `aria-label={"Toggle visibility for " + layer.name}`) for any interactive form element embedded within a table row that lacks a visual, dedicated `<label>` element.
+
+## 2026-06-18 - Dynamic ARIA labels in tables
+**Learning:** When form inputs are placed inside tables, the layout often precludes the use of standard `<label>` tags.
+**Action:** Always use row-specific dynamic `aria-label`s (e.g., `aria-label={"Toggle lock for " + layer.name}`) for proper screen reader accessibility in these situations.
+
+## 2026-06-18 - Missing ARIA Labels on Table Form Inputs
+**Learning:** Form input elements rendered inside table cells (like radios, checkboxes, text inputs, and color pickers) frequently cannot be wrapped in standard `<label>` tags due to strict table layout constraints. This leaves these inputs completely inaccessible to screen reader users, who will just hear "checkbox" or "text input" with no context of what row or entity it applies to.
+**Action:** When adding form inputs inside tables where layout precludes standard `<label>` tags, always use row-specific, dynamic `aria-label` attributes (e.g., `aria-label={"Toggle lock for " + layer.name}`) to provide essential context for assistive technologies.
