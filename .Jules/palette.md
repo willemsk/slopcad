@@ -51,3 +51,7 @@
 ## 2026-07-05 - Missing ARIA Labels on Table Inputs
 **Learning:** Form inputs inside table structures (like in the Layer Properties modal) often lack context for screen readers when they rely entirely on visual layout and table column headers. Without explicit `aria-label`s, screen reader users only hear the input type (e.g., "radio button", "checkbox", "color picker") without knowing which specific item the input controls.
 **Action:** When creating tables containing form inputs, always add context-aware `aria-label`s to the inputs (e.g., `aria-label="Set visibility for Layer 1"`) to ensure proper screen reader accessibility.
+
+## 2026-07-05 - Missing ARIA Labels on Layer Properties Table Inputs
+**Learning:** Inputs within a data table (like the ones in the Layer Properties modal for layer status, name, visibility, lock, and color) often lack explicit `aria-label`s. Because they are in a table row rather than paired with standard `<label>` elements, screen readers only announce the generic input type (e.g., "radio button", "checkbox") without context of which row/layer it applies to.
+**Action:** When creating tables containing inline inputs, always append dynamic `aria-label` attributes to the inputs that include the identifying context of the row (e.g., `aria-label={"Toggle visibility for layer: " + layer.name}`) to ensure proper accessibility.
