@@ -1,9 +1,9 @@
-# Quirky-Lavoisier — Architecture
+# SlopCAD — Architecture
 
 > Last reviewed: 2026-06-18 | Reviewer: /arch-review
 
 ## Overview
-Quirky-Lavoisier (Antigravity CAD) is a browser-based 2D architectural plan editor. It is designed to be a lightweight, highly responsive, fully local CAD tool inspired by the aesthetics and layout of AutoCAD. It runs entirely in the browser with no backend, database, authentication, or network calls (except for static assets).
+SlopCAD is a browser-based 2D architectural plan editor. It is designed to be a lightweight, highly responsive, fully local CAD tool inspired by the aesthetics and layout of AutoCAD. It runs entirely in the browser with no backend, database, authentication, or network calls (except for static assets).
 
 ## Tech Stack
 
@@ -105,7 +105,7 @@ flowchart TD
 
 #### CRIT-001 — Core domain layer imports from higher layers
 - **Severity**: Critical
-- **File(s)**: [src/core/commands.ts](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/src/core/commands.ts)
+- **File(s)**: [src/core/commands.ts](https://github.com/willemsk/slopcad/blob/main/src/core/commands.ts)
 - **Principle Violated**: DIP
 - **Check**: U1a
 - **Detail**: The core module is the foundation of the architecture and must remain pure. `commands.ts` imports `setActiveToolByName` from `../tools/tool-registry` and state actions from `../state/app-state`. This violates the intended layering and creates tight coupling.
@@ -113,7 +113,7 @@ flowchart TD
 
 #### CRIT-002 — State management layer imports rendering and IO details
 - **Severity**: Critical
-- **File(s)**: [src/state/app-state.ts](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/src/state/app-state.ts)
+- **File(s)**: [src/state/app-state.ts](https://github.com/willemsk/slopcad/blob/main/src/state/app-state.ts)
 - **Principle Violated**: SoC
 - **Check**: U1b
 - **Detail**: The global state store imports `Viewport` from `../canvas/viewport` and functions from `../io/file-io`. State orchestration should remain ignorant of how rendering is performed or how serialization is implemented.
@@ -121,7 +121,7 @@ flowchart TD
 
 #### CRIT-003 — Massive file size and SRP violation in Canvas rendering
 - **Severity**: Critical
-- **File(s)**: [src/canvas/draw-helpers.ts](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/src/canvas/draw-helpers.ts)
+- **File(s)**: [src/canvas/draw-helpers.ts](https://github.com/willemsk/slopcad/blob/main/src/canvas/draw-helpers.ts)
 - **Principle Violated**: SRP
 - **Check**: U2a
 - **Detail**: At 1033 lines, this is the largest file in the codebase. It concentrates all low-level Canvas2D rendering for every entity type.
@@ -129,7 +129,7 @@ flowchart TD
 
 #### CRIT-004 — God-object anti-pattern in global state
 - **Severity**: Critical
-- **File(s)**: [src/state/app-state.ts](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/src/state/app-state.ts)
+- **File(s)**: [src/state/app-state.ts](https://github.com/willemsk/slopcad/blob/main/src/state/app-state.ts)
 - **Principle Violated**: SRP
 - **Check**: U2a / U2b
 - **Detail**: This file concentrates all application state (signals) and all mutation functions in a single location, growing to 870 lines.
@@ -137,7 +137,7 @@ flowchart TD
 
 #### CRIT-005 — Oversized constraint solver module
 - **Severity**: Critical
-- **File(s)**: [src/core/solver.ts](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/src/core/solver.ts)
+- **File(s)**: [src/core/solver.ts](https://github.com/willemsk/slopcad/blob/main/src/core/solver.ts)
 - **Principle Violated**: SRP
 - **Check**: U2a
 - **Detail**: Exceeding the 300-line limit by over double, this file contains a monolithic `switch` statement for resolving every constraint type.
@@ -145,7 +145,7 @@ flowchart TD
 
 #### CRIT-006 — Oversized UI Toolbar component
 - **Severity**: Critical
-- **File(s)**: [src/ui/toolbar.tsx](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/src/ui/toolbar.tsx)
+- **File(s)**: [src/ui/toolbar.tsx](https://github.com/willemsk/slopcad/blob/main/src/ui/toolbar.tsx)
 - **Principle Violated**: SRP
 - **Check**: U2a
 - **Detail**: This component exceeds the 300-line limit, containing inline definitions for all toolbar tabs, tool groups, and rendering logic.
@@ -153,7 +153,7 @@ flowchart TD
 
 #### CRIT-007 — Monolithic Canvas component
 - **Severity**: Critical
-- **File(s)**: [src/canvas/canvas-component.tsx](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/src/canvas/canvas-component.tsx)
+- **File(s)**: [src/canvas/canvas-component.tsx](https://github.com/willemsk/slopcad/blob/main/src/canvas/canvas-component.tsx)
 - **Principle Violated**: SRP
 - **Check**: U2a
 - **Detail**: The canvas component handles rendering orchestration, input event listening, snapping, and tool dispatch. Snap logic is duplicated four times within it.
@@ -161,7 +161,7 @@ flowchart TD
 
 #### CRIT-008 — Oversized Selection Tool logic
 - **Severity**: Critical
-- **File(s)**: [src/tools/select-tool.ts](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/src/tools/select-tool.ts)
+- **File(s)**: [src/tools/select-tool.ts](https://github.com/willemsk/slopcad/blob/main/src/tools/select-tool.ts)
 - **Principle Violated**: SRP
 - **Check**: U2a
 - **Detail**: This tool manages an overly complex state machine and inline hit-testing.
@@ -201,7 +201,7 @@ flowchart TD
 
 #### WARN-005 — Minor oversized file
 - **Severity**: Warning
-- **File(s)**: [src/ui/icons.tsx](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/src/ui/icons.tsx)
+- **File(s)**: [src/ui/icons.tsx](https://github.com/willemsk/slopcad/blob/main/src/ui/icons.tsx)
 - **Principle Violated**: SRP
 - **Check**: U2a
 - **Detail**: Just over the 300-line threshold.

@@ -7,7 +7,7 @@ description: >-
 # Start Dev Server
 
 ## Overview
-This skill spins up the local Vite development server for the Antigravity CAD project as a background task. It explicitly uses the correct Node.js paths for Windows and does not block the agent's execution loop.
+This skill spins up the local Vite development server for the SlopCAD project as a background task. It explicitly uses the correct Node.js paths for Windows and does not block the agent's execution loop.
 
 ## Dependencies
 None

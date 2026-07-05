@@ -1,0 +1,27 @@
+{
+  "entryPoints": [
+    "src/core/types.ts",
+    "src/core/entity.ts",
+    "src/core/geometry.ts",
+    "src/core/history.ts",
+    "src/core/hit-test.ts",
+    "src/core/snap.ts",
+    "src/core/solver.ts",
+    "src/core/units.ts",
+    "src/core/viewport-math.ts",
+    "src/state/project-state.ts",
+    "src/state/history-actions.ts",
+    "src/state/page-actions.ts",
+    "src/state/selection-state.ts",
+    "src/state/ui-state.ts",
+    "src/state/viewport-state.ts",
+    "src/state/preferences.ts"
+  ],
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "none",
+  "disableSources": true,
+  "cleanOutputDir": true,
+  "entryFileName": "index.md",
+  "tsconfig": "tsconfig.app.json"
+}

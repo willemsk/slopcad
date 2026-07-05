@@ -1,9 +1,9 @@
-# Quirky-Lavoisier — Rendering Pipeline
+# SlopCAD — Rendering Pipeline
 
 > Last reviewed: 2026-06-18
 
 ## Overview
-Quirky-Lavoisier utilizes the HTML5 Canvas 2D API for rendering architectural plans. The pipeline is encapsulated within the `src/canvas/` module and directly maps entities from the application state into vector graphics without intermediary abstraction layers like WebGL or PixiJS. The pipeline operates via a `requestAnimationFrame` loop.
+SlopCAD utilizes the HTML5 Canvas 2D API for rendering architectural plans. The pipeline is encapsulated within the `src/canvas/` module and directly maps entities from the application state into vector graphics without intermediary abstraction layers like WebGL or PixiJS. The pipeline operates via a `requestAnimationFrame` loop.
 
 ## Render Loop Architecture
 
