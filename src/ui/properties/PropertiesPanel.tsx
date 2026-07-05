@@ -10,6 +10,7 @@ import {GeneralProperties} from './GeneralProperties';
 import {GeometryProperties} from './GeometryProperties';
 import {ParamProperties} from './ParamProperties';
 import {ConstraintProperties} from './ConstraintProperties';
+import {SelectIcon} from '../icons';
 
 export function PropertiesPanel() {
   const selection = selectionSignal.value;
@@ -55,7 +56,16 @@ export function PropertiesPanel() {
             ×
           </button>
         </div>
-        <PageProperties />
+        {selectedEntities.length > 1 ? (
+          <div className="properties-empty">
+            <SelectIcon />
+            <span className="properties-empty-text">
+              {selectedEntities.length} entities selected
+            </span>
+          </div>
+        ) : (
+          <PageProperties />
+        )}
       </aside>
     );
   }
