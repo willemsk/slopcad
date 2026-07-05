@@ -43,6 +43,11 @@
 ## 2026-06-28 - Form Inputs in Table Layouts Missing ARIA Labels
 **Learning:** Forms constructed within table layouts (like the layer modal) inherently lack proper `<label>` associations because structural table elements often break `<label>` to `id` mappings and make the HTML unwieldy. As a result, screen reader users encounter form elements (like checkboxes, radio buttons, color pickers, etc.) without any descriptive context.
 **Action:** When adding form inputs inside tables where layout precludes the use of standard `<label>` tags, always use row-specific dynamic `aria-label`s (e.g., `aria-label={"Toggle lock for " + layer.name}`) for proper screen reader accessibility.
-## 2024-05-19 - Verifying Disabled States in Playwright
+
+## 2024-06-29 - Verifying Disabled States in Playwright
 **Learning:** Standard Playwright interaction methods like `hover()` or `click()` automatically wait for an element to be actionable (which means, among other things, not being `disabled`). Attempting to `hover()` a `disabled` button to verify its state will cause the script to hang and eventually timeout because Playwright considers disabled elements non-actionable.
 **Action:** When writing verification scripts that need to demonstrate or inspect a `disabled` state (like a disabled Delete Layer button), use `force=True` (e.g., `button.hover(force=True)`) to bypass actionability checks, or simply assert the attribute's presence without trying to trigger an interaction.
+
+## 2026-07-05 - Missing ARIA Labels on Table Inputs
+**Learning:** Form inputs inside table structures (like in the Layer Properties modal) often lack context for screen readers when they rely entirely on visual layout and table column headers. Without explicit `aria-label`s, screen reader users only hear the input type (e.g., "radio button", "checkbox", "color picker") without knowing which specific item the input controls.
+**Action:** When creating tables containing form inputs, always add context-aware `aria-label`s to the inputs (e.g., `aria-label="Set visibility for Layer 1"`) to ensure proper screen reader accessibility.

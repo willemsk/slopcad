@@ -88,6 +88,7 @@ export function LayerModal() {
                     type="text"
                     aria-label={'Rename layer ' + layer.name}
                     value={layer.name}
+                    aria-label={`Layer name for ${layer.name}`}
                     className="layer-name-input"
                     onChange={e =>
                       updateLayerAction(layer.id, {
