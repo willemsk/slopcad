@@ -25,3 +25,13 @@ dist-ssr
 
 # Project specific
 scratch/*
+
+# MkDocs build output
+site/
+
+# Python Virtual Environment
+venv/
+.venv/
+
+# Auto-generated API documentation (TypeDoc)
+docs/api/

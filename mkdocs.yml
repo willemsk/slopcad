@@ -1,0 +1,65 @@
+site_name: SlopCAD
+site_url: https://slopcad.readthedocs.io/
+repo_name: willemsk/slopcad
+repo_url: https://github.com/willemsk/slopcad
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
+
+validation:
+  nav:
+    omitted_files: ignore
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+
+nav:
+  - Home: index.md
+  - User Guide:
+    - Getting Started: user-guide/index.md
+    - Features Overview: user-guide/features.md
+    - Drawing Tools: user-guide/drawing-tools.md
+    - Keyboard Shortcuts: user-guide/keyboard-shortcuts.md
+    - File Operations: user-guide/file-operations.md
+    - FAQ: user-guide/faq.md
+  - Developer Guide:
+    - Overview: developer-guide/index.md
+    - Architecture: developer-guide/architecture.md
+    - State Management: developer-guide/state-management.md
+    - Rendering Pipeline: developer-guide/rendering-pipeline.md
+    - Data Models: developer-guide/data-models.md
+    - Contributing & Setup: developer-guide/contributing.md
+    - Changelog: developer-guide/changelog.md
+  - API Reference:
+    - API Overview: api/index.md

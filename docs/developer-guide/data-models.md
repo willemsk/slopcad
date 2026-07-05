@@ -1,9 +1,9 @@
-# Quirky-Lavoisier — Data Models
+# SlopCAD — Data Models
 
 > Last reviewed: 2026-06-18
 
 ## Overview
-The data model of Quirky-Lavoisier relies on a strictly typed hierarchy. The core domain is built upon TypeScript discriminated unions, defining all physical and logical elements of a 2D CAD application. All logic resides purely in `src/core/types.ts` and `src/core/entity.ts`.
+The data model of SlopCAD relies on a strictly typed hierarchy. The core domain is built upon TypeScript discriminated unions, defining all physical and logical elements of a 2D CAD application. All logic resides purely in `src/core/types.ts` and `src/core/entity.ts`.
 
 ## Type/Model Hierarchy
 

@@ -1,12 +1,12 @@
 ---
 trigger: always_on
-description: "Core understanding of the Antigravity CAD project, domain model, and application scope."
+description: "Core understanding of the SlopCAD project, domain model, and application scope."
 ---
 
 # App Foundation
 
 ## Project Overview
-**Antigravity CAD** is a browser-based 2D architectural plan editor. It is designed to be a lightweight, highly responsive, fully local CAD tool inspired by the aesthetics and layout of AutoCAD.
+**SlopCAD** is a browser-based 2D architectural plan editor. It is designed to be a lightweight, highly responsive, fully local CAD tool inspired by the aesthetics and layout of AutoCAD.
 
 ## Scope & Constraints
 - **Fully Local**: The application runs entirely in the browser. There is no backend, no database, no authentication, and no network calls (except to serve static assets).

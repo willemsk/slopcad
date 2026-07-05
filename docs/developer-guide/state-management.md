@@ -1,9 +1,9 @@
-# Quirky-Lavoisier — State Management
+# SlopCAD — State Management
 
 > Last reviewed: 2026-06-18
 
 ## Overview
-Quirky-Lavoisier uses `@preact/signals` for all global state management. The state orchestration is centralized within `src/state/app-state.ts`, functioning as the single source of truth for the CAD application. It manages project data, active tools, selection state, UI toggles, and complex mutation operations.
+SlopCAD uses `@preact/signals` for all global state management. The state orchestration is centralized within `src/state/app-state.ts`, functioning as the single source of truth for the CAD application. It manages project data, active tools, selection state, UI toggles, and complex mutation operations.
 
 ## Signal Inventory
 

@@ -1,14 +1,14 @@
 ---
 name: changelog
 description: >-
-  Generates and appends a structured entry to docs/CHANGELOG.md using details
+  Generates and appends a structured entry to docs/developer-guide/changelog.md using details
   from git diff and test output. Trigger when the user asks for a changelog
   update, /changelog, or when performing non-trivial refactors or fixes before commit.
 ---
 
 # `/changelog` — Changelog Generator Skill
 
-This skill automates the creation of changelog entries in `docs/CHANGELOG.md` to track refactors, features, and bug fixes.
+This skill automates the creation of changelog entries in `docs/developer-guide/changelog.md` to track refactors, features, and bug fixes.
 
 ## Instructions
 
@@ -48,7 +48,7 @@ Construct the entry using the following template:
 </details>
 ```
 
-### 5. Update `docs/CHANGELOG.md`
-- Read the current content of [CHANGELOG.md](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/docs/CHANGELOG.md).
+### 5. Update `docs/developer-guide/changelog.md`
+- Read the current content of [changelog.md](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/docs/developer-guide/changelog.md).
 - Insert the new entry directly below the `# Changelog` title and its introduction sentence/divider, keeping the file in **reverse-chronological order** (newest first).
-- Write the updated content back to [CHANGELOG.md](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/docs/CHANGELOG.md).
+- Write the updated content back to [changelog.md](file:///C:/Users/kheri/Documents/antigravity/quirky-lavoisier/docs/developer-guide/changelog.md).

@@ -1,8 +1,30 @@
 # Changelog
 
-All notable changes to the Antigravity CAD project will be documented in this file.
+All notable changes to the SlopCAD project will be documented in this file.
 
 ---
+
+### [DOCS-001] — Read the Docs Migration & Project Rename
+- **Date**: 2026-07-05
+- **Commit**: `pending`
+- **Files Changed**: 27 files, +1933 insertions, -63 deletions
+
+#### Summary
+Migrated documentation to MkDocs Material and set up automated API documentation generation via TypeDoc. Prepared the `.readthedocs.yaml` configuration for deployment to Read the Docs. The project was officially renamed to `SlopCAD` across the entire codebase, UI elements, and documentation.
+
+<details>
+<summary><b>Detailed Changes</b></summary>
+
+- `package.json`: Renamed to `slopcad`, added `typedoc`, `typedoc-plugin-markdown`, and `mkdocs` build scripts.
+- `index.html`, `src/ui/menubar.tsx`, `src/state/ui-state.ts`: Rebranded UI elements and initialization logs to SlopCAD.
+- `.agents/rules/app-foundation.md`, `.agents/skills/*`: Updated internal project references to SlopCAD.
+- `docs/developer-guide/`: Migrated original top-level architecture and developer docs into this structured directory.
+- `docs/user-guide/`: Created user documentation for features, drawing tools, shortcuts, and FAQ.
+- `mkdocs.yml`: Added site navigation and theme configuration for `mkdocs-material`.
+- `.readthedocs.yaml`: Added Read the Docs v2 configuration to run npm install, TypeDoc, and MkDocs.
+
+</details>
+
 
 ### [PERF-001] — Codebase Audit & Performance Optimization Pass
 - **Date**: 2026-06-29

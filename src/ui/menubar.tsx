@@ -8,7 +8,7 @@ export function Menubar() {
   return (
     <header className="menubar">
       <div className="qat-group">
-        <span className="qat-logo">Antigravity CAD</span>
+        <span className="qat-logo">SlopCAD</span>
 
         <div className="qat-separator" />
         <QuickAccessToolbar />

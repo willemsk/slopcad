@@ -1,5 +1,5 @@
 {
-  "name": "quirky-lavoisier",
+  "name": "slopcad",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,9 @@
     "lint": "gts lint",
     "clean": "gts clean",
     "fix": "gts fix",
-    "test": "vitest run"
+    "test": "vitest run",
+    "docs:api": "typedoc",
+    "docs:serve": "mkdocs serve"
   },
   "dependencies": {
     "@preact/signals": "^2.9.1",
@@ -23,6 +25,8 @@
     "jsdom": "^29.1.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.22.4",
+    "typedoc": "^0.26.3",
+    "typedoc-plugin-markdown": "4.2.1",
     "typescript": "^5.6.3",
     "vite": "^8.0.12",
     "vitest": "^4.1.8"

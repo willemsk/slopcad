@@ -47,7 +47,7 @@ export function requestPrompt(
 }
 
 export const commandLineMessagesSignal = signal<string[]>([
-  'Antigravity CAD Redesign Initialized.',
+  'SlopCAD Initialized.',
   'Select a tool from the ribbon or double-click to select entities.',
 ]);
 
