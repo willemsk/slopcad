@@ -11,6 +11,7 @@ import {
   TextEntity,
   UnitSystem,
   Page,
+  Vec2,
 } from '../core/types';
 import {
   dist,
@@ -21,28 +22,298 @@ import {
   rotate,
   lerp,
   angle,
+  distToSegment,
+  projectPointT,
+  infiniteLineIntersection,
+  dot,
 } from '../core/geometry';
 import {formatLength} from '../core/units';
 import {Renderer} from './renderer-interface';
 
+export interface WallRenderData {
+  wall: WallEntity;
+  pStartL: Vec2;
+  pStartR: Vec2;
+  pEndL: Vec2;
+  pEndR: Vec2;
+  skipStartCap: boolean;
+  skipEndCap: boolean;
+  leftGaps: [number, number][];
+  rightGaps: [number, number][];
+}
+
+function mergeIntervals(intervals: [number, number][]): [number, number][] {
+  if (intervals.length === 0) return [];
+  intervals.sort((a, b) => a[0] - b[0]);
+  const res = [[...intervals[0]] as [number, number]];
+  for (let i = 1; i < intervals.length; i++) {
+    const last = res[res.length - 1];
+    const curr = intervals[i];
+    if (curr[0] <= last[1] + 1e-6) {
+      last[1] = Math.max(last[1], curr[1]);
+    } else {
+      res.push([...curr] as [number, number]);
+    }
+  }
+  return res;
+}
+
+export function renderWalls(
+  walls: WallEntity[],
+  allWalls: WallEntity[],
+  renderer: Renderer,
+): void {
+  const renderData: WallRenderData[] = [];
+
+  // Phase 1: Compute mitered coordinates
+  for (const wall of walls) {
+    const {start, end, thickness} = wall;
+    const d = dist(start, end);
+    if (d === 0) continue;
+
+    const u = normalize(sub(end, start));
+    const n = {x: -u.y, y: u.x};
+    const halfThick = thickness / 2;
+
+    let pStartL = add(start, scale(n, halfThick));
+    let pStartR = sub(start, scale(n, halfThick));
+    let pEndL = add(end, scale(n, halfThick));
+    let pEndR = sub(end, scale(n, halfThick));
+
+    let skipStartCap = false;
+    let skipEndCap = false;
+
+    const processEndpoint = (isStart: boolean) => {
+      const pt = isStart ? start : end;
+      const uOut = isStart ? scale(u, -1) : u;
+
+      const ptL = isStart ? pStartL : pEndL;
+      const ptR = isStart ? pStartR : pEndR;
+
+      const touchingWalls = allWalls.filter(w => {
+        if (w.id === wall.id) return false;
+        if (dist(w.start, pt) < 1e-4 || dist(w.end, pt) < 1e-4) return true;
+        if (distToSegment(pt, w.start, w.end) < 1e-4) return true;
+        return false;
+      });
+
+      if (touchingWalls.length === 1) {
+        const w2 = touchingWalls[0];
+        const isCorner = dist(w2.start, pt) < 1e-4 || dist(w2.end, pt) < 1e-4;
+
+        if (isCorner) {
+          if (isStart) skipStartCap = true;
+          else skipEndCap = true;
+
+          const isW2Start = dist(w2.start, pt) < 1e-4;
+          const u2 = normalize(sub(w2.end, w2.start));
+          const n2 = {x: -u2.y, y: u2.x};
+          const halfThick2 = w2.thickness / 2;
+          const w2_L_start = add(w2.start, scale(n2, halfThick2));
+          const w2_R_start = sub(w2.start, scale(n2, halfThick2));
+
+          const p1L = isStart ? pStartL : pEndL;
+          const p1R = isStart ? pStartR : pEndR;
+
+          let newL: Vec2 | null;
+          let newR: Vec2 | null;
+
+          if (isStart !== isW2Start) {
+            newL = infiniteLineIntersection(p1L, u, w2_L_start, u2);
+            newR = infiniteLineIntersection(p1R, u, w2_R_start, u2);
+          } else {
+            newL = infiniteLineIntersection(p1L, u, w2_R_start, u2);
+            newR = infiniteLineIntersection(p1R, u, w2_L_start, u2);
+          }
+
+          if (isStart) {
+            pStartL = newL || pStartL;
+            pStartR = newR || pStartR;
+          } else {
+            pEndL = newL || pEndL;
+            pEndR = newR || pEndR;
+          }
+        } else {
+          // T-Junction
+          if (isStart) skipStartCap = true;
+          else skipEndCap = true;
+
+          const u2 = normalize(sub(w2.end, w2.start));
+          const n2 = {x: -u2.y, y: u2.x};
+          const L2 = add(w2.start, scale(n2, w2.thickness / 2));
+          const R2 = sub(w2.start, scale(n2, w2.thickness / 2));
+
+          const iL_L2 = infiniteLineIntersection(ptL, uOut, L2, u2);
+          const iL_R2 = infiniteLineIntersection(ptL, uOut, R2, u2);
+          const iR_L2 = infiniteLineIntersection(ptR, uOut, L2, u2);
+          const iR_R2 = infiniteLineIntersection(ptR, uOut, R2, u2);
+
+          const tL_L2 = iL_L2 ? dot(sub(iL_L2, ptL), uOut) : Infinity;
+          const tL_R2 = iL_R2 ? dot(sub(iL_R2, ptL), uOut) : Infinity;
+          const iL = tL_L2 < tL_R2 ? iL_L2 : iL_R2;
+
+          const tR_L2 = iR_L2 ? dot(sub(iR_L2, ptR), uOut) : Infinity;
+          const tR_R2 = iR_R2 ? dot(sub(iR_R2, ptR), uOut) : Infinity;
+          const iR = tR_L2 < tR_R2 ? iR_L2 : iR_R2;
+
+          if (isStart) {
+            pStartL = iL || ptL;
+            pStartR = iR || ptR;
+          } else {
+            pEndL = iL || ptL;
+            pEndR = iR || ptR;
+          }
+        }
+      }
+    };
+
+    processEndpoint(true);
+    processEndpoint(false);
+
+    renderData.push({
+      wall,
+      pStartL,
+      pStartR,
+      pEndL,
+      pEndR,
+      skipStartCap,
+      skipEndCap,
+      leftGaps: [],
+      rightGaps: [],
+    });
+  }
+
+  // Phase 2: Compute T-Junction gaps
+  for (const data of renderData) {
+    const w = data.wall;
+
+    const tWalls = allWalls.filter(other => {
+      if (other.id === w.id) return false;
+      return (
+        distToSegment(other.start, w.start, w.end) < 1e-4 ||
+        distToSegment(other.end, w.start, w.end) < 1e-4
+      );
+    });
+
+    for (const otherWall of tWalls) {
+      const pt =
+        distToSegment(otherWall.start, w.start, w.end) < 1e-4
+          ? otherWall.start
+          : otherWall.end;
+
+      const isCornerStart =
+        dist(w.start, otherWall.start) < 1e-4 ||
+        dist(w.start, otherWall.end) < 1e-4;
+      const isCornerEnd =
+        dist(w.end, otherWall.start) < 1e-4 ||
+        dist(w.end, otherWall.end) < 1e-4;
+
+      if (isCornerStart || isCornerEnd) continue;
+
+      const tData = renderData.find(d => d.wall.id === otherWall.id);
+      if (!tData) continue;
+
+      const isStart = dist(pt, tData.wall.start) < 1e-4;
+
+      const p1 = isStart ? tData.pStartL : tData.pEndL;
+      const p2 = isStart ? tData.pStartR : tData.pEndR;
+
+      const t1 = projectPointT(p1, w.start, w.end);
+      const t2 = projectPointT(p2, w.start, w.end);
+
+      const gapInterval: [number, number] = [
+        Math.min(t1, t2),
+        Math.max(t1, t2),
+      ];
+
+      const inU = normalize(sub(tData.wall.end, tData.wall.start));
+      const uOut = isStart ? scale(inU, -1) : inU;
+
+      const mainU = normalize(sub(w.end, w.start));
+      const mainN = {x: -mainU.y, y: mainU.x};
+
+      if (dot(uOut, mainN) > 0) {
+        data.leftGaps.push(gapInterval);
+      } else {
+        data.rightGaps.push(gapInterval);
+      }
+    }
+
+    data.leftGaps = mergeIntervals(data.leftGaps);
+    data.rightGaps = mergeIntervals(data.rightGaps);
+  }
+
+  // Phase 3: Draw Fills
+  for (const data of renderData) {
+    renderer.drawPolygon([data.pStartL, data.pEndL, data.pEndR, data.pStartR], {
+      fill: 'rgba(200, 202, 212, 0.15)',
+      stroke: 'none',
+    });
+  }
+
+  // Phase 4: Draw Strokes
+  for (const data of renderData) {
+    // Left boundary
+    let currT = 0;
+    for (const gap of data.leftGaps) {
+      if (gap[0] > currT) {
+        const startP = lerp(data.pStartL, data.pEndL, currT);
+        const endP = lerp(data.pStartL, data.pEndL, gap[0]);
+        renderer.drawLine(startP, endP, {stroke: '#c8cad4', strokeWidth: 0.02});
+      }
+      currT = Math.max(currT, gap[1]);
+    }
+    if (currT < 1) {
+      const startP = lerp(data.pStartL, data.pEndL, currT);
+      renderer.drawLine(startP, data.pEndL, {
+        stroke: '#c8cad4',
+        strokeWidth: 0.02,
+      });
+    }
+
+    // Right boundary
+    currT = 0;
+    for (const gap of data.rightGaps) {
+      if (gap[0] > currT) {
+        const startP = lerp(data.pStartR, data.pEndR, currT);
+        const endP = lerp(data.pStartR, data.pEndR, gap[0]);
+        renderer.drawLine(startP, endP, {stroke: '#c8cad4', strokeWidth: 0.02});
+      }
+      currT = Math.max(currT, gap[1]);
+    }
+    if (currT < 1) {
+      const startP = lerp(data.pStartR, data.pEndR, currT);
+      renderer.drawLine(startP, data.pEndR, {
+        stroke: '#c8cad4',
+        strokeWidth: 0.02,
+      });
+    }
+
+    // Caps
+    if (!data.skipStartCap) {
+      renderer.drawLine(data.pStartL, data.pStartR, {
+        stroke: '#c8cad4',
+        strokeWidth: 0.02,
+      });
+    }
+    if (!data.skipEndCap) {
+      renderer.drawLine(data.pEndL, data.pEndR, {
+        stroke: '#c8cad4',
+        strokeWidth: 0.02,
+      });
+    }
+
+    // Center line
+    renderer.drawLine(data.wall.start, data.wall.end, {
+      stroke: 'rgba(200, 202, 212, 0.25)',
+      strokeWidth: 0.01,
+      strokeDasharray: '0.05,0.05',
+    });
+  }
+}
+
 export function renderWall(wall: WallEntity, renderer: Renderer): void {
-  const d = dist(wall.start, wall.end);
-  if (d === 0) return;
-
-  const u = normalize(sub(wall.end, wall.start));
-  const n = {x: -u.y, y: u.x};
-  const halfThickness = wall.thickness / 2;
-
-  const c1 = add(wall.start, scale(n, halfThickness));
-  const c2 = add(wall.end, scale(n, halfThickness));
-  const c3 = sub(wall.end, scale(n, halfThickness));
-  const c4 = sub(wall.start, scale(n, halfThickness));
-
-  renderer.drawPolygon([c1, c2, c3, c4], {
-    fill: 'rgba(200, 202, 212, 0.15)',
-    stroke: '#c8cad4',
-    strokeWidth: 0.02,
-  });
+  renderWalls([wall], [wall], renderer);
 }
 
 export function renderDoor(

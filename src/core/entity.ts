@@ -190,16 +190,93 @@ export function createText(
   };
 }
 
+/**
+ * Gets the point (Vec2) from an entity for a given key, if applicable.
+ */
+export function getEntityPoint(entity: Entity, key: string): Vec2 | undefined {
+  switch (entity.type) {
+    case 'wall':
+    case 'line':
+    case 'stairs':
+      if (key === 'start') return entity.start;
+      if (key === 'end') return entity.end;
+      break;
+    case 'rect':
+      if (key === 'p1') return entity.p1;
+      if (key === 'p2') return entity.p2;
+      break;
+    case 'circle':
+    case 'arc':
+      if (key === 'center') return entity.center;
+      break;
+    case 'dimension':
+      if (key === 'p1') return entity.p1;
+      if (key === 'p2') return entity.p2;
+      break;
+    case 'text':
+      if (key === 'position') return entity.position;
+      break;
+  }
+  return undefined;
+}
+
 // Clone an entity
 export function cloneEntity(entity: Entity): Entity {
-  const clone = {...entity} as any;
-  if (clone.start) clone.start = {...clone.start};
-  if (clone.end) clone.end = {...clone.end};
-  if (clone.p1) clone.p1 = {...clone.p1};
-  if (clone.p2) clone.p2 = {...clone.p2};
-  if (clone.center) clone.center = {...clone.center};
-  if (clone.position) clone.position = {...clone.position};
-  return clone as Entity;
+  switch (entity.type) {
+    case 'wall':
+      return {
+        ...entity,
+        start: {...entity.start},
+        end: {...entity.end},
+      };
+    case 'door':
+      return {
+        ...entity,
+      };
+    case 'window':
+      return {
+        ...entity,
+      };
+    case 'stairs':
+      return {
+        ...entity,
+        start: {...entity.start},
+        end: {...entity.end},
+      };
+    case 'line':
+      return {
+        ...entity,
+        start: {...entity.start},
+        end: {...entity.end},
+      };
+    case 'rect':
+      return {
+        ...entity,
+        p1: {...entity.p1},
+        p2: {...entity.p2},
+      };
+    case 'circle':
+      return {
+        ...entity,
+        center: {...entity.center},
+      };
+    case 'arc':
+      return {
+        ...entity,
+        center: {...entity.center},
+      };
+    case 'dimension':
+      return {
+        ...entity,
+        p1: {...entity.p1},
+        p2: {...entity.p2},
+      };
+    case 'text':
+      return {
+        ...entity,
+        position: {...entity.position},
+      };
+  }
 }
 
 /**

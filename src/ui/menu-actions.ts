@@ -1,13 +1,11 @@
+import {projectSignal, activePageSignal} from '../state/project-state';
 import {
-  projectSignal,
-  activePageSignal,
-  selectionSignal,
   undoAction,
   redoAction,
   deleteSelectedAction,
-  pushCommandMessage,
-  triggerRenderSignal,
-} from '../state/app-state';
+} from '../state/history-actions';
+import {selectionSignal} from '../state/selection-state';
+import {pushCommandMessage, triggerRenderSignal} from '../state/ui-state';
 import {saveProjectToFile, loadProjectFromFile} from '../io/file-io';
 import {downloadSVGFile} from '../io/export-svg';
 import {generateId} from '../core/entity';

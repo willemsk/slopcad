@@ -1,8 +1,7 @@
 import {h} from 'preact';
+import {projectSignal, activePageSignal} from '../state/project-state';
+import {viewportSignal} from '../state/viewport-state';
 import {
-  projectSignal,
-  activePageSignal,
-  viewportSignal,
   snapEnabledSignal,
   gridEnabledSignal,
   showConstraintsSignal,
@@ -10,7 +9,7 @@ import {
   pushCommandMessage,
   uiScaleSignal,
   setUiScale,
-} from '../state/app-state';
+} from '../state/ui-state';
 import {formatLength} from '../core/units';
 import {GridIcon, SnapIcon, ConstraintIcon} from './icons';
 import './status-bar.css';

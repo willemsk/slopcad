@@ -1,10 +1,7 @@
 import {describe, it, expect, beforeEach} from 'vitest';
 import {SelectTool} from './select-tool';
-import {
-  activePageSignal,
-  projectSignal,
-  selectionSignal,
-} from '../state/app-state';
+import {activePageSignal, projectSignal} from '../state/project-state';
+import {selectionSignal} from '../state/selection-state';
 import {WallEntity} from '../core/types';
 
 describe('SelectTool', () => {
