@@ -15,7 +15,6 @@ import {
 import {calculateBoundingBox} from './bounding-box';
 import {SVGRenderer} from './svg-renderer';
 import {
-  renderWall,
   renderDoor,
   renderWindow,
   renderStairs,
@@ -25,6 +24,7 @@ import {
   renderArc,
   renderDimension,
   renderText,
+  renderWalls,
 } from './entity-renderers';
 
 export function exportPageToSVG(page: Page, unitSystem: UnitSystem): string {
@@ -34,10 +34,11 @@ export function exportPageToSVG(page: Page, unitSystem: UnitSystem): string {
   renderer.begin(bbox.minX, bbox.minY, bbox.width, bbox.height);
 
   // Pass 1: Draw walls first
-  for (const ent of page.entities) {
-    if (ent.type === 'wall') {
-      renderWall(ent as WallEntity, renderer);
-    }
+  const walls = page.entities.filter(
+    ent => ent.type === 'wall',
+  ) as WallEntity[];
+  if (walls.length > 0) {
+    renderWalls(walls, walls, renderer);
   }
 
   // Pass 2: Draw doors & windows (with background masks that cut walls)

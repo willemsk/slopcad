@@ -1,13 +1,14 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
+import {projectSignal} from '../state/project-state';
+import {isLayerModalOpenSignal} from '../state/ui-state';
 import {
-  projectSignal,
-  isLayerModalOpenSignal,
   addLayerAction,
   updateLayerAction,
   deleteLayerAction,
   setActiveLayerAction,
-} from '../state/app-state';
+} from '../state/layer-actions';
+import {DeleteIcon} from './icons';
 import './layer-modal.css';
 
 export function LayerModal() {
@@ -18,6 +19,17 @@ export function LayerModal() {
 
   const handleClose = () => {
     isLayerModalOpenSignal.value = false;
+  };
+
+  const handleDeleteLayer = (layer: {id: string; name: string}) => {
+    if (layer.id === '0' || project.layers.length <= 1) return;
+    if (
+      window.confirm(
+        `Delete layer "${layer.name}"? This action cannot be undone.`,
+      )
+    ) {
+      deleteLayerAction(layer.id);
+    }
   };
 
   const handleAddLayer = () => {
@@ -53,6 +65,7 @@ export function LayerModal() {
               <th>On</th>
               <th>Lock</th>
               <th>Color</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -65,6 +78,7 @@ export function LayerModal() {
                   <input
                     type="radio"
                     name="activeLayer"
+                    aria-label={`Set ${layer.name} as active layer`}
                     checked={project.activeLayerId === layer.id}
                     onChange={() => setActiveLayerAction(layer.id)}
                     aria-label={`Set active layer: ${layer.name}`}
@@ -73,7 +87,9 @@ export function LayerModal() {
                 <td className="layer-cell-name">
                   <input
                     type="text"
+                    aria-label={'Rename layer ' + layer.name}
                     value={layer.name}
+                    aria-label={`Layer name for ${layer.name}`}
                     className="layer-name-input"
                     onChange={e =>
                       updateLayerAction(layer.id, {
@@ -86,6 +102,7 @@ export function LayerModal() {
                 <td className="layer-cell-toggle">
                   <input
                     type="checkbox"
+                    aria-label={`Toggle visibility for ${layer.name}`}
                     checked={layer.visible}
                     onChange={() =>
                       updateLayerAction(layer.id, {visible: !layer.visible})
@@ -96,6 +113,7 @@ export function LayerModal() {
                 <td className="layer-cell-toggle">
                   <input
                     type="checkbox"
+                    aria-label={`Toggle lock for ${layer.name}`}
                     checked={layer.locked}
                     onChange={() =>
                       updateLayerAction(layer.id, {locked: !layer.locked})
@@ -106,6 +124,7 @@ export function LayerModal() {
                 <td className="layer-cell-color">
                   <input
                     type="color"
+                    aria-label={`Change color for ${layer.name}`}
                     value={layer.color}
                     onChange={e =>
                       updateLayerAction(layer.id, {
@@ -114,6 +133,34 @@ export function LayerModal() {
                     }
                     aria-label={`Color for layer: ${layer.name}`}
                   />
+                </td>
+                <td
+                  className="layer-cell-delete"
+                  style={{textAlign: 'center', width: '32px'}}
+                >
+                  <button
+                    className="layer-delete-btn"
+                    onClick={() => handleDeleteLayer(layer)}
+                    aria-label={`Delete layer ${layer.name}`}
+                    title={`Delete layer ${layer.name}`}
+                    disabled={layer.id === '0' || project.layers.length <= 1}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'inherit',
+                      cursor:
+                        layer.id === '0' || project.layers.length <= 1
+                          ? 'not-allowed'
+                          : 'pointer',
+                      opacity:
+                        layer.id === '0' || project.layers.length <= 1
+                          ? 0.3
+                          : 0.7,
+                      padding: '4px',
+                    }}
+                  >
+                    <DeleteIcon />
+                  </button>
                 </td>
               </tr>
             ))}

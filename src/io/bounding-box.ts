@@ -27,28 +27,22 @@ export function calculateBoundingBox(
 
   for (const ent of entities) {
     if (ent.type === 'wall' || ent.type === 'line' || ent.type === 'stairs') {
-      const e = ent as any;
-      expandBBox(e.start);
-      expandBBox(e.end);
+      expandBBox(ent.start);
+      expandBBox(ent.end);
     } else if (ent.type === 'rect') {
-      const r = ent as any;
-      expandBBox(r.p1);
-      expandBBox(r.p2);
+      expandBBox(ent.p1);
+      expandBBox(ent.p2);
     } else if (ent.type === 'circle') {
-      const c = ent as any;
-      expandBBox({x: c.center.x - c.radius, y: c.center.y - c.radius});
-      expandBBox({x: c.center.x + c.radius, y: c.center.y + c.radius});
+      expandBBox({x: ent.center.x - ent.radius, y: ent.center.y - ent.radius});
+      expandBBox({x: ent.center.x + ent.radius, y: ent.center.y + ent.radius});
     } else if (ent.type === 'arc') {
-      const a = ent as any;
-      expandBBox({x: a.center.x - a.radius, y: a.center.y - a.radius});
-      expandBBox({x: a.center.x + a.radius, y: a.center.y + a.radius});
+      expandBBox({x: ent.center.x - ent.radius, y: ent.center.y - ent.radius});
+      expandBBox({x: ent.center.x + ent.radius, y: ent.center.y + ent.radius});
     } else if (ent.type === 'dimension') {
-      const d = ent as any;
-      expandBBox(d.p1);
-      expandBBox(d.p2);
+      expandBBox(ent.p1);
+      expandBBox(ent.p2);
     } else if (ent.type === 'text') {
-      const t = ent as any;
-      expandBBox(t.position);
+      expandBBox(ent.position);
     }
   }
 

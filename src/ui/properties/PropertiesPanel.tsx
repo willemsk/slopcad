@@ -1,11 +1,8 @@
 import {h} from 'preact';
 import {useEffect} from 'preact/hooks';
-import {
-  projectSignal,
-  activePageSignal,
-  selectionSignal,
-  isPropertiesPanelOpenSignal,
-} from '../../state/app-state';
+import {projectSignal, activePageSignal} from '../../state/project-state';
+import {selectionSignal} from '../../state/selection-state';
+import {isPropertiesPanelOpenSignal} from '../../state/ui-state';
 import '../properties-panel.css';
 import {usePropertyCommit} from './use-property-commit';
 import {PageProperties} from './PageProperties';

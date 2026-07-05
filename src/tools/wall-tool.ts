@@ -1,16 +1,15 @@
 import {Tool} from './tool';
 import {Vec2, SnapResult, WallEntity, Constraint} from '../core/types';
-import {Viewport} from '../canvas/viewport';
+import {ViewportMath} from '../core/viewport-math';
 import {createWall, generateId} from '../core/entity';
 import {dist} from '../core/geometry';
 import {
   activePageSignal,
   updateActivePage,
-  previewEntitySignal,
-  snapshotState,
-  triggerRenderSignal,
   projectSignal,
-} from '../state/app-state';
+} from '../state/project-state';
+import {snapshotState} from '../state/history-actions';
+import {previewEntitySignal, triggerRenderSignal} from '../state/ui-state';
 
 export class WallTool implements Tool {
   name = 'wall';
@@ -18,6 +17,10 @@ export class WallTool implements Tool {
   private startPt: Vec2 | null = null;
   private wallThickness = 0.2; // 20cm default thickness
   private lastClickTime = 0;
+  private startSnapRef: {
+    entityId: string;
+    pointKey: 'start' | 'end';
+  } | null = null;
 
   activate() {
     this.reset();
@@ -29,6 +32,7 @@ export class WallTool implements Tool {
 
   private reset() {
     this.startPt = null;
+    this.startSnapRef = null;
     previewEntitySignal.value = null;
     triggerRenderSignal.value = {};
   }
@@ -62,7 +66,7 @@ export class WallTool implements Tool {
         snapResult.entityId &&
         (snapResult.type === 'endpoint' || snapResult.type === 'midpoint')
       ) {
-        (this as any).startSnapRef = {
+        this.startSnapRef = {
           entityId: snapResult.entityId,
           pointKey:
             snapResult.type === 'endpoint'
@@ -72,7 +76,7 @@ export class WallTool implements Tool {
               : 'start', // fallback
         };
       } else {
-        (this as any).startSnapRef = null;
+        this.startSnapRef = null;
       }
     } else {
       // 2. Place current segment, start next
@@ -92,16 +96,16 @@ export class WallTool implements Tool {
       const newConstraints = [...page.constraints];
 
       // Add coincident constraint at Start Point (if snapped)
-      if ((this as any).startSnapRef) {
+      if (this.startSnapRef) {
         const c: Constraint = {
           id: generateId(),
           type: 'coincident',
-          entityIds: [newWall.id, (this as any).startSnapRef.entityId],
+          entityIds: [newWall.id, this.startSnapRef.entityId],
           pointRefs: [
             {entityId: newWall.id, pointKey: 'start'},
             {
-              entityId: (this as any).startSnapRef.entityId,
-              pointKey: (this as any).startSnapRef.pointKey,
+              entityId: this.startSnapRef.entityId,
+              pointKey: this.startSnapRef.pointKey,
             },
           ],
         };
@@ -132,13 +136,13 @@ export class WallTool implements Tool {
         newConstraints.push(c);
 
         // Chain continues, but snap reference for next segment start is this end snap
-        (this as any).startSnapRef = {
+        this.startSnapRef = {
           entityId: snapResult.entityId,
           pointKey: pointKey,
         };
       } else {
         // If not snapped to another wall, snap to this newly created wall's end
-        (this as any).startSnapRef = {
+        this.startSnapRef = {
           entityId: newWall.id,
           pointKey: 'end',
         };

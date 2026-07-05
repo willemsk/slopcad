@@ -1,5 +1,5 @@
 import {Entity, SnapResult, UnitSystem, Constraint, Layer} from '../core/types';
-import {Viewport} from './viewport';
+import {ViewportMath} from '../core/viewport-math';
 import {
   clearCanvas,
   drawGrid,
@@ -10,13 +10,13 @@ import {
   drawAllSelectionHandles,
   drawUCS,
 } from './render-helpers';
-import {drawSnapIndicator} from './draw-helpers';
+import {drawSnapIndicator} from './renderers/snap-renderer';
 
 export interface RenderState {
   ctx: CanvasRenderingContext2D;
   width: number;
   height: number;
-  viewport: Viewport;
+  viewport: ViewportMath;
   entities: Entity[];
   constraints: Constraint[];
   layers: Layer[];
