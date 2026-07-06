@@ -35,13 +35,13 @@ export function DimensionParams({
               'label',
               (activeEntity as DimensionEntity).label || '',
             )}
-            onInput={e =>
+            onInput={(e) =>
               handleInputChange('label', (e.target as HTMLInputElement).value)
             }
-            onFocus={e => (e.target as HTMLInputElement).select()}
+            onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
-            onBlur={e => {
-              commitProperty(ent => {
+            onBlur={(e) => {
+              commitProperty((ent) => {
                 (ent as DimensionEntity).label =
                   (e.target as HTMLInputElement).value.trim() || undefined;
               });
@@ -60,24 +60,24 @@ export function DimensionParams({
               'override',
               (activeEntity as DimensionEntity).valueOverride?.toString() || '',
             )}
-            onInput={e =>
+            onInput={(e) =>
               handleInputChange(
                 'override',
                 (e.target as HTMLInputElement).value,
               )
             }
-            onFocus={e => (e.target as HTMLInputElement).select()}
+            onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
-            onBlur={e => {
+            onBlur={(e) => {
               const valStr = (e.target as HTMLInputElement).value.trim();
               if (valStr === '') {
-                commitProperty(ent => {
+                commitProperty((ent) => {
                   (ent as DimensionEntity).valueOverride = undefined;
                 });
               } else {
                 const m = parseLength(valStr, unitSystem);
                 if (m !== null && m > 0) {
-                  commitProperty(ent => {
+                  commitProperty((ent) => {
                     (ent as DimensionEntity).valueOverride = m;
                   });
                 } else {

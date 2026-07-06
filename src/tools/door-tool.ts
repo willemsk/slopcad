@@ -39,7 +39,7 @@ export class DoorTool implements Tool {
 
       const page = activePageSignal.value;
       let t = snapResult.extra?.t ?? 0.5;
-      const wall = page.entities.find(e => e.id === snapResult.entityId) as
+      const wall = page.entities.find((e) => e.id === snapResult.entityId) as
         | WallEntity
         | undefined;
       if (wall) {
@@ -98,7 +98,7 @@ export class DoorTool implements Tool {
     if (snapResult && snapResult.type === 'wall-align' && snapResult.entityId) {
       let t = snapResult.extra?.t ?? 0.5;
       const page = activePageSignal.value;
-      const wall = page.entities.find(e => e.id === snapResult.entityId) as
+      const wall = page.entities.find((e) => e.id === snapResult.entityId) as
         | WallEntity
         | undefined;
       if (wall) {

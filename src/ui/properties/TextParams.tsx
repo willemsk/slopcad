@@ -31,13 +31,13 @@ export function TextParams({
           <textarea
             rows={3}
             value={getVal('text', (activeEntity as TextEntity).text)}
-            onInput={e =>
+            onInput={(e) =>
               handleInputChange('text', (e.target as HTMLTextAreaElement).value)
             }
-            onFocus={e => (e.target as HTMLInputElement).select()}
+            onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
-            onBlur={e => {
-              commitProperty(ent => {
+            onBlur={(e) => {
+              commitProperty((ent) => {
                 (ent as TextEntity).text = (
                   e.target as HTMLTextAreaElement
                 ).value;
@@ -57,21 +57,21 @@ export function TextParams({
               'fontSize',
               formatLength((activeEntity as TextEntity).fontSize, unitSystem),
             )}
-            onInput={e =>
+            onInput={(e) =>
               handleInputChange(
                 'fontSize',
                 (e.target as HTMLInputElement).value,
               )
             }
-            onFocus={e => (e.target as HTMLInputElement).select()}
+            onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
-            onBlur={e => {
+            onBlur={(e) => {
               const m = parseLength(
                 (e.target as HTMLInputElement).value,
                 unitSystem,
               );
               if (m !== null && m > 0) {
-                commitProperty(ent => {
+                commitProperty((ent) => {
                   (ent as TextEntity).fontSize = m;
                 });
               } else {

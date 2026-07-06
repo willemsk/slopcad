@@ -235,11 +235,11 @@ describe('Entity Renderers', () => {
     renderDimension(dimension, 'metric', renderer);
 
     // Should push group, draw text mask, draw text, pop group, and draw lines/ticks
-    expect(renderer.calls.some(c => c.type === 'pushGroup')).toBe(true);
-    expect(renderer.calls.some(c => c.type === 'popGroup')).toBe(true);
-    expect(renderer.calls.some(c => c.type === 'drawText')).toBe(true);
-    expect(renderer.calls.some(c => c.type === 'drawRect')).toBe(true); // text mask
-    expect(renderer.calls.filter(c => c.type === 'drawLine').length).toBe(5); // 2 extension lines + 1 dim line + 2 ticks
+    expect(renderer.calls.some((c) => c.type === 'pushGroup')).toBe(true);
+    expect(renderer.calls.some((c) => c.type === 'popGroup')).toBe(true);
+    expect(renderer.calls.some((c) => c.type === 'drawText')).toBe(true);
+    expect(renderer.calls.some((c) => c.type === 'drawRect')).toBe(true); // text mask
+    expect(renderer.calls.filter((c) => c.type === 'drawLine').length).toBe(5); // 2 extension lines + 1 dim line + 2 ticks
   });
 
   it('renders a WallEntity correctly', () => {
@@ -255,8 +255,8 @@ describe('Entity Renderers', () => {
     renderWall(wall, renderer);
 
     // Wall rendering draws a polygon fill, then left/right stroke lines, end caps, and a center dashed line.
-    expect(renderer.calls.some(c => c.type === 'drawPolygon')).toBe(true);
-    const lines = renderer.calls.filter(c => c.type === 'drawLine');
+    expect(renderer.calls.some((c) => c.type === 'drawPolygon')).toBe(true);
+    const lines = renderer.calls.filter((c) => c.type === 'drawLine');
     expect(lines.length).toBeGreaterThanOrEqual(4); // Left stroke, right stroke, 2 caps, centerline
   });
 
@@ -281,7 +281,7 @@ describe('Entity Renderers', () => {
     renderWalls([wall1, wall2], [wall1, wall2], renderer);
 
     // Corner mitering should skip start caps on both walls where they intersect at {0, 0}
-    expect(renderer.calls.some(c => c.type === 'drawPolygon')).toBe(true);
+    expect(renderer.calls.some((c) => c.type === 'drawPolygon')).toBe(true);
   });
 
   it('renders a DoorEntity with swing arc and polygon mask', () => {
@@ -305,9 +305,9 @@ describe('Entity Renderers', () => {
     renderDoor(door, wall, renderer);
 
     // Should render a polygon mask first, then door frame cuts, leaf line, and swing arc
-    expect(renderer.calls.some(c => c.type === 'drawPolygon')).toBe(true); // mask
-    expect(renderer.calls.some(c => c.type === 'drawArc')).toBe(true); // swing arc
-    expect(renderer.calls.some(c => c.type === 'drawLine')).toBe(true); // leaf line
+    expect(renderer.calls.some((c) => c.type === 'drawPolygon')).toBe(true); // mask
+    expect(renderer.calls.some((c) => c.type === 'drawArc')).toBe(true); // swing arc
+    expect(renderer.calls.some((c) => c.type === 'drawLine')).toBe(true); // leaf line
   });
 
   it('renders a WindowEntity with polygon mask and outlines', () => {
@@ -330,8 +330,8 @@ describe('Entity Renderers', () => {
     renderWindow(wind, wall, renderer);
 
     // Window renders mask (polygon), 2 end lines, 3 longitudinal lines (1 main center + 2 inner glass)
-    expect(renderer.calls.some(c => c.type === 'drawPolygon')).toBe(true);
-    const lineDraws = renderer.calls.filter(c => c.type === 'drawLine');
+    expect(renderer.calls.some((c) => c.type === 'drawPolygon')).toBe(true);
+    const lineDraws = renderer.calls.filter((c) => c.type === 'drawLine');
     expect(lineDraws.length).toBe(5); // 2 frame end cuts + 3 glass lines
   });
 
@@ -350,10 +350,12 @@ describe('Entity Renderers', () => {
     renderStairs(stairs, renderer);
 
     // Stairs renders outline polygon, 9 tread lines, 1 direction line, 1 start circle, arrow head polygon, and UP text
-    expect(renderer.calls.filter(c => c.type === 'drawPolygon').length).toBe(2); // outline + arrow head
-    expect(renderer.calls.some(c => c.type === 'drawCircle')).toBe(true); // start dot
-    expect(renderer.calls.some(c => c.type === 'drawText')).toBe(true); // direction label
-    const lines = renderer.calls.filter(c => c.type === 'drawLine');
+    expect(renderer.calls.filter((c) => c.type === 'drawPolygon').length).toBe(
+      2,
+    ); // outline + arrow head
+    expect(renderer.calls.some((c) => c.type === 'drawCircle')).toBe(true); // start dot
+    expect(renderer.calls.some((c) => c.type === 'drawText')).toBe(true); // direction label
+    const lines = renderer.calls.filter((c) => c.type === 'drawLine');
     expect(lines.length).toBe(10); // 9 treads + 1 direction line
   });
 });

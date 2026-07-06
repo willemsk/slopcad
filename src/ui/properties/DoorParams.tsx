@@ -52,7 +52,7 @@ export function DoorParams({
               'posDist',
               (() => {
                 const wall = page.entities.find(
-                  e => e.id === activeEntity.wallId,
+                  (e) => e.id === activeEntity.wallId,
                 ) as WallEntity | undefined;
                 const wallLength = wall ? dist(wall.start, wall.end) : 0;
                 const pos = activeEntity.position;
@@ -62,18 +62,18 @@ export function DoorParams({
                 return formatLength(currentDist, unitSystem);
               })(),
             )}
-            onInput={e =>
+            onInput={(e) =>
               handleInputChange('posDist', (e.target as HTMLInputElement).value)
             }
-            onFocus={e => (e.target as HTMLInputElement).select()}
+            onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
-            onBlur={e => {
+            onBlur={(e) => {
               const m = parseLength(
                 (e.target as HTMLInputElement).value,
                 unitSystem,
               );
               const wall = page.entities.find(
-                w => w.id === activeEntity.wallId,
+                (w) => w.id === activeEntity.wallId,
               ) as WallEntity | undefined;
               const wallLength = wall ? dist(wall.start, wall.end) : 0;
 
@@ -85,7 +85,7 @@ export function DoorParams({
                 const maxT = 1 - minT;
                 newPos = Math.max(minT, Math.min(maxT, newPos));
 
-                commitProperty(ent => {
+                commitProperty((ent) => {
                   if (ent.type === 'door') {
                     ent.position = newPos;
                   }
@@ -105,8 +105,8 @@ export function DoorParams({
             <input
               type="checkbox"
               checked={!!(activeEntity as DoorEntity).flipX}
-              onChange={e => {
-                commitProperty(ent => {
+              onChange={(e) => {
+                commitProperty((ent) => {
                   (ent as DoorEntity).flipX = (
                     e.target as HTMLInputElement
                   ).checked;
@@ -122,8 +122,8 @@ export function DoorParams({
             <input
               type="checkbox"
               checked={!!(activeEntity as DoorEntity).flipY}
-              onChange={e => {
-                commitProperty(ent => {
+              onChange={(e) => {
+                commitProperty((ent) => {
                   (ent as DoorEntity).flipY = (
                     e.target as HTMLInputElement
                   ).checked;
@@ -144,18 +144,18 @@ export function DoorParams({
                 'openingAngle',
                 ((activeEntity as DoorEntity).openingAngle ?? 90).toString(),
               )}
-              onInput={e =>
+              onInput={(e) =>
                 handleInputChange(
                   'openingAngle',
                   (e.target as HTMLInputElement).value,
                 )
               }
-              onFocus={e => (e.target as HTMLInputElement).select()}
+              onFocus={(e) => (e.target as HTMLInputElement).select()}
               onKeyDown={handleKeyDownCommit}
-              onBlur={e => {
+              onBlur={(e) => {
                 const val = parseFloat((e.target as HTMLInputElement).value);
                 if (!isNaN(val)) {
-                  commitProperty(ent => {
+                  commitProperty((ent) => {
                     (ent as DoorEntity).openingAngle = val;
                   });
                 } else {

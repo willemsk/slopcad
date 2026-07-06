@@ -20,7 +20,7 @@ export function addPerpendicularConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
   const selectedEntities = page.entities.filter(
-    e => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
+    (e) => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
   );
 
   if (selectedEntities.length !== 2) {
@@ -55,7 +55,7 @@ export function addParallelConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
   const selectedEntities = page.entities.filter(
-    e => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
+    (e) => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
   );
 
   if (selectedEntities.length !== 2) {
@@ -88,7 +88,7 @@ export function addCoincidentConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
   const selectedEntities = page.entities.filter(
-    e =>
+    (e) =>
       selection.has(e.id) &&
       (e.type === 'wall' || e.type === 'line' || e.type === 'arc'),
   );
@@ -153,7 +153,7 @@ export function addCollinearConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
   const selectedEntities = page.entities.filter(
-    e => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
+    (e) => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
   );
 
   if (selectedEntities.length !== 2) {
@@ -186,7 +186,7 @@ export function addConcentricConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
   const selectedEntities = page.entities.filter(
-    e => selection.has(e.id) && (e.type === 'circle' || e.type === 'arc'),
+    (e) => selection.has(e.id) && (e.type === 'circle' || e.type === 'arc'),
   );
 
   if (selectedEntities.length !== 2) {
@@ -219,7 +219,7 @@ export function addEqualLengthConstraintAction() {
   const selection = selectionSignal.value;
   const page = activePageSignal.value;
   const selectedEntities = page.entities.filter(
-    e => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
+    (e) => selection.has(e.id) && (e.type === 'wall' || e.type === 'line'),
   );
 
   if (selectedEntities.length !== 2) {

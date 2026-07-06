@@ -35,7 +35,7 @@ export function exportPageToSVG(page: Page, unitSystem: UnitSystem): string {
 
   // Pass 1: Draw walls first
   const walls = page.entities.filter(
-    ent => ent.type === 'wall',
+    (ent) => ent.type === 'wall',
   ) as WallEntity[];
   if (walls.length > 0) {
     renderWalls(walls, walls, renderer);

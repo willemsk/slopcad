@@ -287,9 +287,9 @@ export function getVisibleEntities(
   entities: Entity[],
   layers: Layer[],
 ): Entity[] {
-  const layerVisibilityMap = new Map(layers.map(l => [l.id, l.visible]));
+  const layerVisibilityMap = new Map(layers.map((l) => [l.id, l.visible]));
   const defaultVisibility = layers[0]?.visible ?? true;
-  return entities.filter(ent => {
+  return entities.filter((ent) => {
     if (ent.layerId && layerVisibilityMap.has(ent.layerId)) {
       return layerVisibilityMap.get(ent.layerId);
     }
@@ -301,7 +301,7 @@ export function cloneConstraint(c: Constraint): Constraint {
   return {
     ...c,
     entityIds: [...c.entityIds],
-    pointRefs: c.pointRefs ? c.pointRefs.map(pr => ({...pr})) : undefined,
+    pointRefs: c.pointRefs ? c.pointRefs.map((pr) => ({...pr})) : undefined,
   };
 }
 

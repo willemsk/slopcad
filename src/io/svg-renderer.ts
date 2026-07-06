@@ -95,7 +95,7 @@ export class SVGRenderer implements Renderer {
   }
 
   drawPolygon(points: Vec2[], options?: RendererOptions): void {
-    const pts = points.map(p => `${p.x},${p.y}`).join(' ');
+    const pts = points.map((p) => `${p.x},${p.y}`).join(' ');
     this.elements.push(
       `  <polygon points="${pts}" ${this.buildAttrs(options)} />`,
     );

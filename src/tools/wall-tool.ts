@@ -152,9 +152,9 @@ export class WallTool implements Tool {
       // But only if we had a previous wall in this chain that wasn't already locked by snap
       if (
         page.entities.length > 0 &&
-        !newConstraints.some(c =>
+        !newConstraints.some((c) =>
           c.pointRefs?.some(
-            r => r.entityId === newWall.id && r.pointKey === 'start',
+            (r) => r.entityId === newWall.id && r.pointKey === 'start',
           ),
         )
       ) {
@@ -223,7 +223,7 @@ export class WallTool implements Tool {
   // Check if click coordinate is closer to start or end of specified wall
   private isNearStart(pt: Vec2, wallId: string): boolean {
     const page = activePageSignal.value;
-    const wall = page.entities.find(e => e.id === wallId);
+    const wall = page.entities.find((e) => e.id === wallId);
     if (!wall || !('start' in wall)) return true;
     return dist(pt, wall.start) < dist(pt, wall.end);
   }

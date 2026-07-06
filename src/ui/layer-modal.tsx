@@ -38,7 +38,7 @@ export function LayerModal() {
 
   return (
     <div className="layer-modal-overlay" onClick={handleClose}>
-      <div className="layer-modal-content" onClick={e => e.stopPropagation()}>
+      <div className="layer-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="layer-modal-header">
           <h2>Layer Properties</h2>
           <button
@@ -69,7 +69,7 @@ export function LayerModal() {
             </tr>
           </thead>
           <tbody>
-            {project.layers.map(layer => (
+            {project.layers.map((layer) => (
               <tr
                 key={layer.id}
                 className={project.activeLayerId === layer.id ? 'active' : ''}
@@ -88,7 +88,7 @@ export function LayerModal() {
                     type="text"
                     value={layer.name}
                     className="layer-name-input"
-                    onChange={e =>
+                    onChange={(e) =>
                       updateLayerAction(layer.id, {
                         name: (e.target as HTMLInputElement).value,
                       })
@@ -120,7 +120,7 @@ export function LayerModal() {
                   <input
                     type="color"
                     value={layer.color}
-                    onChange={e =>
+                    onChange={(e) =>
                       updateLayerAction(layer.id, {
                         color: (e.target as HTMLInputElement).value,
                       })

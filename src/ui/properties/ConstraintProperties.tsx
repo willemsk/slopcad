@@ -13,7 +13,7 @@ export function ConstraintProperties({activeEntity}: Props) {
   const [constraintsOpen, setConstraintsOpen] = useState(true);
   const page = activePageSignal.value;
 
-  const relevantConstraints = page.constraints.filter(c =>
+  const relevantConstraints = page.constraints.filter((c) =>
     c.entityIds.includes(activeEntity.id),
   );
 
@@ -29,7 +29,7 @@ export function ConstraintProperties({activeEntity}: Props) {
 
       {constraintsOpen && (
         <div className="properties-category-content">
-          {relevantConstraints.map(c => (
+          {relevantConstraints.map((c) => (
             <div
               key={c.id}
               className="property-item"
@@ -46,7 +46,7 @@ export function ConstraintProperties({activeEntity}: Props) {
                   onClick={() => {
                     snapshotState();
                     const newConstraints = page.constraints.filter(
-                      oc => oc.id !== c.id,
+                      (oc) => oc.id !== c.id,
                     );
                     updateActivePage(page.entities, newConstraints);
                   }}
@@ -59,8 +59,8 @@ export function ConstraintProperties({activeEntity}: Props) {
                   }}
                   title="Delete constraint"
                   aria-label="Delete constraint"
-                  onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-                  onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
                 >
                   ×
                 </button>

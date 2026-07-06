@@ -47,12 +47,12 @@ export function PageProperties() {
               <input
                 type="text"
                 value={localPageName}
-                onInput={e =>
+                onInput={(e) =>
                   setLocalPageName((e.target as HTMLInputElement).value)
                 }
-                onFocus={e => (e.target as HTMLInputElement).select()}
+                onFocus={(e) => (e.target as HTMLInputElement).select()}
                 onKeyDown={handleKeyDownCommit}
-                onBlur={e =>
+                onBlur={(e) =>
                   handlePageNameChange((e.target as HTMLInputElement).value)
                 }
               />
@@ -64,7 +64,7 @@ export function PageProperties() {
             <div className="property-value">
               <select
                 value={gridSpacingSignal.value.toString()}
-                onChange={e => {
+                onChange={(e) => {
                   gridSpacingSignal.value = parseFloat(
                     (e.target as HTMLSelectElement).value,
                   );
@@ -84,7 +84,7 @@ export function PageProperties() {
             <div className="property-value">
               <select
                 value={project.scale.toString()}
-                onChange={e => {
+                onChange={(e) => {
                   projectSignal.value = {
                     ...project,
                     scale: parseInt((e.target as HTMLSelectElement).value),

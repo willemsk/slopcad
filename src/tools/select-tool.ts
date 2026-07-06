@@ -78,7 +78,7 @@ export class SelectTool implements Tool {
             key === 'position' &&
             (ent.type === 'door' || ent.type === 'window')
           ) {
-            const wall = page.entities.find(e => e.id === ent.wallId) as
+            const wall = page.entities.find((e) => e.id === ent.wallId) as
               | WallEntity
               | undefined;
             if (wall) pt = lerp(wall.start, wall.end, ent.position);
@@ -117,8 +117,8 @@ export class SelectTool implements Tool {
       snapshotState(); // Save undo state before drag
       const idsToDrag = selectionSignal.value;
       this.draggingEntities = page.entities
-        .filter(e => idsToDrag.has(e.id) && !e.locked)
-        .map(e => JSON.parse(JSON.stringify(e))); // deep copy starting state
+        .filter((e) => idsToDrag.has(e.id) && !e.locked)
+        .map((e) => JSON.parse(JSON.stringify(e))); // deep copy starting state
 
       return;
     }
@@ -149,14 +149,14 @@ export class SelectTool implements Tool {
       const targetPos = snapResult ? snapResult.point : worldPos;
 
       // Update the handle coordinate
-      const updatedEntities = page.entities.map(ent => {
+      const updatedEntities = page.entities.map((ent) => {
         if (ent.id === this.draggingHandle!.entityId) {
           const copy = JSON.parse(JSON.stringify(ent));
           if (
             this.draggingHandle!.pointKey === 'position' &&
             (copy.type === 'door' || copy.type === 'window')
           ) {
-            const wall = page.entities.find(w => w.id === copy.wallId) as
+            const wall = page.entities.find((w) => w.id === copy.wallId) as
               | WallEntity
               | undefined;
             if (wall) {
@@ -186,9 +186,9 @@ export class SelectTool implements Tool {
       // If it's a door/window position, we don't need to run the solver on it, but we can safely skip pinning since it doesn't affect other things.
       const pinnedRef: PointRef | null =
         this.draggingHandle.pointKey === 'position' &&
-        (updatedEntities.find(e => e.id === this.draggingHandle!.entityId)
+        (updatedEntities.find((e) => e.id === this.draggingHandle!.entityId)
           ?.type === 'door' ||
-          updatedEntities.find(e => e.id === this.draggingHandle!.entityId)
+          updatedEntities.find((e) => e.id === this.draggingHandle!.entityId)
             ?.type === 'window')
           ? null
           : {
@@ -211,8 +211,8 @@ export class SelectTool implements Tool {
       const totalDelta = sub(worldPos, this.dragStartPos);
 
       // Translate all points of dragged entities
-      const updatedEntities = page.entities.map(ent => {
-        const dragStartEnt = this.draggingEntities.find(e => e.id === ent.id);
+      const updatedEntities = page.entities.map((ent) => {
+        const dragStartEnt = this.draggingEntities.find((e) => e.id === ent.id);
         if (dragStartEnt) {
           const copy = JSON.parse(JSON.stringify(ent));
           // Move start/end points
@@ -326,7 +326,7 @@ export class SelectTool implements Tool {
         } else if (ent.type === 'text') {
           matches = withinBox(ent.position);
         } else if (ent.type === 'door' || ent.type === 'window') {
-          const wall = page.entities.find(e => e.id === ent.wallId) as
+          const wall = page.entities.find((e) => e.id === ent.wallId) as
             | WallEntity
             | undefined;
           if (wall) {

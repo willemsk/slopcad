@@ -26,7 +26,7 @@ export function usePropertyCommit(activeEntity: Entity | null) {
     if (!activeEntity) return;
     snapshotState();
     const page = activePageSignal.value;
-    const newEntities = page.entities.map(e => {
+    const newEntities = page.entities.map((e) => {
       if (e.id === activeEntity.id) {
         const copy = JSON.parse(JSON.stringify(e));
         updater(copy);

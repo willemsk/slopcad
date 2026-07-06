@@ -52,7 +52,7 @@ export function WindowParams({
               'posDist',
               (() => {
                 const wall = page.entities.find(
-                  e => e.id === activeEntity.wallId,
+                  (e) => e.id === activeEntity.wallId,
                 ) as WallEntity | undefined;
                 const wallLength = wall ? dist(wall.start, wall.end) : 0;
                 const pos = activeEntity.position;
@@ -62,18 +62,18 @@ export function WindowParams({
                 return formatLength(currentDist, unitSystem);
               })(),
             )}
-            onInput={e =>
+            onInput={(e) =>
               handleInputChange('posDist', (e.target as HTMLInputElement).value)
             }
-            onFocus={e => (e.target as HTMLInputElement).select()}
+            onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
-            onBlur={e => {
+            onBlur={(e) => {
               const m = parseLength(
                 (e.target as HTMLInputElement).value,
                 unitSystem,
               );
               const wall = page.entities.find(
-                w => w.id === activeEntity.wallId,
+                (w) => w.id === activeEntity.wallId,
               ) as WallEntity | undefined;
               const wallLength = wall ? dist(wall.start, wall.end) : 0;
 
@@ -85,7 +85,7 @@ export function WindowParams({
                 const maxT = 1 - minT;
                 newPos = Math.max(minT, Math.min(maxT, newPos));
 
-                commitProperty(ent => {
+                commitProperty((ent) => {
                   if (ent.type === 'window') {
                     ent.position = newPos;
                   }

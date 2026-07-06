@@ -133,7 +133,7 @@ export class Canvas2DRenderer implements Renderer {
       } else {
         const dashes = options.strokeDasharray
           .split(',')
-          .map(s => parseFloat(s.trim()));
+          .map((s) => parseFloat(s.trim()));
         this.lastDashStr = options.strokeDasharray;
         this.lastDashArray = dashes;
         this.ctx.setLineDash(dashes);

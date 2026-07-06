@@ -80,21 +80,21 @@ function WallLineGeometry({
                   unitSystem,
                 ),
               )}
-              onInput={e =>
+              onInput={(e) =>
                 handleInputChange(
                   'thickness',
                   (e.target as HTMLInputElement).value,
                 )
               }
-              onFocus={e => (e.target as HTMLInputElement).select()}
+              onFocus={(e) => (e.target as HTMLInputElement).select()}
               onKeyDown={handleKeyDownCommit}
-              onBlur={e => {
+              onBlur={(e) => {
                 const m = parseLength(
                   (e.target as HTMLInputElement).value,
                   unitSystem,
                 );
                 if (m !== null && m > 0) {
-                  commitProperty(ent => {
+                  commitProperty((ent) => {
                     (ent as WallEntity).thickness = m;
                   });
                 } else {
@@ -118,18 +118,18 @@ function WallLineGeometry({
                 unitSystem,
               ),
             )}
-            onInput={e =>
+            onInput={(e) =>
               handleInputChange('length', (e.target as HTMLInputElement).value)
             }
-            onFocus={e => (e.target as HTMLInputElement).select()}
+            onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
-            onBlur={e => {
+            onBlur={(e) => {
               const m = parseLength(
                 (e.target as HTMLInputElement).value,
                 unitSystem,
               );
               if (m !== null && m > 0) {
-                commitProperty(ent => {
+                commitProperty((ent) => {
                   if (ent.type === 'wall' || ent.type === 'line') {
                     const start = ent.start;
                     const end = ent.end;
@@ -184,18 +184,18 @@ function RectGeometry({
                 unitSystem,
               ),
             )}
-            onInput={e =>
+            onInput={(e) =>
               handleInputChange('w', (e.target as HTMLInputElement).value)
             }
-            onFocus={e => (e.target as HTMLInputElement).select()}
+            onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
-            onBlur={e => {
+            onBlur={(e) => {
               const m = parseLength(
                 (e.target as HTMLInputElement).value,
                 unitSystem,
               );
               if (m !== null && m > 0) {
-                commitProperty(ent => {
+                commitProperty((ent) => {
                   const r = ent as RectEntity;
                   const sign = Math.sign(r.p2.x - r.p1.x) || 1;
                   r.p2.x = r.p1.x + sign * m;
@@ -223,18 +223,18 @@ function RectGeometry({
                 unitSystem,
               ),
             )}
-            onInput={e =>
+            onInput={(e) =>
               handleInputChange('h', (e.target as HTMLInputElement).value)
             }
-            onFocus={e => (e.target as HTMLInputElement).select()}
+            onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
-            onBlur={e => {
+            onBlur={(e) => {
               const m = parseLength(
                 (e.target as HTMLInputElement).value,
                 unitSystem,
               );
               if (m !== null && m > 0) {
-                commitProperty(ent => {
+                commitProperty((ent) => {
                   const r = ent as RectEntity;
                   const sign = Math.sign(r.p2.y - r.p1.y) || 1;
                   r.p2.y = r.p1.y + sign * m;
@@ -269,18 +269,18 @@ function CircleGeometry({
             'radius',
             formatLength((activeEntity as CircleEntity).radius, unitSystem),
           )}
-          onInput={e =>
+          onInput={(e) =>
             handleInputChange('radius', (e.target as HTMLInputElement).value)
           }
-          onFocus={e => (e.target as HTMLInputElement).select()}
+          onFocus={(e) => (e.target as HTMLInputElement).select()}
           onKeyDown={handleKeyDownCommit}
-          onBlur={e => {
+          onBlur={(e) => {
             const m = parseLength(
               (e.target as HTMLInputElement).value,
               unitSystem,
             );
             if (m !== null && m > 0) {
-              commitProperty(ent => {
+              commitProperty((ent) => {
                 (ent as CircleEntity).radius = m;
               });
             } else {
@@ -321,18 +321,18 @@ function GeneralElementGeometry({
                 unitSystem,
               ),
             )}
-            onInput={e =>
+            onInput={(e) =>
               handleInputChange('width', (e.target as HTMLInputElement).value)
             }
-            onFocus={e => (e.target as HTMLInputElement).select()}
+            onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
-            onBlur={e => {
+            onBlur={(e) => {
               const m = parseLength(
                 (e.target as HTMLInputElement).value,
                 unitSystem,
               );
               if (m !== null && m > 0 && activeEntity.type !== 'dimension') {
-                commitProperty(ent => {
+                commitProperty((ent) => {
                   if (
                     ent.type === 'door' ||
                     ent.type === 'window' ||

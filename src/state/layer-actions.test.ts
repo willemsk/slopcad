@@ -32,7 +32,7 @@ describe('Layer Actions', () => {
 
     updateLayerAction(newLayerId, {color: '#00ff00', locked: true});
     const updatedLayer = projectSignal.value.layers.find(
-      l => l.id === newLayerId,
+      (l) => l.id === newLayerId,
     );
     expect(updatedLayer?.color).toBe('#00ff00');
     expect(updatedLayer?.locked).toBe(true);
