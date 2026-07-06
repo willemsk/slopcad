@@ -29,12 +29,12 @@ export function loadProjectFromFile(
   input.type = 'file';
   input.accept = '.archplan,application/json';
 
-  input.onchange = e => {
+  input.onchange = (e) => {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = event => {
+    reader.onload = (event) => {
       const text = event.target?.result as string;
       const loadedProject = deserializeProject(text);
 

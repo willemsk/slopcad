@@ -90,7 +90,7 @@ export function renderWalls(
       const ptL = isStart ? pStartL : pEndL;
       const ptR = isStart ? pStartR : pEndR;
 
-      const touchingWalls = allWalls.filter(w => {
+      const touchingWalls = allWalls.filter((w) => {
         if (w.id === wall.id) return false;
         if (dist(w.start, pt) < 1e-4 || dist(w.end, pt) < 1e-4) return true;
         if (distToSegment(pt, w.start, w.end) < 1e-4) return true;
@@ -187,7 +187,7 @@ export function renderWalls(
   for (const data of renderData) {
     const w = data.wall;
 
-    const tWalls = allWalls.filter(other => {
+    const tWalls = allWalls.filter((other) => {
       if (other.id === w.id) return false;
       return (
         distToSegment(other.start, w.start, w.end) < 1e-4 ||
@@ -210,7 +210,7 @@ export function renderWalls(
 
       if (isCornerStart || isCornerEnd) continue;
 
-      const tData = renderData.find(d => d.wall.id === otherWall.id);
+      const tData = renderData.find((d) => d.wall.id === otherWall.id);
       if (!tData) continue;
 
       const isStart = dist(pt, tData.wall.start) < 1e-4;

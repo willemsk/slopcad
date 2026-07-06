@@ -50,9 +50,9 @@ describe('Canvas Entity Filtering Performance Benchmark', () => {
 
     // Warm up JS engine for both implementations
     for (let i = 0; i < 20; i++) {
-      activePage.entities.filter(ent => {
+      activePage.entities.filter((ent) => {
         const layer =
-          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+          project.layers.find((l) => l.id === ent.layerId) || project.layers[0];
         return layer?.visible ?? true;
       });
       getVisibleEntities(activePage.entities, project.layers);
@@ -63,9 +63,9 @@ describe('Canvas Entity Filtering Performance Benchmark', () => {
     let visibleUnoptimizedCount = 0;
     for (let run = 0; run < 5; run++) {
       const start = performance.now();
-      const visible = activePage.entities.filter(ent => {
+      const visible = activePage.entities.filter((ent) => {
         const layer =
-          project.layers.find(l => l.id === ent.layerId) || project.layers[0];
+          project.layers.find((l) => l.id === ent.layerId) || project.layers[0];
         return layer?.visible ?? true;
       });
       const end = performance.now();

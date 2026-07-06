@@ -34,7 +34,7 @@ export function findWall(
   entities: Entity[],
   id: string,
 ): WallEntity | undefined {
-  return entities.find(e => e.id === id && e.type === 'wall') as
+  return entities.find((e) => e.id === id && e.type === 'wall') as
     | WallEntity
     | undefined;
 }

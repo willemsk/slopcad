@@ -46,7 +46,7 @@ export function deleteSelectedAction() {
     }
   }
 
-  const finalEntities = page.entities.filter(e => {
+  const finalEntities = page.entities.filter((e) => {
     if (selection.has(e.id)) return false;
     if (e.type === 'door' || e.type === 'window') {
       const de = e as DoorEntity | WindowEntity;
@@ -55,7 +55,7 @@ export function deleteSelectedAction() {
     return true;
   });
 
-  const newConstraints = page.constraints.filter(c => {
+  const newConstraints = page.constraints.filter((c) => {
     if (!c.entityIds) return true;
     for (let i = 0; i < c.entityIds.length; i++) {
       const id = c.entityIds[i];

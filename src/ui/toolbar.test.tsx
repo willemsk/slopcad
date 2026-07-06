@@ -54,12 +54,12 @@ describe('Toolbar Component', () => {
     });
 
     const homeTab = Array.from(container.querySelectorAll('.ribbon-tab')).find(
-      el => el.textContent === 'Home',
+      (el) => el.textContent === 'Home',
     );
     expect(homeTab?.className).toContain('active');
 
     const viewTab = Array.from(container.querySelectorAll('.ribbon-tab')).find(
-      el => el.textContent === 'View',
+      (el) => el.textContent === 'View',
     ) as HTMLButtonElement;
 
     expect(viewTab).toBeDefined();
@@ -80,7 +80,7 @@ describe('Toolbar Component', () => {
     });
 
     const viewTab = Array.from(container.querySelectorAll('.ribbon-tab')).find(
-      el => el.textContent === 'View',
+      (el) => el.textContent === 'View',
     ) as HTMLButtonElement;
 
     await act(() => {
@@ -89,7 +89,7 @@ describe('Toolbar Component', () => {
 
     const gridBtn = Array.from(
       container.querySelectorAll('.ribbon-btn-large'),
-    ).find(el => el.textContent?.includes('Grid')) as HTMLButtonElement;
+    ).find((el) => el.textContent?.includes('Grid')) as HTMLButtonElement;
 
     expect(gridBtn).toBeDefined();
 

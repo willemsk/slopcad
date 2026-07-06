@@ -22,7 +22,7 @@ export function getDistanceSqToEntity(
   const entityMap =
     entitiesOrMap instanceof Map
       ? entitiesOrMap
-      : new Map(entitiesOrMap.map(e => [e.id, e]));
+      : new Map(entitiesOrMap.map((e) => [e.id, e]));
 
   switch (ent.type) {
     case 'wall':
@@ -96,7 +96,7 @@ export function findEntityAt(
   const hitRadiusSq = hitRadius * hitRadius;
   let bestDistSq = hitRadiusSq;
 
-  const map = entityMap || new Map(entities.map(e => [e.id, e]));
+  const map = entityMap || new Map(entities.map((e) => [e.id, e]));
 
   for (const ent of entities) {
     const dSq = getDistanceSqToEntity(pt, ent, map);

@@ -33,7 +33,7 @@ export function getPointValue(
   const entity =
     entitiesOrMap instanceof Map
       ? entitiesOrMap.get(ref.entityId)
-      : entitiesOrMap.find(e => e.id === ref.entityId);
+      : entitiesOrMap.find((e) => e.id === ref.entityId);
   if (!entity) return null;
 
   const key = ref.pointKey;
@@ -72,7 +72,7 @@ export function setPointValue(
   const entity =
     entitiesOrMap instanceof Map
       ? entitiesOrMap.get(ref.entityId)
-      : entitiesOrMap.find(e => e.id === ref.entityId);
+      : entitiesOrMap.find((e) => e.id === ref.entityId);
   if (!entity || entity.locked) return false;
 
   const key = ref.pointKey;
@@ -127,7 +127,7 @@ export function solveConstraints(
   // Keep track of locked points. Entity locked flag or pinnedRefs
   const isPointLocked = (ref: PointRef): boolean => {
     // Check if pinned by user drag
-    if (pinnedRefs.some(p => isRefEqual(p, ref))) return true;
+    if (pinnedRefs.some((p) => isRefEqual(p, ref))) return true;
 
     // Check if parent entity is locked
     const ent = solvedEntityMap.get(ref.entityId);

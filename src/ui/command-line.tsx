@@ -112,7 +112,7 @@ export function CommandLine() {
           placeholder="Type a command or press a shortcut..."
           value={inputValue}
           disabled={isLayerModalOpenSignal.value}
-          onInput={e => setInputValue(e.currentTarget.value)}
+          onInput={(e) => setInputValue(e.currentTarget.value)}
           onKeyDown={handleKeyDown}
         />
       </div>

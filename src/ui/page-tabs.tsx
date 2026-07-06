@@ -30,7 +30,7 @@ export function PageTabs() {
               {project.pages.length > 1 && (
                 <button
                   className="tab-close"
-                  onClick={e => {
+                  onClick={(e) => {
                     e.stopPropagation();
                     deletePageAction(idx);
                   }}
@@ -63,7 +63,7 @@ export function PageTabs() {
               ? 'none'
               : overlayPageIndexSignal.value.toString()
           }
-          onChange={e => setOverlayPageAction(e.currentTarget.value)}
+          onChange={(e) => setOverlayPageAction(e.currentTarget.value)}
         >
           <option value="none">None</option>
           {project.pages.map((page, idx) => {

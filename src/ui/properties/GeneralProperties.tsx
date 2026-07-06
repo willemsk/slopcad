@@ -48,13 +48,13 @@ export function GeneralProperties({
             <div className="property-value">
               <select
                 value={activeEntity.layerId}
-                onChange={e => {
-                  commitProperty(ent => {
+                onChange={(e) => {
+                  commitProperty((ent) => {
                     ent.layerId = (e.target as HTMLSelectElement).value;
                   });
                 }}
               >
-                {project.layers.map(l => (
+                {project.layers.map((l) => (
                   <option key={l.id} value={l.id}>
                     {l.name}
                   </option>
@@ -70,7 +70,7 @@ export function GeneralProperties({
                 type="checkbox"
                 checked={!!activeEntity.locked}
                 onChange={() => {
-                  commitProperty(e => {
+                  commitProperty((e) => {
                     e.locked = !e.locked;
                   });
                 }}

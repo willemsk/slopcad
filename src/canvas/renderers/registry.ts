@@ -20,7 +20,7 @@ function getRenderer(
 }
 
 export const RendererRegistry: Record<EntityType, RenderFunction> = {
-  wall: context => {
+  wall: (context) => {
     const {ctx, entity, entityMap, entitiesByType, isSelected, color, zoom} =
       context;
     if (entity.type === 'wall') {
@@ -37,7 +37,7 @@ export const RendererRegistry: Record<EntityType, RenderFunction> = {
       entityRenderers.renderWalls([entity], allWalls, canvasRenderer);
     }
   },
-  door: context => {
+  door: (context) => {
     const {ctx, entity, entityMap, isSelected, color, zoom} = context;
     if (entity.type === 'door') {
       const wall = entityMap.get(entity.wallId) as WallEntity | undefined;
@@ -47,7 +47,7 @@ export const RendererRegistry: Record<EntityType, RenderFunction> = {
       }
     }
   },
-  window: context => {
+  window: (context) => {
     const {ctx, entity, entityMap, isSelected, color, zoom} = context;
     if (entity.type === 'window') {
       const wall = entityMap.get(entity.wallId) as WallEntity | undefined;
@@ -57,49 +57,49 @@ export const RendererRegistry: Record<EntityType, RenderFunction> = {
       }
     }
   },
-  stairs: context => {
+  stairs: (context) => {
     const {ctx, entity, isSelected, color, zoom} = context;
     if (entity.type === 'stairs') {
       const canvasRenderer = getRenderer(ctx, zoom, isSelected, color);
       entityRenderers.renderStairs(entity, canvasRenderer);
     }
   },
-  line: context => {
+  line: (context) => {
     const {ctx, entity, isSelected, color, zoom} = context;
     if (entity.type === 'line') {
       const canvasRenderer = getRenderer(ctx, zoom, isSelected, color);
       entityRenderers.renderLine(entity, canvasRenderer);
     }
   },
-  rect: context => {
+  rect: (context) => {
     const {ctx, entity, isSelected, color, zoom} = context;
     if (entity.type === 'rect') {
       const canvasRenderer = getRenderer(ctx, zoom, isSelected, color);
       entityRenderers.renderRect(entity, canvasRenderer);
     }
   },
-  circle: context => {
+  circle: (context) => {
     const {ctx, entity, isSelected, color, zoom} = context;
     if (entity.type === 'circle') {
       const canvasRenderer = getRenderer(ctx, zoom, isSelected, color);
       entityRenderers.renderCircle(entity, canvasRenderer);
     }
   },
-  arc: context => {
+  arc: (context) => {
     const {ctx, entity, isSelected, color, zoom} = context;
     if (entity.type === 'arc') {
       const canvasRenderer = getRenderer(ctx, zoom, isSelected, color);
       entityRenderers.renderArc(entity, canvasRenderer);
     }
   },
-  dimension: context => {
+  dimension: (context) => {
     const {ctx, entity, isSelected, color, zoom, unitSystem} = context;
     if (entity.type === 'dimension') {
       const canvasRenderer = getRenderer(ctx, zoom, isSelected, color);
       entityRenderers.renderDimension(entity, unitSystem, canvasRenderer);
     }
   },
-  text: context => {
+  text: (context) => {
     const {ctx, entity, isSelected, color, zoom} = context;
     if (entity.type === 'text') {
       const canvasRenderer = getRenderer(ctx, zoom, isSelected, color);

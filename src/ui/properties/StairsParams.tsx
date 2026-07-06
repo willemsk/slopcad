@@ -33,15 +33,15 @@ export function StairsParams({
               'treads',
               (activeEntity as StairsEntity).treadCount.toString(),
             )}
-            onInput={e =>
+            onInput={(e) =>
               handleInputChange('treads', (e.target as HTMLInputElement).value)
             }
-            onFocus={e => (e.target as HTMLInputElement).select()}
+            onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
-            onBlur={e => {
+            onBlur={(e) => {
               const val = parseInt((e.target as HTMLInputElement).value);
               if (!isNaN(val) && val >= 2) {
-                commitProperty(ent => {
+                commitProperty((ent) => {
                   (ent as StairsEntity).treadCount = val;
                 });
               } else {
@@ -57,10 +57,10 @@ export function StairsParams({
         <div className="property-value">
           <select
             value={activeEntity.direction}
-            onChange={e => {
+            onChange={(e) => {
               const val = (e.target as HTMLSelectElement).value;
               if (val === 'up' || val === 'down') {
-                commitProperty(ent => {
+                commitProperty((ent) => {
                   if (ent.type === 'stairs') {
                     ent.direction = val;
                   }

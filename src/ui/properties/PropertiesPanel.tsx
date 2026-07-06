@@ -18,7 +18,7 @@ export function PropertiesPanel() {
   const page = activePageSignal.value;
   const unitSystem = project.unitSystem;
 
-  const selectedEntities = page.entities.filter(e => selection.has(e.id));
+  const selectedEntities = page.entities.filter((e) => selection.has(e.id));
   const isSingleSelect = selectedEntities.length === 1;
   const activeEntity = isSingleSelect ? selectedEntities[0] : null;
 

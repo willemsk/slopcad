@@ -33,12 +33,12 @@ export function requestPrompt(
   initialValue: string,
   position?: Vec2,
 ): Promise<string | null> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     activePromptSignal.value = {
       message,
       initialValue,
       position,
-      resolve: val => {
+      resolve: (val) => {
         activePromptSignal.value = null;
         resolve(val);
       },

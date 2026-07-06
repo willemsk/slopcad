@@ -26,7 +26,7 @@ export function addHorizontalConstraintAction() {
   for (const ent of selectedEntities) {
     if (ent.type === 'wall' || ent.type === 'line') {
       const exists = newConstraints.some(
-        c => c.type === 'horizontal' && c.entityIds[0] === ent.id,
+        (c) => c.type === 'horizontal' && c.entityIds[0] === ent.id,
       );
       if (!exists) {
         snapshotState();
@@ -68,7 +68,7 @@ export function addVerticalConstraintAction() {
   for (const ent of selectedEntities) {
     if (ent.type === 'wall' || ent.type === 'line') {
       const exists = newConstraints.some(
-        c => c.type === 'vertical' && c.entityIds[0] === ent.id,
+        (c) => c.type === 'vertical' && c.entityIds[0] === ent.id,
       );
       if (!exists) {
         snapshotState();
@@ -132,7 +132,7 @@ export async function addLengthConstraintAction(targetVal?: number) {
 
   snapshotState();
   const newConstraints = page.constraints.filter(
-    c => !(c.type === 'fixed_length' && c.entityIds[0] === ent.id),
+    (c) => !(c.type === 'fixed_length' && c.entityIds[0] === ent.id),
   );
 
   newConstraints.push({
@@ -156,8 +156,8 @@ export function clearSelectedConstraintsAction() {
 
   snapshotState();
   const page = activePageSignal.value;
-  const newConstraints = page.constraints.filter(c => {
-    return !c.entityIds.some(id => selection.has(id));
+  const newConstraints = page.constraints.filter((c) => {
+    return !c.entityIds.some((id) => selection.has(id));
   });
 
   updateActivePage(page.entities, newConstraints);
@@ -205,7 +205,7 @@ export async function addFixedAngleConstraintAction() {
 
   snapshotState();
   const newConstraints = page.constraints.filter(
-    c => !(c.type === 'fixed_angle' && c.entityIds[0] === ent.id),
+    (c) => !(c.type === 'fixed_angle' && c.entityIds[0] === ent.id),
   );
 
   newConstraints.push({

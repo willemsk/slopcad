@@ -139,11 +139,11 @@ export function HomePanel() {
               color: 'var(--text-primary)',
             }}
             value={projectSignal.value.activeLayerId}
-            onChange={e =>
+            onChange={(e) =>
               setActiveLayerAction((e.target as HTMLSelectElement).value)
             }
           >
-            {projectSignal.value.layers.map(l => (
+            {projectSignal.value.layers.map((l) => (
               <option key={l.id} value={l.id}>
                 {l.name}
               </option>

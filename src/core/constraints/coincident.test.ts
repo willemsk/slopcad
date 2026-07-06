@@ -54,7 +54,7 @@ describe('solveCoincident', () => {
       return null;
     });
     const setPointValue = vi.fn();
-    const isPointLocked = vi.fn(ref => ref === refA);
+    const isPointLocked = vi.fn((ref) => ref === refA);
 
     const context = {
       constraint: {

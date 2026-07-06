@@ -31,11 +31,13 @@ export class SymbolRegistry {
   }
 
   static getByCategory(category: string): SymbolDefinition[] {
-    return this.symbols.filter(s => s.category === category);
+    return this.symbols.filter((s) => s.category === category);
   }
 
   static getByName(name: string): SymbolDefinition | undefined {
-    return this.symbols.find(s => s.name.toLowerCase() === name.toLowerCase());
+    return this.symbols.find(
+      (s) => s.name.toLowerCase() === name.toLowerCase(),
+    );
   }
 
   static getAll(): SymbolDefinition[] {

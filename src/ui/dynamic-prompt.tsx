@@ -46,7 +46,7 @@ export function DynamicPrompt() {
     <div
       className={`dynamic-prompt-overlay ${isCentered ? 'centered' : 'floating'}`}
       onClick={() => prompt.resolve(null)}
-      onContextMenu={e => {
+      onContextMenu={(e) => {
         e.preventDefault();
         prompt.resolve(null);
       }}
@@ -54,14 +54,14 @@ export function DynamicPrompt() {
       <div
         className="dynamic-prompt-box"
         style={style}
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <span className="prompt-message">{prompt.message}</span>
         <input
           ref={inputRef}
           type="text"
           value={val}
-          onInput={e => setVal(e.currentTarget.value)}
+          onInput={(e) => setVal(e.currentTarget.value)}
           onKeyDown={handleKeyDown}
           className="prompt-input"
         />
