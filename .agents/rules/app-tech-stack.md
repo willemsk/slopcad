@@ -24,3 +24,4 @@ This project uses a highly specific and constrained tech stack to maintain simpl
 - **Formatting & Linting**: Biome (formatter and linter).
 - **Testing**: Vitest.
 - **Package Management**: npm.
+- **Build/Dev Runtime**: Node.js 24.x LTS.
