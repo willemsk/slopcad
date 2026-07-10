@@ -17,6 +17,7 @@ import {
 import {selectionSignal} from '../../state/selection-state';
 import {pushCommandMessage} from '../../state/ui-state';
 import {DimensionIcon, TextIcon} from '../icons';
+import {RibbonButton} from '../ribbon-button';
 
 export function ConstraintsPanel() {
   const hasSelection = selectionSignal.value.size > 0;
@@ -27,8 +28,8 @@ export function ConstraintsPanel() {
       <div className="ribbon-panel">
         <div className="ribbon-panel-body">
           <div className="ribbon-btn-group-stacked">
-            <button
-              className="ribbon-btn-small"
+            <RibbonButton
+              size="small"
               onClick={() => {
                 addHorizontalConstraintAction();
                 pushCommandMessage(
@@ -37,11 +38,10 @@ export function ConstraintsPanel() {
               }}
               disabled={!hasSelection}
               title="Constrain Horizontal"
-            >
-              <span className="ribbon-btn-small-label">Horizontal</span>
-            </button>
-            <button
-              className="ribbon-btn-small"
+              label="Horizontal"
+            />
+            <RibbonButton
+              size="small"
               onClick={() => {
                 addVerticalConstraintAction();
                 pushCommandMessage(
@@ -50,14 +50,13 @@ export function ConstraintsPanel() {
               }}
               disabled={!hasSelection}
               title="Constrain Vertical"
-            >
-              <span className="ribbon-btn-small-label">Vertical</span>
-            </button>
+              label="Vertical"
+            />
           </div>
 
           <div className="ribbon-btn-group-stacked">
-            <button
-              className="ribbon-btn-small"
+            <RibbonButton
+              size="small"
               onClick={() => {
                 addParallelConstraintAction();
                 pushCommandMessage(
@@ -65,11 +64,10 @@ export function ConstraintsPanel() {
                 );
               }}
               title="Constrain Parallel (Select 2)"
-            >
-              <span className="ribbon-btn-small-label">Parallel</span>
-            </button>
-            <button
-              className="ribbon-btn-small"
+              label="Parallel"
+            />
+            <RibbonButton
+              size="small"
               onClick={() => {
                 addPerpendicularConstraintAction();
                 pushCommandMessage(
@@ -77,14 +75,13 @@ export function ConstraintsPanel() {
                 );
               }}
               title="Constrain Perpendicular (Select 2)"
-            >
-              <span className="ribbon-btn-small-label">Perpendicular</span>
-            </button>
+              label="Perpendicular"
+            />
           </div>
 
           <div className="ribbon-btn-group-stacked">
-            <button
-              className="ribbon-btn-small"
+            <RibbonButton
+              size="small"
               onClick={() => {
                 addCollinearConstraintAction();
                 pushCommandMessage(
@@ -93,11 +90,10 @@ export function ConstraintsPanel() {
               }}
               disabled={!hasSelection}
               title="Constrain Collinear"
-            >
-              <span className="ribbon-btn-small-label">Collinear</span>
-            </button>
-            <button
-              className="ribbon-btn-small"
+              label="Collinear"
+            />
+            <RibbonButton
+              size="small"
               onClick={() => {
                 addCoincidentConstraintAction();
                 pushCommandMessage(
@@ -106,11 +102,10 @@ export function ConstraintsPanel() {
               }}
               disabled={!hasSelection}
               title="Constrain Coincident"
-            >
-              <span className="ribbon-btn-small-label">Coincident</span>
-            </button>
-            <button
-              className="ribbon-btn-small"
+              label="Coincident"
+            />
+            <RibbonButton
+              size="small"
               onClick={() => {
                 addConcentricConstraintAction();
                 pushCommandMessage(
@@ -119,9 +114,8 @@ export function ConstraintsPanel() {
               }}
               disabled={!hasSelection}
               title="Constrain Concentric"
-            >
-              <span className="ribbon-btn-small-label">Concentric</span>
-            </button>
+              label="Concentric"
+            />
           </div>
         </div>
         <div className="ribbon-panel-title">Geometric</div>
@@ -130,8 +124,7 @@ export function ConstraintsPanel() {
       {/* Dimensional Constraints */}
       <div className="ribbon-panel">
         <div className="ribbon-panel-body">
-          <button
-            className="ribbon-btn-large"
+          <RibbonButton
             onClick={async () => {
               await addLengthConstraintAction();
               pushCommandMessage(
@@ -140,15 +133,11 @@ export function ConstraintsPanel() {
             }}
             disabled={!hasSelection}
             title="Constrain Fixed Length"
-          >
-            <span className="ribbon-btn-large-icon">
-              <DimensionIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Fix Length</span>
-          </button>
+            label="Fix Length"
+            icon={<DimensionIcon />}
+          />
 
-          <button
-            className="ribbon-btn-large"
+          <RibbonButton
             onClick={() => {
               addEqualLengthConstraintAction();
               pushCommandMessage(
@@ -157,15 +146,11 @@ export function ConstraintsPanel() {
             }}
             disabled={!hasSelection}
             title="Constrain Equal Length"
-          >
-            <span className="ribbon-btn-large-icon">
-              <DimensionIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Equal Len</span>
-          </button>
+            label="Equal Len"
+            icon={<DimensionIcon />}
+          />
 
-          <button
-            className="ribbon-btn-large"
+          <RibbonButton
             onClick={async () => {
               await addFixedAngleConstraintAction();
               pushCommandMessage(
@@ -174,15 +159,11 @@ export function ConstraintsPanel() {
             }}
             disabled={!hasSelection}
             title="Constrain Fixed Angle"
-          >
-            <span className="ribbon-btn-large-icon">
-              <DimensionIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Fix Angle</span>
-          </button>
+            label="Fix Angle"
+            icon={<DimensionIcon />}
+          />
 
-          <button
-            className="ribbon-btn-large"
+          <RibbonButton
             onClick={() => {
               clearSelectedConstraintsAction();
               pushCommandMessage(
@@ -191,12 +172,9 @@ export function ConstraintsPanel() {
             }}
             disabled={!hasSelection}
             title="Remove Selected Entity Constraints"
-          >
-            <span className="ribbon-btn-large-icon">
-              <TextIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Clear</span>
-          </button>
+            label="Clear"
+            icon={<TextIcon />}
+          />
         </div>
         <div className="ribbon-panel-title">Dimensional</div>
       </div>
