@@ -27,8 +27,36 @@ export function App() {
     setActiveToolByName('select');
 
     const handleGlobalShortcuts = (e: KeyboardEvent) => {
-      // Ignore if user is typing in an input/textarea
       const target = e.target as HTMLElement;
+
+      if (e.key === 'Escape') {
+        if (activePromptSignal.value !== null) {
+          activePromptSignal.value.resolve(null);
+          return;
+        }
+        if (
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable
+        ) {
+          target.blur();
+          return;
+        }
+        if (isLayerModalOpenSignal.value) {
+          isLayerModalOpenSignal.value = false;
+          return;
+        }
+        if (isPropertiesPanelOpenSignal.value) {
+          isPropertiesPanelOpenSignal.value = false;
+          return;
+        }
+
+        setActiveToolByName('select');
+        clearSelection();
+        return;
+      }
+
+      // Ignore other shortcuts if typing in input or if dialogs are open
       if (
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA' ||
@@ -39,10 +67,7 @@ export function App() {
         return;
       }
 
-      if (e.key === 'Escape') {
-        setActiveToolByName('select');
-        clearSelection();
-      } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
         deleteSelectedAction();
       }
     };

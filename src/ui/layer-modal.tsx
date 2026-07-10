@@ -33,7 +33,8 @@ export function LayerModal() {
             className="layer-modal-close"
             onClick={handleClose}
             aria-label="Close"
-            title="Close"
+            aria-keyshortcuts="Escape"
+            title="Close (Esc)"
           >
             ×
           </button>

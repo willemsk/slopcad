@@ -17,3 +17,6 @@
 ## 2026-06-17 - [Extract File Menu]
 **Learning:** The ribbon component uses specific CSS structures. Adding a file menu tab requires using `.ribbon-tab` to look cohesive.
 **Action:** Use `.ribbon-tab` class for the File Menu button when integrating with the ribbon layout.
+## 2024-06-23 - Keyboard Shortcut Tooltips and Escape Handling
+**Learning:** Adding keyboard shortcut hints in UI buttons significantly aids discoverability. However, directly adding shortcut text like "(Esc)" into the `aria-label` is an accessibility anti-pattern because screen readers will read it out literally.
+**Action:** Always place shortcut hints in the `title` attribute for visual hover and use the `aria-keyshortcuts` attribute (e.g., `aria-keyshortcuts="Escape"`) to properly inform assistive technologies without cluttering the spoken label.
