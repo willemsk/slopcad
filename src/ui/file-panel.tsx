@@ -1,10 +1,10 @@
 import {h} from 'preact';
-import {NewIcon, OpenIcon, SaveIcon, ExportIcon} from './icons';
+import {ExportIcon, NewIcon, OpenIcon, SaveIcon} from './icons';
 import {
+  handleExportSVG,
   handleNewProject,
   handleOpenProject,
   handleSaveProject,
-  handleExportSVG,
 } from './menu-actions';
 
 export function FilePanel() {

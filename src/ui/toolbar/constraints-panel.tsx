@@ -1,21 +1,21 @@
 import {h} from 'preact';
-import {selectionSignal} from '../../state/selection-state';
-import {pushCommandMessage} from '../../state/ui-state';
 import {
-  addHorizontalConstraintAction,
-  addVerticalConstraintAction,
-  addLengthConstraintAction,
   addFixedAngleConstraintAction,
+  addHorizontalConstraintAction,
+  addLengthConstraintAction,
+  addVerticalConstraintAction,
   clearSelectedConstraintsAction,
 } from '../../state/constraint-actions';
 import {
-  addParallelConstraintAction,
-  addPerpendicularConstraintAction,
-  addCollinearConstraintAction,
   addCoincidentConstraintAction,
+  addCollinearConstraintAction,
   addConcentricConstraintAction,
   addEqualLengthConstraintAction,
+  addParallelConstraintAction,
+  addPerpendicularConstraintAction,
 } from '../../state/constraint-actions-relational';
+import {selectionSignal} from '../../state/selection-state';
+import {pushCommandMessage} from '../../state/ui-state';
 import {DimensionIcon, TextIcon} from '../icons';
 
 export function ConstraintsPanel() {

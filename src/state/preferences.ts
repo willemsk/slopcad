@@ -1,5 +1,5 @@
-import {signal, effect} from '@preact/signals';
-import {UnitSystem} from '../core/types';
+import {effect, signal} from '@preact/signals';
+import type {UnitSystem} from '../core/types';
 
 // Load stored preferences
 const storedTheme =

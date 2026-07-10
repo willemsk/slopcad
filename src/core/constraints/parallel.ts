@@ -1,5 +1,5 @@
-import {ConstraintHandlerContext} from './types';
-import {sub, add, angle, rotate, lerp} from '../geometry';
+import {add, angle, lerp, rotate, sub} from '../geometry';
+import type {ConstraintHandlerContext} from './types';
 
 export function solveParallel({
   constraint,

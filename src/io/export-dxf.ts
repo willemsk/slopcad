@@ -1,4 +1,4 @@
-import {Page, UnitSystem} from '../core/types';
+import type {Page, UnitSystem} from '../core/types';
 
 // TODO: Implement DXFRenderer writing DXF formatted strings using a library like makerjs or a custom writer
 // export class DXFRenderer implements Renderer { ... }

@@ -1,5 +1,5 @@
-import {ConstraintHandlerContext} from './types';
-import {dist, sub, add, scale, normalize, lerp} from '../geometry';
+import {add, dist, lerp, normalize, scale, sub} from '../geometry';
+import type {ConstraintHandlerContext} from './types';
 
 export function solveEqualLength({
   constraint,

@@ -1,24 +1,24 @@
 import {h} from 'preact';
-import {useState, useRef, useEffect} from 'preact/hooks';
+import {useEffect, useRef, useState} from 'preact/hooks';
 import {projectSignal} from '../state/project-state';
 import {selectionSignal} from '../state/selection-state';
 import {
+  DeleteIcon,
+  ExportIcon,
   NewIcon,
   OpenIcon,
-  SaveIcon,
-  ExportIcon,
-  UndoIcon,
   RedoIcon,
-  DeleteIcon,
+  SaveIcon,
+  UndoIcon,
 } from './icons';
 import {
+  handleDelete,
+  handleExportSVG,
   handleNewProject,
   handleOpenProject,
-  handleSaveProject,
-  handleExportSVG,
-  handleUndo,
   handleRedo,
-  handleDelete,
+  handleSaveProject,
+  handleUndo,
 } from './menu-actions';
 
 export function QuickAccessToolbar() {

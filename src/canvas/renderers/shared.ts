@@ -1,4 +1,4 @@
-import {Entity, WallEntity, Vec2} from '../../core/types';
+import type {Entity, Vec2, WallEntity} from '../../core/types';
 
 export interface WallRenderData {
   wall: WallEntity;

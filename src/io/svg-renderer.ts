@@ -1,9 +1,9 @@
-import {
+import type {Vec2} from '../core/types';
+import type {
   Renderer,
   RendererOptions,
   TransformOptions,
 } from './renderer-interface';
-import {Vec2} from '../core/types';
 
 function formatTransform(t: string | TransformOptions): string {
   if (typeof t === 'string') {

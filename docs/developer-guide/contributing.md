@@ -30,7 +30,7 @@ Welcome to the SlopCAD developer community! This document provides guidelines fo
 ## 🧑‍💻 Code Style and Quality
 
 To maintain consistency and code cleanliness, SlopCAD enforces strict constraints:
-- **Linting & Formatting**: Powered by Google TypeScript Style (`gts`).
+- **Linting & Formatting**: Powered by **Biome**.
   - Run linter check: `npm run lint`
   - Automatically fix format issues: `npm run fix`
 - **Testing**: Powered by Vitest.

@@ -1,12 +1,12 @@
-import {Vec2, WallEntity, LineEntity} from '../core/types';
 import {generateId} from '../core/entity';
-import {solveConstraints} from '../core/solver';
 import {dist} from '../core/geometry';
-import {activePageSignal, updateActivePage, entityMap} from './project-state';
+import {solveConstraints} from '../core/solver';
+import type {LineEntity, Vec2, WallEntity} from '../core/types';
 import {snapshotState} from './history-actions';
+import {activePageSignal, entityMap, updateActivePage} from './project-state';
 import {selectionSignal} from './selection-state';
-import {viewportSignal} from './viewport-state';
 import {requestPrompt} from './ui-state';
+import {viewportSignal} from './viewport-state';
 
 export function addHorizontalConstraintAction() {
   const selection = selectionSignal.value;
@@ -125,10 +125,10 @@ export async function addLengthConstraintAction(targetVal?: number) {
       screenPos,
     );
     if (input === null) return;
-    val = parseFloat(input);
+    val = Number.parseFloat(input);
   }
 
-  if (isNaN(val) || val <= 0) return;
+  if (Number.isNaN(val) || val <= 0) return;
 
   snapshotState();
   const newConstraints = page.constraints.filter(
@@ -200,8 +200,8 @@ export async function addFixedAngleConstraintAction() {
     screenPos,
   );
   if (input === null) return;
-  const val = parseFloat(input);
-  if (isNaN(val)) return;
+  const val = Number.parseFloat(input);
+  if (Number.isNaN(val)) return;
 
   snapshotState();
   const newConstraints = page.constraints.filter(

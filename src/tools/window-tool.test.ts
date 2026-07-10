@@ -1,8 +1,8 @@
-import {describe, it, expect, beforeEach} from 'vitest';
-import {WindowTool} from './window-tool';
+import {beforeEach, describe, expect, it} from 'vitest';
+import type {WallEntity, WindowEntity} from '../core/types';
 import {activePageSignal, projectSignal} from '../state/project-state';
 import {previewEntitySignal} from '../state/ui-state';
-import {WallEntity, WindowEntity} from '../core/types';
+import {WindowTool} from './window-tool';
 
 describe('WindowTool', () => {
   let tool: WindowTool;

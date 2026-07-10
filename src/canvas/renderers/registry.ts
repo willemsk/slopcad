@@ -1,7 +1,7 @@
-import {EntityType, WallEntity, Entity} from '../../core/types';
-import {RenderFunction} from '../types';
-import {Canvas2DRenderer} from '../canvas-renderer';
+import {Entity, type EntityType, type WallEntity} from '../../core/types';
 import * as entityRenderers from '../../io/entity-renderers';
+import {Canvas2DRenderer} from '../canvas-renderer';
+import type {RenderFunction} from '../types';
 
 let cachedRenderer: Canvas2DRenderer | null = null;
 

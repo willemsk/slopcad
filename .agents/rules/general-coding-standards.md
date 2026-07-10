@@ -7,12 +7,12 @@ globs: **/*.ts, **/*.tsx, **/*.js, **/*.css
 # General Coding Standards
 
 ## Formatting & Linting
-- **Formatter**: Use `gts` (Google TypeScript Style). 
-- Always run `npx gts fix` before committing or finalizing code changes.
+- **Formatter & Linter**: Use Biome.
+- Always run `npm run fix` before committing or finalizing code changes.
 
 ## TypeScript Rules
 - **Strict Mode**: TypeScript strict mode is enabled.
-- **No `any`**: Avoid `any`. If absolutely necessary, add an inline comment (e.g., `// eslint-disable-next-line @typescript-eslint/no-explicit-any`) explaining *why*.
+- **No `any`**: Avoid `any`. If absolutely necessary, add an inline comment (e.g., `// biome-ignore lint/suspicious/noExplicitAny: explanation`) explaining *why*.
 - **Exports**: Use **named exports** exclusively. Avoid `default` exports to ensure easier refactoring and predictable imports.
 
 ## Architecture & Code Design

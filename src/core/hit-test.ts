@@ -1,14 +1,14 @@
-import {Entity, Vec2, WallEntity} from './types';
 import {
+  add,
   dist,
   distSq,
   distToSegmentSq,
-  normalize,
-  sub,
-  add,
-  scale,
   lerp,
+  normalize,
+  scale,
+  sub,
 } from './geometry';
+import type {Entity, Vec2, WallEntity} from './types';
 
 /**
  * Checks if a point hits a given entity within a radius.

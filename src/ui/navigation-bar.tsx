@@ -1,8 +1,8 @@
 import {h} from 'preact';
-import {viewportSignal} from '../state/viewport-state';
-import {triggerRenderSignal, pushCommandMessage} from '../state/ui-state';
 import {activePageSignal} from '../state/project-state';
-import {PanIcon, ZoomInIcon, ZoomOutIcon, FitScreenIcon} from './icons';
+import {pushCommandMessage, triggerRenderSignal} from '../state/ui-state';
+import {viewportSignal} from '../state/viewport-state';
+import {FitScreenIcon, PanIcon, ZoomInIcon, ZoomOutIcon} from './icons';
 
 export function NavigationBar() {
   const handlePan = () => {

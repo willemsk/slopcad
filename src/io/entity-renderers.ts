@@ -1,34 +1,34 @@
 import {
-  WallEntity,
-  DoorEntity,
-  WindowEntity,
-  StairsEntity,
-  LineEntity,
-  RectEntity,
-  CircleEntity,
-  ArcEntity,
-  DimensionEntity,
-  TextEntity,
-  UnitSystem,
-  Page,
-  Vec2,
-} from '../core/types';
-import {
-  dist,
-  sub,
   add,
-  scale,
-  normalize,
-  rotate,
-  lerp,
   angle,
+  dist,
   distToSegment,
-  projectPointT,
-  infiniteLineIntersection,
   dot,
+  infiniteLineIntersection,
+  lerp,
+  normalize,
+  projectPointT,
+  rotate,
+  scale,
+  sub,
 } from '../core/geometry';
+import {
+  type ArcEntity,
+  type CircleEntity,
+  type DimensionEntity,
+  type DoorEntity,
+  type LineEntity,
+  Page,
+  type RectEntity,
+  type StairsEntity,
+  type TextEntity,
+  type UnitSystem,
+  type Vec2,
+  type WallEntity,
+  type WindowEntity,
+} from '../core/types';
 import {formatLength} from '../core/units';
-import {Renderer} from './renderer-interface';
+import type {Renderer} from './renderer-interface';
 
 export interface WallRenderData {
   wall: WallEntity;
@@ -148,12 +148,20 @@ export function renderWalls(
           const iR_L2 = infiniteLineIntersection(ptR, uOut, L2, u2);
           const iR_R2 = infiniteLineIntersection(ptR, uOut, R2, u2);
 
-          const tL_L2 = iL_L2 ? dot(sub(iL_L2, ptL), uOut) : Infinity;
-          const tL_R2 = iL_R2 ? dot(sub(iL_R2, ptL), uOut) : Infinity;
+          const tL_L2 = iL_L2
+            ? dot(sub(iL_L2, ptL), uOut)
+            : Number.POSITIVE_INFINITY;
+          const tL_R2 = iL_R2
+            ? dot(sub(iL_R2, ptL), uOut)
+            : Number.POSITIVE_INFINITY;
           const iL = tL_L2 < tL_R2 ? iL_L2 : iL_R2;
 
-          const tR_L2 = iR_L2 ? dot(sub(iR_L2, ptR), uOut) : Infinity;
-          const tR_R2 = iR_R2 ? dot(sub(iR_R2, ptR), uOut) : Infinity;
+          const tR_L2 = iR_L2
+            ? dot(sub(iR_L2, ptR), uOut)
+            : Number.POSITIVE_INFINITY;
+          const tR_R2 = iR_R2
+            ? dot(sub(iR_R2, ptR), uOut)
+            : Number.POSITIVE_INFINITY;
           const iR = tR_L2 < tR_R2 ? iR_L2 : iR_R2;
 
           if (isStart) {

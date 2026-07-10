@@ -1,18 +1,18 @@
 import {h} from 'preact';
-import {projectSignal, activePageSignal} from '../state/project-state';
-import {viewportSignal} from '../state/viewport-state';
+import type {UnitSystem} from '../core/types';
+import {formatLength} from '../core/units';
+import {activePageSignal, projectSignal} from '../state/project-state';
 import {
-  snapEnabledSignal,
   gridEnabledSignal,
-  showConstraintsSignal,
   mouseCoordsSignal,
   pushCommandMessage,
-  uiScaleSignal,
   setUiScale,
+  showConstraintsSignal,
+  snapEnabledSignal,
+  uiScaleSignal,
 } from '../state/ui-state';
-import {formatLength} from '../core/units';
-import {UnitSystem} from '../core/types';
-import {GridIcon, SnapIcon, ConstraintIcon} from './icons';
+import {viewportSignal} from '../state/viewport-state';
+import {ConstraintIcon, GridIcon, SnapIcon} from './icons';
 import './status-bar.css';
 
 function MouseCoordsDisplay({unitSystem}: {unitSystem: UnitSystem}) {

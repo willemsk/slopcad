@@ -1,8 +1,8 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
-import {Entity} from '../../core/types';
-import {activePageSignal, updateActivePage} from '../../state/project-state';
+import type {Entity} from '../../core/types';
 import {snapshotState} from '../../state/history-actions';
+import {activePageSignal, updateActivePage} from '../../state/project-state';
 import {ChevronDownIcon, ChevronRightIcon} from '../icons';
 
 interface Props {

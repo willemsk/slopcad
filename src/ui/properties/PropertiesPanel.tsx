@@ -1,16 +1,16 @@
 import {h} from 'preact';
 import {useEffect} from 'preact/hooks';
-import {projectSignal, activePageSignal} from '../../state/project-state';
+import {activePageSignal, projectSignal} from '../../state/project-state';
 import {selectionSignal} from '../../state/selection-state';
 import {isPropertiesPanelOpenSignal} from '../../state/ui-state';
 import '../properties-panel.css';
-import {usePropertyCommit} from './use-property-commit';
-import {PageProperties} from './PageProperties';
+import {SelectIcon} from '../icons';
+import {ConstraintProperties} from './ConstraintProperties';
 import {GeneralProperties} from './GeneralProperties';
 import {GeometryProperties} from './GeometryProperties';
+import {PageProperties} from './PageProperties';
 import {ParamProperties} from './ParamProperties';
-import {ConstraintProperties} from './ConstraintProperties';
-import {SelectIcon} from '../icons';
+import {usePropertyCommit} from './use-property-commit';
 
 export function PropertiesPanel() {
   const selection = selectionSignal.value;

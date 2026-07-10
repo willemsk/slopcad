@@ -1,15 +1,15 @@
-import {Tool} from './tool';
-import {Vec2, SnapResult, DimensionEntity} from '../core/types';
-import {ViewportMath} from '../core/viewport-math';
 import {createDimension} from '../core/entity';
-import {dist, sub, dot, normalize} from '../core/geometry';
+import {dist, dot, normalize, sub} from '../core/geometry';
+import {DimensionEntity, type SnapResult, type Vec2} from '../core/types';
+import {ViewportMath} from '../core/viewport-math';
+import {snapshotState} from '../state/history-actions';
 import {
   activePageSignal,
-  updateActivePage,
   projectSignal,
+  updateActivePage,
 } from '../state/project-state';
-import {snapshotState} from '../state/history-actions';
 import {previewEntitySignal} from '../state/ui-state';
+import type {Tool} from './tool';
 
 export class DimensionTool implements Tool {
   name = 'dimension';

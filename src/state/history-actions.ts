@@ -1,5 +1,5 @@
-import {Entity, DoorEntity, WindowEntity} from '../core/types';
 import {HistoryManager} from '../core/history';
+import {type DoorEntity, Entity, type WindowEntity} from '../core/types';
 import {activePageSignal, updateActivePage} from './project-state';
 import {selectionSignal} from './selection-state';
 

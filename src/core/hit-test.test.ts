@@ -1,17 +1,17 @@
-import {describe, it, expect} from 'vitest';
-import {findEntityAt} from './hit-test';
+import {describe, expect, it} from 'vitest';
 import {
-  createWall,
+  createArc,
+  createCircle,
+  createDimension,
+  createDoor,
   createLine,
   createRect,
-  createCircle,
-  createArc,
-  createDimension,
   createText,
-  createDoor,
+  createWall,
   createWindow,
 } from './entity';
-import {Entity} from './types';
+import {findEntityAt} from './hit-test';
+import type {Entity} from './types';
 
 describe('Hit Testing', () => {
   it('finds a wall entity when clicking close to it', () => {

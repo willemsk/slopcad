@@ -1,4 +1,4 @@
-import {Entity} from '../core/types';
+import type {Entity} from '../core/types';
 
 export interface BoundingBox {
   minX: number;
@@ -13,10 +13,10 @@ export function calculateBoundingBox(
   entities: Entity[],
   padding = 1.0,
 ): BoundingBox {
-  let minX = Infinity;
-  let minY = Infinity;
-  let maxX = -Infinity;
-  let maxY = -Infinity;
+  let minX = Number.POSITIVE_INFINITY;
+  let minY = Number.POSITIVE_INFINITY;
+  let maxX = Number.NEGATIVE_INFINITY;
+  let maxY = Number.NEGATIVE_INFINITY;
 
   const expandBBox = (pt: {x: number; y: number}) => {
     minX = Math.min(minX, pt.x);
@@ -47,7 +47,7 @@ export function calculateBoundingBox(
   }
 
   // If empty, default viewBox
-  if (minX === Infinity) {
+  if (minX === Number.POSITIVE_INFINITY) {
     minX = 0;
     minY = 0;
     maxX = 10;

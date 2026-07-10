@@ -1,6 +1,6 @@
-import {describe, it, expect, vi} from 'vitest';
+import {describe, expect, it, vi} from 'vitest';
+import type {Constraint, PointRef} from '../types';
 import {solvePerpendicular} from './perpendicular';
-import {Constraint, PointRef} from '../types';
 
 describe('solvePerpendicular', () => {
   it('should return 0 if missing point refs', () => {

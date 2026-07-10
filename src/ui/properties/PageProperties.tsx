@@ -1,6 +1,6 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
-import {projectSignal, activePageSignal} from '../../state/project-state';
+import {activePageSignal, projectSignal} from '../../state/project-state';
 import {gridSpacingSignal} from '../../state/ui-state';
 import {ChevronDownIcon, ChevronRightIcon} from '../icons';
 
@@ -65,7 +65,7 @@ export function PageProperties() {
               <select
                 value={gridSpacingSignal.value.toString()}
                 onChange={(e) => {
-                  gridSpacingSignal.value = parseFloat(
+                  gridSpacingSignal.value = Number.parseFloat(
                     (e.target as HTMLSelectElement).value,
                   );
                 }}
@@ -87,7 +87,9 @@ export function PageProperties() {
                 onChange={(e) => {
                   projectSignal.value = {
                     ...project,
-                    scale: parseInt((e.target as HTMLSelectElement).value),
+                    scale: Number.parseInt(
+                      (e.target as HTMLSelectElement).value,
+                    ),
                   };
                 }}
               >

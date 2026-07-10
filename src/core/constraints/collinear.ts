@@ -1,5 +1,5 @@
-import {ConstraintHandlerContext} from './types';
-import {dist, sub, add, scale, angle, normalize, len, lerp} from '../geometry';
+import {add, angle, dist, len, lerp, normalize, scale, sub} from '../geometry';
+import type {ConstraintHandlerContext} from './types';
 
 export function solveCollinear({
   constraint,

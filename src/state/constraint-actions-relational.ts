@@ -1,19 +1,19 @@
+import {generateId} from '../core/entity';
+import {dist} from '../core/geometry';
+import {solveConstraints} from '../core/solver';
 import {
-  Entity,
-  WallEntity,
-  LineEntity,
-  StairsEntity,
-  RectEntity,
-  DimensionEntity,
   ArcEntity,
   CircleEntity,
-  Vec2,
+  type DimensionEntity,
+  type Entity,
+  type LineEntity,
+  type RectEntity,
+  type StairsEntity,
+  type Vec2,
+  type WallEntity,
 } from '../core/types';
-import {generateId} from '../core/entity';
-import {solveConstraints} from '../core/solver';
-import {dist} from '../core/geometry';
-import {activePageSignal, updateActivePage} from './project-state';
 import {snapshotState} from './history-actions';
+import {activePageSignal, updateActivePage} from './project-state';
 import {selectionSignal} from './selection-state';
 
 export function addPerpendicularConstraintAction() {
@@ -124,7 +124,7 @@ export function addCoincidentConstraintAction() {
 
   if (points1.length === 0 || points2.length === 0) return;
 
-  let best = {p1: points1[0], p2: points2[0], d: Infinity};
+  let best = {p1: points1[0], p2: points2[0], d: Number.POSITIVE_INFINITY};
   for (const p1 of points1) {
     for (const p2 of points2) {
       const d = dist(p1.pt, p2.pt);

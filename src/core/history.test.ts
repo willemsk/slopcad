@@ -1,6 +1,6 @@
-import {describe, it, expect} from 'vitest';
+import {describe, expect, it} from 'vitest';
 import {HistoryManager} from './history';
-import {Entity, Constraint, LineEntity} from './types';
+import type {Constraint, Entity, LineEntity} from './types';
 
 describe('HistoryManager', () => {
   it('pushes state and manages undo/redo', () => {

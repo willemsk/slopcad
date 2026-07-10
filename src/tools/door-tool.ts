@@ -1,14 +1,14 @@
-import {Tool} from './tool';
-import {Vec2, SnapResult, DoorEntity, WallEntity} from '../core/types';
-import {ViewportMath} from '../core/viewport-math';
 import {createDoor} from '../core/entity';
+import type {DoorEntity, SnapResult, Vec2, WallEntity} from '../core/types';
+import {ViewportMath} from '../core/viewport-math';
+import {snapshotState} from '../state/history-actions';
 import {
   activePageSignal,
-  updateActivePage,
   projectSignal,
+  updateActivePage,
 } from '../state/project-state';
-import {snapshotState} from '../state/history-actions';
 import {previewEntitySignal} from '../state/ui-state';
+import type {Tool} from './tool';
 
 export class DoorTool implements Tool {
   name = 'door';

@@ -1,4 +1,4 @@
-import {UnitSystem} from './types';
+import type {UnitSystem} from './types';
 
 // Convert meters to imperial representation (e.g., 5' 10 3/4")
 export function formatImperial(meters: number): string {
@@ -48,14 +48,13 @@ export function formatLength(
 ): string {
   if (system === 'imperial') {
     return formatImperial(meters);
-  } else {
-    // Metric
-    if (meters < 1) {
-      // Show in cm if less than 1m
-      return `${Math.round(meters * 100)} cm`;
-    }
-    return `${meters.toFixed(precision)} m`;
   }
+  // Metric
+  if (meters < 1) {
+    // Show in cm if less than 1m
+    return `${Math.round(meters * 100)} cm`;
+  }
+  return `${meters.toFixed(precision)} m`;
 }
 
 // Parses string input in metric (m, cm) or imperial (ft, in, fractions) and returns meters.
@@ -78,19 +77,19 @@ export function parseLength(input: string, system: UnitSystem): number | null {
   // 2. Metric Parsing
   // Check for explicit 'cm'
   if (cleanStr.endsWith('cm')) {
-    const val = parseFloat(cleanStr.replace('cm', '').trim());
-    return isNaN(val) ? null : val / 100;
+    const val = Number.parseFloat(cleanStr.replace('cm', '').trim());
+    return Number.isNaN(val) ? null : val / 100;
   }
 
   // Check for explicit 'm'
   if (cleanStr.endsWith('m') && !cleanStr.endsWith('cm')) {
-    const val = parseFloat(cleanStr.replace('m', '').trim());
-    return isNaN(val) ? null : val;
+    const val = Number.parseFloat(cleanStr.replace('m', '').trim());
+    return Number.isNaN(val) ? null : val;
   }
 
   // Raw number (defaults to meters in metric)
-  const val = parseFloat(cleanStr);
-  return isNaN(val) ? null : val;
+  const val = Number.parseFloat(cleanStr);
+  return Number.isNaN(val) ? null : val;
 }
 
 function parseImperial(str: string): number | null {
@@ -110,20 +109,20 @@ function parseImperial(str: string): number | null {
   // Case 1: feet marker ' or ft
   const feetMatch = str.match(/(\d+(?:\.\d+)?)\s*(?:'|ft)/);
   if (feetMatch) {
-    feet = parseFloat(feetMatch[1]);
+    feet = Number.parseFloat(feetMatch[1]);
   }
 
   // Case 2: inches marker " or in
   const inchesMatch = str.match(/(?:^|'|ft|\s)\s*(\d+(?:\.\d+)?)\s*(?:"|in)/);
   if (inchesMatch) {
-    inches = parseFloat(inchesMatch[1]);
+    inches = Number.parseFloat(inchesMatch[1]);
   }
 
   // Check for fractional inches, e.g., 3/4 or 1/2
   const fractionMatch = str.match(/(\d+)\/(\d+)/);
   if (fractionMatch) {
-    const num = parseFloat(fractionMatch[1]);
-    const den = parseFloat(fractionMatch[2]);
+    const num = Number.parseFloat(fractionMatch[1]);
+    const den = Number.parseFloat(fractionMatch[2]);
     if (den !== 0) {
       const fracVal = num / den;
       // If there was a whole number before the fraction, add it
@@ -131,7 +130,7 @@ function parseImperial(str: string): number | null {
       const wholeInchesMatch = str.match(/(\d+)\s+\d+\/\d+/);
       if (wholeInchesMatch) {
         // e.g. "10 3/4" => wholeInchesMatch[1] = "10"
-        inches = parseFloat(wholeInchesMatch[1]) + fracVal;
+        inches = Number.parseFloat(wholeInchesMatch[1]) + fracVal;
       } else if (!inchesMatch) {
         // No explicit inch number match, just fraction
         inches += fracVal;
@@ -143,15 +142,15 @@ function parseImperial(str: string): number | null {
   if (!feetMatch && !inchesMatch && !fractionMatch) {
     const parts = str.split(/[\s-]+/);
     if (parts.length === 2) {
-      const f = parseFloat(parts[0]);
-      const i = parseFloat(parts[1]);
-      if (!isNaN(f) && !isNaN(i)) {
+      const f = Number.parseFloat(parts[0]);
+      const i = Number.parseFloat(parts[1]);
+      if (!Number.isNaN(f) && !Number.isNaN(i)) {
         feet = f;
         inches = i;
       }
     } else if (parts.length === 1) {
-      const val = parseFloat(parts[0]);
-      if (!isNaN(val)) {
+      const val = Number.parseFloat(parts[0]);
+      if (!Number.isNaN(val)) {
         // Single number: if it's imperial system and no symbol, treat as inches.
         inches = val;
       }
@@ -159,5 +158,5 @@ function parseImperial(str: string): number | null {
   }
 
   const totalMeters = (feet * 12 + inches) * 0.0254;
-  return isNaN(totalMeters) ? null : totalMeters;
+  return Number.isNaN(totalMeters) ? null : totalMeters;
 }

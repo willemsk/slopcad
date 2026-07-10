@@ -1,4 +1,4 @@
-import {Vec2} from '../../core/types';
+import type {Vec2} from '../../core/types';
 
 export function drawSnapIndicator(
   ctx: CanvasRenderingContext2D,

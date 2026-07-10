@@ -1,9 +1,9 @@
-import {
+import type {Vec2} from '../core/types';
+import type {
   Renderer,
   RendererOptions,
   TransformOptions,
 } from '../io/renderer-interface';
-import {Vec2} from '../core/types';
 
 function applyTransform(
   ctx: CanvasRenderingContext2D,
@@ -12,17 +12,17 @@ function applyTransform(
   if (typeof t === 'string') {
     const rotateMatch = t.match(/rotate\(([^,]+),\s*([^,]+),\s*([^)]+)\)/);
     if (rotateMatch) {
-      const deg = parseFloat(rotateMatch[1]);
-      const cx = parseFloat(rotateMatch[2]);
-      const cy = parseFloat(rotateMatch[3]);
+      const deg = Number.parseFloat(rotateMatch[1]);
+      const cx = Number.parseFloat(rotateMatch[2]);
+      const cy = Number.parseFloat(rotateMatch[3]);
       ctx.translate(cx, cy);
       ctx.rotate((deg * Math.PI) / 180);
       ctx.translate(-cx, -cy);
     }
     const translateMatch = t.match(/translate\(([^,]+),\s*([^)]+)\)/);
     if (translateMatch) {
-      const tx = parseFloat(translateMatch[1]);
-      const ty = parseFloat(translateMatch[2]);
+      const tx = Number.parseFloat(translateMatch[1]);
+      const ty = Number.parseFloat(translateMatch[2]);
       ctx.translate(tx, ty);
     }
   } else {
@@ -133,7 +133,7 @@ export class Canvas2DRenderer implements Renderer {
       } else {
         const dashes = options.strokeDasharray
           .split(',')
-          .map((s) => parseFloat(s.trim()));
+          .map((s) => Number.parseFloat(s.trim()));
         this.lastDashStr = options.strokeDasharray;
         this.lastDashArray = dashes;
         this.ctx.setLineDash(dashes);

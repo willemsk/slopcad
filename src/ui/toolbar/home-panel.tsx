@@ -1,21 +1,21 @@
 import {h} from 'preact';
+import {setActiveLayerAction} from '../../state/layer-actions';
+import {projectSignal} from '../../state/project-state';
 import {
   activeToolNameSignal,
   isLayerModalOpenSignal,
 } from '../../state/ui-state';
-import {projectSignal} from '../../state/project-state';
-import {setActiveLayerAction} from '../../state/layer-actions';
-import {selectTool} from './helpers';
 import {
-  SelectIcon,
-  WallIcon,
-  LineIcon,
-  RectIcon,
   CircleIcon,
   DoorIcon,
-  WindowIcon,
+  LineIcon,
+  RectIcon,
+  SelectIcon,
   StairsIcon,
+  WallIcon,
+  WindowIcon,
 } from '../icons';
+import {selectTool} from './helpers';
 
 export function HomePanel() {
   const activeToolName = activeToolNameSignal.value || 'select';

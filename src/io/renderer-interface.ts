@@ -1,4 +1,4 @@
-import {Vec2} from '../core/types';
+import type {Vec2} from '../core/types';
 
 export interface RendererOptions {
   fill?: string;

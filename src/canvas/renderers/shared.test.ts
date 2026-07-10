@@ -1,6 +1,6 @@
-import {describe, it, expect} from 'vitest';
-import {mergeIntervals, findWall} from './shared';
-import {WallEntity, LineEntity} from '../../core/types';
+import {describe, expect, it} from 'vitest';
+import type {LineEntity, WallEntity} from '../../core/types';
+import {findWall, mergeIntervals} from './shared';
 
 describe('shared renderer utilities', () => {
   describe('mergeIntervals()', () => {

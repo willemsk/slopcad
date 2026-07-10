@@ -1,4 +1,4 @@
-import {Page, UnitSystem} from '../core/types';
+import type {Page, UnitSystem} from '../core/types';
 
 // TODO: Implement PNGRenderer using HTMLCanvasElement or OffscreenCanvas
 // export class PNGRenderer implements Renderer { ... }

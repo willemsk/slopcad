@@ -1,21 +1,21 @@
-import {
+import {computeViewportAABB} from '../core/bounding-box-cache';
+import type {
+  Constraint,
   Entity,
+  EntityType,
+  Layer,
   SnapResult,
   UnitSystem,
-  Constraint,
-  Layer,
-  EntityType,
 } from '../core/types';
-import {ViewportMath} from '../core/viewport-math';
-import {computeViewportAABB} from '../core/bounding-box-cache';
+import type {ViewportMath} from '../core/viewport-math';
 import {
   clearCanvas,
+  drawAllConstraints,
+  drawAllEntities,
+  drawAllSelectionHandles,
   drawGrid,
   drawOverlayFloor,
-  drawAllEntities,
   drawPreviewEntity,
-  drawAllConstraints,
-  drawAllSelectionHandles,
   drawUCS,
 } from './render-helpers';
 import {drawSnapIndicator} from './renderers/snap-renderer';

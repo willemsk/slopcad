@@ -1,5 +1,5 @@
-import {Vec2, SnapResult} from '../core/types';
-import {ViewportMath} from '../core/viewport-math';
+import type {SnapResult, Vec2} from '../core/types';
+import type {ViewportMath} from '../core/viewport-math';
 
 export interface Tool {
   name: string;

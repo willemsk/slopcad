@@ -1,16 +1,16 @@
-import {signal, computed, effect} from '@preact/signals';
-import {
-  Project,
-  Page,
-  Entity,
-  Constraint,
-  PointRef,
-  UnitSystem,
-  Layer,
-  EntityType,
-} from '../core/types';
+import {computed, effect, signal} from '@preact/signals';
 import {generateId, getVisibleEntities} from '../core/entity';
 import {solveConstraints} from '../core/solver';
+import type {
+  Constraint,
+  Entity,
+  EntityType,
+  Layer,
+  Page,
+  PointRef,
+  Project,
+  UnitSystem,
+} from '../core/types';
 
 // Initial default page
 const defaultPage: Page = {

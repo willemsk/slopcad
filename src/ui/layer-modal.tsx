@@ -1,13 +1,13 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
-import {projectSignal} from '../state/project-state';
-import {isLayerModalOpenSignal} from '../state/ui-state';
 import {
   addLayerAction,
-  updateLayerAction,
   deleteLayerAction,
   setActiveLayerAction,
+  updateLayerAction,
 } from '../state/layer-actions';
+import {projectSignal} from '../state/project-state';
+import {isLayerModalOpenSignal} from '../state/ui-state';
 import {DeleteIcon} from './icons';
 import './layer-modal.css';
 
@@ -65,7 +65,7 @@ export function LayerModal() {
               <th>On</th>
               <th>Lock</th>
               <th>Color</th>
-              <th></th>
+              <th />
             </tr>
           </thead>
           <tbody>

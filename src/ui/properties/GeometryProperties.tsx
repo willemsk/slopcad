@@ -1,13 +1,13 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
-import {
-  Entity,
-  WallEntity,
-  RectEntity,
-  CircleEntity,
-  StairsEntity,
-} from '../../core/types';
 import {dist, sub} from '../../core/geometry';
+import type {
+  CircleEntity,
+  Entity,
+  RectEntity,
+  StairsEntity,
+  WallEntity,
+} from '../../core/types';
 import {formatLength, parseLength} from '../../core/units';
 import {ChevronDownIcon, ChevronRightIcon} from '../icons';
 

@@ -1,7 +1,7 @@
 import {h} from 'preact';
 import {activeToolNameSignal} from '../../state/ui-state';
-import {selectTool} from './helpers';
 import {DimensionIcon, TextIcon} from '../icons';
+import {selectTool} from './helpers';
 
 export function AnnotatePanel() {
   const activeToolName = activeToolNameSignal.value || 'select';

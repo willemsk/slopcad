@@ -1,10 +1,10 @@
 import {h} from 'preact';
 import {useEffect, useRef, useState} from 'preact/hooks';
 import {
-  commandLineMessagesSignal,
-  pushCommandMessage,
   activePromptSignal,
+  commandLineMessagesSignal,
   isLayerModalOpenSignal,
+  pushCommandMessage,
 } from '../state/ui-state';
 import {dispatchCommand} from '../tools/commands';
 import './command-line.css';
@@ -93,7 +93,7 @@ export function CommandLine() {
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        <div className="drag-lines"></div>
+        <div className="drag-lines" />
       </div>
       <div className="command-history" ref={containerRef}>
         {messages.map((msg, i) => (

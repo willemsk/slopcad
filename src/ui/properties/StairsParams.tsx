@@ -1,5 +1,5 @@
 import {h} from 'preact';
-import {Entity, StairsEntity} from '../../core/types';
+import type {Entity, StairsEntity} from '../../core/types';
 
 interface StairsParamsProps {
   activeEntity: Entity;
@@ -39,8 +39,8 @@ export function StairsParams({
             onFocus={(e) => (e.target as HTMLInputElement).select()}
             onKeyDown={handleKeyDownCommit}
             onBlur={(e) => {
-              const val = parseInt((e.target as HTMLInputElement).value);
-              if (!isNaN(val) && val >= 2) {
+              const val = Number.parseInt((e.target as HTMLInputElement).value);
+              if (!Number.isNaN(val) && val >= 2) {
                 commitProperty((ent) => {
                   (ent as StairsEntity).treadCount = val;
                 });

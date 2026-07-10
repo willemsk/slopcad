@@ -3,35 +3,38 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": "^24.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "gts lint",
-    "clean": "gts clean",
-    "fix": "gts fix",
+    "lint": "biome lint .",
+    "format": "biome format .",
+    "fix": "biome check --write .",
     "test": "vitest run",
     "docs:api": "typedoc",
     "docs:serve": "mkdocs serve"
   },
   "dependencies": {
     "@preact/signals": "^2.9.1",
-    "preact": "^10.29.1"
+    "preact": "^10.29.3"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@preact/preset-vite": "^2.10.5",
-    "@types/node": "^22.7.5",
-    "gts": "^7.0.0",
-    "jsdom": "^29.1.1",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.22.4",
-    "typedoc": "^0.26.3",
-    "typedoc-plugin-markdown": "4.2.1",
+    "@types/node": "^22.13.0",
+    "jsdom": "^26.0.0",
+    "tsx": "^4.19.2",
+    "typedoc": "^0.28.0",
+    "typedoc-plugin-markdown": "^4.12.0",
     "typescript": "^5.6.3",
-    "vite": "^8.0.12",
-    "vitest": "^4.1.8"
+    "vite": "^8.1.4",
+    "vitest": "^4.1.10"
   },
   "allowScripts": {
-    "esbuild@0.28.1": true
+    "esbuild@0.28.1": true,
+    "@biomejs/biome@1.9.4": true
   }
 }

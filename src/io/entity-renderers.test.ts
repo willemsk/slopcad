@@ -1,31 +1,31 @@
-import {describe, it, expect} from 'vitest';
-import {Renderer, RendererOptions} from './renderer-interface';
-import {
-  Vec2,
+import {describe, expect, it} from 'vitest';
+import type {
+  ArcEntity,
+  CircleEntity,
+  DimensionEntity,
+  DoorEntity,
   LineEntity,
   RectEntity,
-  CircleEntity,
-  ArcEntity,
-  TextEntity,
-  DimensionEntity,
-  WallEntity,
-  DoorEntity,
-  WindowEntity,
   StairsEntity,
+  TextEntity,
+  Vec2,
+  WallEntity,
+  WindowEntity,
 } from '../core/types';
 import {
+  renderArc,
+  renderCircle,
+  renderDimension,
+  renderDoor,
   renderLine,
   renderRect,
-  renderCircle,
-  renderArc,
+  renderStairs,
   renderText,
-  renderDimension,
   renderWall,
   renderWalls,
-  renderDoor,
   renderWindow,
-  renderStairs,
 } from './entity-renderers';
+import type {Renderer, RendererOptions} from './renderer-interface';
 
 class MockRenderer implements Renderer {
   calls: {type: string; args: unknown[]}[] = [];

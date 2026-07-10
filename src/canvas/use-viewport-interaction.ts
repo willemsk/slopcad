@@ -1,7 +1,7 @@
-import {RefObject} from 'preact';
-import {useRef, useEffect} from 'preact/hooks';
-import {Vec2} from '../core/types';
-import {ViewportMath} from '../core/viewport-math';
+import type {RefObject} from 'preact';
+import {useEffect, useRef} from 'preact/hooks';
+import type {Vec2} from '../core/types';
+import type {ViewportMath} from '../core/viewport-math';
 import {triggerRenderSignal} from '../state/ui-state';
 
 /**

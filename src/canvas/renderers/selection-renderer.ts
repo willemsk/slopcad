@@ -1,5 +1,5 @@
-import {Entity, Vec2} from '../../core/types';
 import {lerp} from '../../core/geometry';
+import type {Entity, Vec2} from '../../core/types';
 
 export function drawSelectionHandles(
   ctx: CanvasRenderingContext2D,

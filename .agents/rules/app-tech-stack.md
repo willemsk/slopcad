@@ -21,6 +21,6 @@ This project uses a highly specific and constrained tech stack to maintain simpl
 - **Bundler**: Vite 8.x with `@preact/preset-vite`.
 - **Canvas / Rendering**: HTML5 Canvas 2D API (`CanvasRenderingContext2D`).
   - **Do NOT** use WebGL, Three.js, PixiJS, or SVG for the main drawing surface.
-- **Formatting**: `gts` (Google TypeScript Style).
+- **Formatting & Linting**: Biome (formatter and linter).
 - **Testing**: Vitest.
 - **Package Management**: npm.

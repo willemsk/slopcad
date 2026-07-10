@@ -1,34 +1,34 @@
 import {h} from 'preact';
 import {useEffect, useRef, useState} from 'preact/hooks';
-import {ViewportMath} from '../core/viewport-math';
-import {toolsMap} from '../tools/tool-registry';
-import {render, RenderState} from './renderer';
-import {Entity, SnapResult} from '../core/types';
 import {findEntityAt} from '../core/hit-test';
-import {computeEventSnap} from './snap-helper';
-import {useViewportInteraction} from './use-viewport-interaction';
-import {useKeyboardShortcuts} from './use-keyboard-shortcuts';
+import {Entity, SnapResult} from '../core/types';
+import type {ViewportMath} from '../core/viewport-math';
 import {
-  projectSignal,
-  layerMap,
-  entityMap,
-  visibleEntitiesSignal,
   entitiesByTypeSignal,
+  entityMap,
+  layerMap,
+  projectSignal,
+  visibleEntitiesSignal,
 } from '../state/project-state';
+import {selectionSignal} from '../state/selection-state';
 import {
   activeToolNameSignal,
-  snapEnabledSignal,
   gridEnabledSignal,
-  showConstraintsSignal,
   gridSpacingSignal,
-  previewEntitySignal,
   hoveredEntityIdSignal,
-  renderDirtySignal,
-  overlayPageIndexSignal,
   mouseCoordsSignal,
+  overlayPageIndexSignal,
+  previewEntitySignal,
+  renderDirtySignal,
+  showConstraintsSignal,
+  snapEnabledSignal,
 } from '../state/ui-state';
-import {selectionSignal} from '../state/selection-state';
 import {viewportSignal} from '../state/viewport-state';
+import {toolsMap} from '../tools/tool-registry';
+import {type RenderState, render} from './renderer';
+import {computeEventSnap} from './snap-helper';
+import {useKeyboardShortcuts} from './use-keyboard-shortcuts';
+import {useViewportInteraction} from './use-viewport-interaction';
 
 /**
  * Main CAD canvas rendering component. Handles dimensions, render loops,
@@ -157,7 +157,7 @@ export function CanvasComponent() {
     render(renderState);
 
     // Draw tool-specific preview/overlay graphics
-    if (activeTool && activeTool.renderPreview) {
+    if (activeTool?.renderPreview) {
       ctx.save();
       ctx.translate(
         viewportRef.current.panOffset.x,

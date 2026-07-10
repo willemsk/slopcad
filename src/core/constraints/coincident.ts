@@ -1,5 +1,5 @@
-import {ConstraintHandlerContext} from './types';
 import {dist, lerp} from '../geometry';
+import type {ConstraintHandlerContext} from './types';
 
 export function solveCoincident({
   constraint,

@@ -1,5 +1,5 @@
-import {Layer} from '../core/types';
 import {generateId} from '../core/entity';
+import type {Layer} from '../core/types';
 import {projectSignal} from './project-state';
 import {triggerRenderSignal} from './ui-state';
 

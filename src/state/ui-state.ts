@@ -1,5 +1,5 @@
 import {signal} from '@preact/signals';
-import {Entity, Vec2} from '../core/types';
+import type {Entity, Vec2} from '../core/types';
 
 export const activeToolNameSignal = signal<string>('select');
 export const snapEnabledSignal = signal<boolean>(true);
@@ -56,7 +56,7 @@ export const isRibbonCollapsedSignal = signal<boolean>(false);
 export const isLayerModalOpenSignal = signal<boolean>(false);
 
 export const uiScaleSignal = signal<number>(
-  parseFloat(localStorage.getItem('uiScale') || '1'),
+  Number.parseFloat(localStorage.getItem('uiScale') || '1'),
 );
 
 export function setUiScale(scale: number) {

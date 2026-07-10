@@ -1,7 +1,7 @@
-import {Vec2, Entity, SnapResult} from '../core/types';
-import {ViewportMath, getAdaptiveGridSpacing} from '../core/viewport-math';
-import {getSnapPoint, SnapSettings} from '../core/snap';
 import {dist} from '../core/geometry';
+import {type SnapSettings, getSnapPoint} from '../core/snap';
+import type {Entity, SnapResult, Vec2} from '../core/types';
+import {type ViewportMath, getAdaptiveGridSpacing} from '../core/viewport-math';
 
 /**
  * Interface representing the result of snap computation.

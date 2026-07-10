@@ -1,11 +1,11 @@
-import {useState, useEffect} from 'preact/hooks';
+import {useEffect, useState} from 'preact/hooks';
+import type {Entity} from '../../core/types';
+import {snapshotState} from '../../state/history-actions';
 import {
   activePageSignal,
-  updateActivePage,
   runSolverOnActivePage,
+  updateActivePage,
 } from '../../state/project-state';
-import {snapshotState} from '../../state/history-actions';
-import {Entity} from '../../core/types';
 
 export function usePropertyCommit(activeEntity: Entity | null) {
   const [localVals, setLocalVals] = useState<Record<string, string>>({});

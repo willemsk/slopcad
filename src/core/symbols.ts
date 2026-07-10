@@ -27,20 +27,20 @@ export class SymbolRegistry {
   ];
 
   static register(sym: SymbolDefinition) {
-    this.symbols.push(sym);
+    SymbolRegistry.symbols.push(sym);
   }
 
   static getByCategory(category: string): SymbolDefinition[] {
-    return this.symbols.filter((s) => s.category === category);
+    return SymbolRegistry.symbols.filter((s) => s.category === category);
   }
 
   static getByName(name: string): SymbolDefinition | undefined {
-    return this.symbols.find(
+    return SymbolRegistry.symbols.find(
       (s) => s.name.toLowerCase() === name.toLowerCase(),
     );
   }
 
   static getAll(): SymbolDefinition[] {
-    return this.symbols;
+    return SymbolRegistry.symbols;
   }
 }

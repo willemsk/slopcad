@@ -1,9 +1,9 @@
 import {h, render} from 'preact';
-import {describe, it, expect, beforeEach, afterEach} from 'vitest';
 import {act} from 'preact/test-utils';
-import {Toolbar} from './toolbar';
-import {gridEnabledSignal} from '../state/ui-state';
+import {afterEach, beforeEach, describe, expect, it} from 'vitest';
 import {projectSignal} from '../state/project-state';
+import {gridEnabledSignal} from '../state/ui-state';
+import {Toolbar} from './toolbar';
 
 describe('Toolbar Component', () => {
   let container: HTMLDivElement;

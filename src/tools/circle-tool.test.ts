@@ -1,8 +1,8 @@
-import {describe, it, expect, beforeEach} from 'vitest';
-import {CircleTool} from './circle-tool';
+import {beforeEach, describe, expect, it} from 'vitest';
+import type {CircleEntity} from '../core/types';
 import {activePageSignal, projectSignal} from '../state/project-state';
 import {previewEntitySignal} from '../state/ui-state';
-import {CircleEntity} from '../core/types';
+import {CircleTool} from './circle-tool';
 
 describe('CircleTool', () => {
   let tool: CircleTool;

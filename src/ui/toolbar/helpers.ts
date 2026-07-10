@@ -1,5 +1,5 @@
-import {setActiveToolByName} from '../../tools/tool-registry';
 import {pushCommandMessage} from '../../state/ui-state';
+import {setActiveToolByName} from '../../tools/tool-registry';
 
 export const TOOL_PROMPTS: Record<string, string> = {
   select:

@@ -1,18 +1,18 @@
 import {h} from 'preact';
-import {viewportSignal} from '../../state/viewport-state';
 import {activePageSignal} from '../../state/project-state';
 import {
-  triggerRenderSignal,
   gridEnabledSignal,
-  snapEnabledSignal,
   pushCommandMessage,
+  snapEnabledSignal,
+  triggerRenderSignal,
 } from '../../state/ui-state';
+import {viewportSignal} from '../../state/viewport-state';
 import {
   FitScreenIcon,
-  ZoomInIcon,
-  ZoomOutIcon,
   GridIcon,
   SnapIcon,
+  ZoomInIcon,
+  ZoomOutIcon,
 } from '../icons';
 
 export function ViewPanel() {

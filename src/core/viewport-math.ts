@@ -1,4 +1,4 @@
-import {Vec2, Entity} from './types';
+import type {Entity, Vec2} from './types';
 
 export class ViewportMath {
   // zoom is screen pixels per world unit (meter)
@@ -54,10 +54,10 @@ export class ViewportMath {
     }
 
     // Calculate bounding box in world coordinates
-    let minX = Infinity;
-    let minY = Infinity;
-    let maxX = -Infinity;
-    let maxY = -Infinity;
+    let minX = Number.POSITIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    let maxX = Number.NEGATIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
 
     const expandBBox = (pt: Vec2) => {
       minX = Math.min(minX, pt.x);
@@ -92,7 +92,7 @@ export class ViewportMath {
       }
     }
 
-    if (minX === Infinity) return;
+    if (minX === Number.POSITIVE_INFINITY) return;
 
     const wWidth = maxX - minX;
     const wHeight = maxY - minY;
@@ -132,7 +132,7 @@ export function getAdaptiveGridSpacing(spacing: number, zoom: number): number {
   let multiplier = 1;
 
   while (spacing * multiplier * zoom < minPixels) {
-    const firstDigit = parseInt(multiplier.toFixed(0)[0], 10);
+    const firstDigit = Number.parseInt(multiplier.toFixed(0)[0], 10);
     if (firstDigit === 1) {
       multiplier *= 2;
     } else if (firstDigit === 2) {

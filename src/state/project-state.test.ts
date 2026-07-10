@@ -1,13 +1,13 @@
 // @vitest-environment jsdom
-import {describe, it, expect, beforeEach} from 'vitest';
+import {beforeEach, describe, expect, it} from 'vitest';
+import type {Entity, WallEntity} from '../core/types';
 import {
-  projectSignal,
   activePageSignal,
-  updateActivePage,
+  projectSignal,
   runSolverOnActivePage,
   setUnitSystem,
+  updateActivePage,
 } from './project-state';
-import {Entity, WallEntity} from '../core/types';
 
 describe('Project State', () => {
   beforeEach(() => {
