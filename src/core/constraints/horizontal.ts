@@ -1,4 +1,4 @@
-import {ConstraintHandlerContext} from './types';
+import type {ConstraintHandlerContext} from './types';
 
 export function solveHorizontal({
   constraint,

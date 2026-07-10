@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
-import {describe, it, expect, beforeEach} from 'vitest';
+import {beforeEach, describe, expect, it} from 'vitest';
 import {
   addLayerAction,
-  updateLayerAction,
   deleteLayerAction,
   setActiveLayerAction,
+  updateLayerAction,
 } from './layer-actions';
 import {projectSignal} from './project-state';
 

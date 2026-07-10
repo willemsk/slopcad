@@ -1,7 +1,7 @@
-import {describe, it, expect, vi, beforeEach} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import type {LineEntity} from '../core/types';
 import {drawEntity} from './render-helpers';
 import {RendererRegistry} from './renderers/registry';
-import {LineEntity} from '../core/types';
 
 describe('render-helpers', () => {
   describe('drawEntity()', () => {
@@ -19,9 +19,9 @@ describe('render-helpers', () => {
 
     it('should dispatch to the correct renderer via the registry', () => {
       // Mock the registry for 'line'
-      const originalRenderLine = RendererRegistry['line'];
+      const originalRenderLine = RendererRegistry.line;
       const mockRenderLine = vi.fn();
-      RendererRegistry['line'] = mockRenderLine;
+      RendererRegistry.line = mockRenderLine;
 
       const mockLine: LineEntity = {
         id: '1',
@@ -49,7 +49,7 @@ describe('render-helpers', () => {
       expect(callArgs.isSelected).toBe(true);
 
       // Restore
-      RendererRegistry['line'] = originalRenderLine;
+      RendererRegistry.line = originalRenderLine;
     });
   });
 });

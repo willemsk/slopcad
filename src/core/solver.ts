@@ -1,29 +1,29 @@
-import {
-  Entity,
-  Constraint,
-  PointRef,
-  Vec2,
-  WallEntity,
-  LineEntity,
-  StairsEntity,
-  RectEntity,
-  DimensionEntity,
-  CircleEntity,
-  ArcEntity,
-} from './types';
+import {ConstraintRegistry} from './constraints/registry';
 import {cloneEntity} from './entity';
 import {
-  dist,
-  sub,
   add,
-  scale,
-  normalize,
   angle,
-  rotate,
+  dist,
   len,
   lerp,
+  normalize,
+  rotate,
+  scale,
+  sub,
 } from './geometry';
-import {ConstraintRegistry} from './constraints/registry';
+import type {
+  ArcEntity,
+  CircleEntity,
+  Constraint,
+  DimensionEntity,
+  Entity,
+  LineEntity,
+  PointRef,
+  RectEntity,
+  StairsEntity,
+  Vec2,
+  WallEntity,
+} from './types';
 
 // Get coordinate reference from entity list or map
 export function getPointValue(

@@ -1,20 +1,20 @@
 // @vitest-environment jsdom
-import {describe, it, expect, beforeEach, vi} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import type {Entity} from '../core/types';
 import {
-  addPerpendicularConstraintAction,
-  addParallelConstraintAction,
   addCoincidentConstraintAction,
   addCollinearConstraintAction,
   addConcentricConstraintAction,
   addEqualLengthConstraintAction,
+  addParallelConstraintAction,
+  addPerpendicularConstraintAction,
 } from './constraint-actions-relational';
 import {
-  projectSignal,
   activePageSignal,
+  projectSignal,
   updateActivePage,
 } from './project-state';
 import {selectionSignal} from './selection-state';
-import {Entity} from '../core/types';
 
 describe('Relational Constraint Actions', () => {
   beforeEach(() => {

@@ -2,10 +2,10 @@ import {generateId} from '../core/entity';
 import {projectSignal} from './project-state';
 import {selectionSignal} from './selection-state';
 import {
-  triggerRenderSignal,
   overlayPageIndexSignal,
   pushCommandMessage,
   requestPrompt,
+  triggerRenderSignal,
 } from './ui-state';
 
 export function selectPageAction(index: number) {
@@ -99,8 +99,8 @@ export function setOverlayPageAction(val: string) {
     overlayPageIndexSignal.value = null;
     pushCommandMessage('Command: OVERLAY - Ghost overlay disabled.');
   } else {
-    overlayPageIndexSignal.value = parseInt(val, 10);
-    const name = project.pages[parseInt(val, 10)].name;
+    overlayPageIndexSignal.value = Number.parseInt(val, 10);
+    const name = project.pages[Number.parseInt(val, 10)].name;
     pushCommandMessage(
       `Command: OVERLAY - Displaying "${name}" as background overlay.`,
     );

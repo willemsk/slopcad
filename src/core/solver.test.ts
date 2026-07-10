@@ -1,6 +1,6 @@
-import {describe, it, expect} from 'vitest';
-import {solveConstraints, getPointValue} from './solver';
-import {Entity, Constraint, LineEntity} from './types';
+import {describe, expect, it} from 'vitest';
+import {getPointValue, solveConstraints} from './solver';
+import type {Constraint, Entity, LineEntity} from './types';
 
 describe('solveConstraints', () => {
   it('solves horizontal constraint', () => {

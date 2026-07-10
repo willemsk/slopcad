@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import {describe, it, expect, beforeEach} from 'vitest';
-import {selectionSignal, selectEntity, clearSelection} from './selection-state';
+import {beforeEach, describe, expect, it} from 'vitest';
+import {clearSelection, selectEntity, selectionSignal} from './selection-state';
 
 describe('Selection State', () => {
   beforeEach(() => {

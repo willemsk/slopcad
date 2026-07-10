@@ -1,18 +1,18 @@
-import {
-  Entity,
-  WallEntity,
+import type {
+  ArcEntity,
+  CircleEntity,
+  Constraint,
+  DimensionEntity,
   DoorEntity,
-  WindowEntity,
-  StairsEntity,
+  Entity,
+  Layer,
   LineEntity,
   RectEntity,
-  CircleEntity,
-  ArcEntity,
-  DimensionEntity,
+  StairsEntity,
   TextEntity,
   Vec2,
-  Layer,
-  Constraint,
+  WallEntity,
+  WindowEntity,
 } from './types';
 
 // Helper to generate a simple unique ID

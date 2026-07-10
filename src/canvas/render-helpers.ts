@@ -1,13 +1,19 @@
-import {Entity, Constraint, Layer, UnitSystem, EntityType} from '../core/types';
-import {ViewportMath, getAdaptiveGridSpacing} from '../core/viewport-math';
 import {
-  AABB,
-  computeEntityAABB,
+  type AABB,
   aabbIntersects,
+  computeEntityAABB,
 } from '../core/bounding-box-cache';
-import {drawSelectionHandles} from './renderers/selection-renderer';
+import type {
+  Constraint,
+  Entity,
+  EntityType,
+  Layer,
+  UnitSystem,
+} from '../core/types';
+import {type ViewportMath, getAdaptiveGridSpacing} from '../core/viewport-math';
 import {drawConstraint} from './renderers/constraint-renderer';
 import {RendererRegistry} from './renderers/registry';
+import {drawSelectionHandles} from './renderers/selection-renderer';
 
 const TYPE_ORDER = [
   'line',

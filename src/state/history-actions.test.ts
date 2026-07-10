@@ -1,19 +1,19 @@
 // @vitest-environment jsdom
-import {describe, it, expect, beforeEach} from 'vitest';
+import {beforeEach, describe, expect, it} from 'vitest';
+import type {Constraint, Entity} from '../core/types';
 import {
-  projectSignal,
-  activePageSignal,
-  updateActivePage,
-} from './project-state';
-import {
+  clearHistory,
+  deleteSelectedAction,
+  redoAction,
   snapshotState,
   undoAction,
-  redoAction,
-  deleteSelectedAction,
-  clearHistory,
 } from './history-actions';
+import {
+  activePageSignal,
+  projectSignal,
+  updateActivePage,
+} from './project-state';
 import {selectionSignal} from './selection-state';
-import {Entity, Constraint} from '../core/types';
 
 describe('History Actions', () => {
   beforeEach(() => {

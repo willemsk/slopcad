@@ -1,6 +1,6 @@
-import {describe, it, expect, vi} from 'vitest';
+import {describe, expect, it, vi} from 'vitest';
+import type {Constraint, PointRef} from '../types';
 import {solveEqualLength} from './equal-length';
-import {Constraint, PointRef} from '../types';
 
 describe('solveEqualLength', () => {
   it('should return 0 if missing point refs', () => {

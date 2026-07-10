@@ -1,15 +1,15 @@
-import {Constraint, Entity, UnitSystem, Vec2} from '../../core/types';
-import {
-  dist,
-  sub,
-  add,
-  scale,
-  normalize,
-  lerp,
-  angle,
-} from '../../core/geometry';
-import {formatLength} from '../../core/units';
 import {getEntityPoint} from '../../core/entity';
+import {
+  add,
+  angle,
+  dist,
+  lerp,
+  normalize,
+  scale,
+  sub,
+} from '../../core/geometry';
+import type {Constraint, Entity, UnitSystem, Vec2} from '../../core/types';
+import {formatLength} from '../../core/units';
 
 export function drawConstraint(
   ctx: CanvasRenderingContext2D,

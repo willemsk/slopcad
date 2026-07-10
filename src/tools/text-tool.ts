@@ -1,15 +1,15 @@
-import {Tool} from './tool';
-import {Vec2, SnapResult} from '../core/types';
-import {ViewportMath} from '../core/viewport-math';
 import {createText} from '../core/entity';
+import type {SnapResult, Vec2} from '../core/types';
+import {ViewportMath} from '../core/viewport-math';
+import {snapshotState} from '../state/history-actions';
 import {
   activePageSignal,
-  updateActivePage,
   projectSignal,
+  updateActivePage,
 } from '../state/project-state';
-import {snapshotState} from '../state/history-actions';
 import {selectEntity} from '../state/selection-state';
 import {requestPrompt} from '../state/ui-state';
+import type {Tool} from './tool';
 
 export class TextTool implements Tool {
   name = 'text';

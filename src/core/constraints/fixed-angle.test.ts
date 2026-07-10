@@ -1,6 +1,6 @@
-import {describe, it, expect, vi} from 'vitest';
+import {describe, expect, it, vi} from 'vitest';
+import type {Constraint, PointRef} from '../types';
 import {solveFixedAngle} from './fixed-angle';
-import {Constraint, PointRef} from '../types';
 
 describe('solveFixedAngle', () => {
   it('should return 0 if missing point refs or value', () => {

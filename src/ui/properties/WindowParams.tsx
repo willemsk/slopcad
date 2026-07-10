@@ -1,7 +1,7 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
-import {Entity, WallEntity} from '../../core/types';
 import {dist} from '../../core/geometry';
+import type {Entity, WallEntity} from '../../core/types';
 import {formatLength, parseLength} from '../../core/units';
 import {activePageSignal} from '../../state/project-state';
 

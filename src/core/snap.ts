@@ -1,13 +1,13 @@
-import {Vec2, Entity, SnapResult} from './types';
 import {
+  closestPointOnSegment,
   dist,
   distSq,
-  closestPointOnSegment,
-  projectPointOnLine,
-  sub,
   len,
   normalize,
+  projectPointOnLine,
+  sub,
 } from './geometry';
+import type {Entity, SnapResult, Vec2} from './types';
 
 export interface SnapSettings {
   grid: boolean;
@@ -35,7 +35,7 @@ export function getSnapPoint(
     settings.wallAlign &&
     (activeToolType === 'door' || activeToolType === 'window')
   ) {
-    let bestWallDistSq = Infinity;
+    let bestWallDistSq = Number.POSITIVE_INFINITY;
     let bestWallProj: Vec2 | null = null;
     let bestWallId: string | null = null;
     let bestT = 0.5;

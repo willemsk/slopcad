@@ -1,8 +1,8 @@
-import {describe, it, expect, beforeEach} from 'vitest';
-import {SelectTool} from './select-tool';
+import {beforeEach, describe, expect, it} from 'vitest';
+import type {WallEntity} from '../core/types';
 import {activePageSignal, projectSignal} from '../state/project-state';
 import {selectionSignal} from '../state/selection-state';
-import {WallEntity} from '../core/types';
+import {SelectTool} from './select-tool';
 
 describe('SelectTool', () => {
   let tool: SelectTool;

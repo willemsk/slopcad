@@ -1,4 +1,4 @@
-import {Constraint, Entity, PointRef, Vec2} from '../types';
+import type {Constraint, Entity, PointRef, Vec2} from '../types';
 
 export interface ConstraintHandlerContext {
   constraint: Constraint;

@@ -1,15 +1,15 @@
-import {Tool} from './tool';
-import {Vec2, SnapResult} from '../core/types';
-import {ViewportMath} from '../core/viewport-math';
 import {createRect} from '../core/entity';
 import {dist} from '../core/geometry';
+import type {SnapResult, Vec2} from '../core/types';
+import {ViewportMath} from '../core/viewport-math';
+import {snapshotState} from '../state/history-actions';
 import {
   activePageSignal,
-  updateActivePage,
   projectSignal,
+  updateActivePage,
 } from '../state/project-state';
-import {snapshotState} from '../state/history-actions';
 import {previewEntitySignal} from '../state/ui-state';
+import type {Tool} from './tool';
 
 export class RectTool implements Tool {
   name = 'rect';

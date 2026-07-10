@@ -1,15 +1,20 @@
-import {Tool} from './tool';
-import {Vec2, SnapResult, WallEntity, Constraint} from '../core/types';
-import {ViewportMath} from '../core/viewport-math';
 import {createWall, generateId} from '../core/entity';
 import {dist} from '../core/geometry';
 import {
-  activePageSignal,
-  updateActivePage,
-  projectSignal,
-} from '../state/project-state';
+  type Constraint,
+  type SnapResult,
+  type Vec2,
+  WallEntity,
+} from '../core/types';
+import {ViewportMath} from '../core/viewport-math';
 import {snapshotState} from '../state/history-actions';
+import {
+  activePageSignal,
+  projectSignal,
+  updateActivePage,
+} from '../state/project-state';
 import {previewEntitySignal, triggerRenderSignal} from '../state/ui-state';
+import type {Tool} from './tool';
 
 export class WallTool implements Tool {
   name = 'wall';
@@ -62,8 +67,7 @@ export class WallTool implements Tool {
 
       // Remember snap reference for coincident constraint
       if (
-        snapResult &&
-        snapResult.entityId &&
+        snapResult?.entityId &&
         (snapResult.type === 'endpoint' || snapResult.type === 'midpoint')
       ) {
         this.startSnapRef = {
@@ -114,8 +118,7 @@ export class WallTool implements Tool {
 
       // Add coincident constraint at End Point (if snapped)
       if (
-        snapResult &&
-        snapResult.entityId &&
+        snapResult?.entityId &&
         (snapResult.type === 'endpoint' || snapResult.type === 'midpoint')
       ) {
         const pointKey =

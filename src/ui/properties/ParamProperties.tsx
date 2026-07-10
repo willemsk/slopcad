@@ -1,12 +1,12 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
-import {Entity} from '../../core/types';
+import type {Entity} from '../../core/types';
 import {ChevronDownIcon, ChevronRightIcon} from '../icons';
-import {DoorParams} from './DoorParams';
-import {WindowParams} from './WindowParams';
-import {StairsParams} from './StairsParams';
 import {DimensionParams} from './DimensionParams';
+import {DoorParams} from './DoorParams';
+import {StairsParams} from './StairsParams';
 import {TextParams} from './TextParams';
+import {WindowParams} from './WindowParams';
 
 interface Props {
   activeEntity: Entity;

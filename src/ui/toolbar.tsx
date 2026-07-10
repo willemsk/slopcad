@@ -1,9 +1,9 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
 import {FilePanel} from './file-panel';
-import {HomePanel} from './toolbar/home-panel';
 import {AnnotatePanel} from './toolbar/annotate-panel';
 import {ConstraintsPanel} from './toolbar/constraints-panel';
+import {HomePanel} from './toolbar/home-panel';
 import {ViewPanel} from './toolbar/view-panel';
 import './ribbon.css';
 

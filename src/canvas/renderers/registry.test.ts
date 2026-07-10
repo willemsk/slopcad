@@ -1,6 +1,6 @@
-import {describe, it, expect} from 'vitest';
+import {describe, expect, it} from 'vitest';
+import type {EntityType} from '../../core/types';
 import {RendererRegistry} from './registry';
-import {EntityType} from '../../core/types';
 
 describe('RendererRegistry', () => {
   it('should have a render function registered for every entity type', () => {

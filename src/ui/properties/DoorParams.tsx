@@ -1,7 +1,7 @@
 import {h} from 'preact';
 import {useState} from 'preact/hooks';
-import {Entity, DoorEntity, WallEntity} from '../../core/types';
 import {dist} from '../../core/geometry';
+import type {DoorEntity, Entity, WallEntity} from '../../core/types';
 import {formatLength, parseLength} from '../../core/units';
 import {activePageSignal} from '../../state/project-state';
 
@@ -153,8 +153,10 @@ export function DoorParams({
               onFocus={(e) => (e.target as HTMLInputElement).select()}
               onKeyDown={handleKeyDownCommit}
               onBlur={(e) => {
-                const val = parseFloat((e.target as HTMLInputElement).value);
-                if (!isNaN(val)) {
+                const val = Number.parseFloat(
+                  (e.target as HTMLInputElement).value,
+                );
+                if (!Number.isNaN(val)) {
                   commitProperty((ent) => {
                     (ent as DoorEntity).openingAngle = val;
                   });

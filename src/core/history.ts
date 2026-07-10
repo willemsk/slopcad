@@ -1,5 +1,5 @@
-import {Entity, Constraint} from './types';
-import {cloneEntity, cloneConstraints} from './entity';
+import {cloneConstraints, cloneEntity} from './entity';
+import type {Constraint, Entity} from './types';
 
 export interface PageSnapshot {
   entities: Entity[];
@@ -53,8 +53,6 @@ export class HistoryManager {
   private past: PageSnapshot[] = [];
   private future: PageSnapshot[] = [];
   private maxStates = 100;
-
-  constructor() {}
 
   // Pushes a new state onto the history stack.
   // We clone the entities and constraints to ensure immutability.

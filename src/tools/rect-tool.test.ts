@@ -1,8 +1,8 @@
-import {describe, it, expect, beforeEach} from 'vitest';
-import {RectTool} from './rect-tool';
+import {beforeEach, describe, expect, it} from 'vitest';
+import type {RectEntity} from '../core/types';
 import {activePageSignal, projectSignal} from '../state/project-state';
 import {previewEntitySignal} from '../state/ui-state';
-import {RectEntity} from '../core/types';
+import {RectTool} from './rect-tool';
 
 describe('RectTool', () => {
   let tool: RectTool;

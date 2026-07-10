@@ -1,6 +1,6 @@
-import {describe, it, expect} from 'vitest';
-import {viewportSignal} from './viewport-state';
+import {describe, expect, it} from 'vitest';
 import {ViewportMath} from '../core/viewport-math';
+import {viewportSignal} from './viewport-state';
 
 describe('Viewport State', () => {
   it('initializes viewportSignal with a ViewportMath instance', () => {

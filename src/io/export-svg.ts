@@ -1,31 +1,31 @@
-import {
-  Page,
-  WallEntity,
-  DoorEntity,
-  WindowEntity,
-  StairsEntity,
-  LineEntity,
-  RectEntity,
-  CircleEntity,
+import type {
   ArcEntity,
+  CircleEntity,
   DimensionEntity,
+  DoorEntity,
+  LineEntity,
+  Page,
+  RectEntity,
+  StairsEntity,
   TextEntity,
   UnitSystem,
+  WallEntity,
+  WindowEntity,
 } from '../core/types';
 import {calculateBoundingBox} from './bounding-box';
-import {SVGRenderer} from './svg-renderer';
 import {
+  renderArc,
+  renderCircle,
+  renderDimension,
   renderDoor,
-  renderWindow,
-  renderStairs,
   renderLine,
   renderRect,
-  renderCircle,
-  renderArc,
-  renderDimension,
+  renderStairs,
   renderText,
   renderWalls,
+  renderWindow,
 } from './entity-renderers';
+import {SVGRenderer} from './svg-renderer';
 
 export function exportPageToSVG(page: Page, unitSystem: UnitSystem): string {
   const bbox = calculateBoundingBox(page.entities);

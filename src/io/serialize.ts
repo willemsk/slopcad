@@ -1,4 +1,4 @@
-import {Project} from '../core/types';
+import type {Project} from '../core/types';
 
 const SCHEMA_VERSION = '1.0.0';
 

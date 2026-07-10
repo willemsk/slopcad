@@ -9,11 +9,11 @@ SlopCAD is a browser-based 2D architectural plan editor. It is designed to be a 
 
 | Category | Technology | Version | Notes |
 |----------|-----------|---------|-------|
-| runtime-framework | Preact | ^10.29.1 | UI rendering (no React) |
+| runtime-framework | Preact | ^10.29.3 | UI rendering (no React) |
 | state-management | @preact/signals | ^2.9.1 | Global state management |
-| bundler | Vite | ^8.0.12 | Build tool with @preact/preset-vite |
-| test-runner | Vitest | ^4.1.8 | Unit and integration testing |
-| linter/formatter | gts | ^7.0.0 | Google TypeScript Style |
+| bundler | Vite | ^8.1.4 | Build tool with @preact/preset-vite |
+| test-runner | Vitest | ^4.1.10 | Unit and integration testing |
+| linter/formatter | Biome | ^1.9.4 | Formatter and Linter |
 | types | TypeScript | ^5.6.3 | Strict mode enabled |
 | packageManager | npm | - | - |
 

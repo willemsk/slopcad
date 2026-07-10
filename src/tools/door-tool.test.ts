@@ -1,8 +1,8 @@
-import {describe, it, expect, beforeEach} from 'vitest';
-import {DoorTool} from './door-tool';
+import {beforeEach, describe, expect, it} from 'vitest';
+import type {DoorEntity, WallEntity} from '../core/types';
 import {activePageSignal, projectSignal} from '../state/project-state';
 import {previewEntitySignal} from '../state/ui-state';
-import {WallEntity, DoorEntity} from '../core/types';
+import {DoorTool} from './door-tool';
 
 describe('DoorTool', () => {
   let tool: DoorTool;

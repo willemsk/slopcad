@@ -1,5 +1,5 @@
 import {h} from 'preact';
-import {Entity, DimensionEntity} from '../../core/types';
+import type {DimensionEntity, Entity} from '../../core/types';
 import {parseLength} from '../../core/units';
 
 interface DimensionParamsProps {

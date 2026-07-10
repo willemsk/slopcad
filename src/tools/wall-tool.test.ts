@@ -1,9 +1,9 @@
-import {describe, it, expect, beforeEach, vi, afterEach} from 'vitest';
-import {WallTool} from './wall-tool';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {Project, type WallEntity} from '../core/types';
 import {activePageSignal, projectSignal} from '../state/project-state';
-import {previewEntitySignal} from '../state/ui-state';
 import {selectionSignal} from '../state/selection-state';
-import {WallEntity, Project} from '../core/types';
+import {previewEntitySignal} from '../state/ui-state';
+import {WallTool} from './wall-tool';
 
 describe('WallTool', () => {
   let tool: WallTool;

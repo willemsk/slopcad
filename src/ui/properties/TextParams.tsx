@@ -1,5 +1,5 @@
 import {h} from 'preact';
-import {Entity, TextEntity} from '../../core/types';
+import type {Entity, TextEntity} from '../../core/types';
 import {formatLength, parseLength} from '../../core/units';
 
 interface TextParamsProps {

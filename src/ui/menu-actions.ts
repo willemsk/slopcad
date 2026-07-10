@@ -1,14 +1,14 @@
-import {projectSignal, activePageSignal} from '../state/project-state';
+import {generateId} from '../core/entity';
+import {downloadSVGFile} from '../io/export-svg';
+import {loadProjectFromFile, saveProjectToFile} from '../io/file-io';
 import {
-  undoAction,
-  redoAction,
   deleteSelectedAction,
+  redoAction,
+  undoAction,
 } from '../state/history-actions';
+import {activePageSignal, projectSignal} from '../state/project-state';
 import {selectionSignal} from '../state/selection-state';
 import {pushCommandMessage, triggerRenderSignal} from '../state/ui-state';
-import {saveProjectToFile, loadProjectFromFile} from '../io/file-io';
-import {downloadSVGFile} from '../io/export-svg';
-import {generateId} from '../core/entity';
 
 export const handleNewProject = () => {
   if (

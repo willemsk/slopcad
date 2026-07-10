@@ -1,20 +1,20 @@
 // @vitest-environment jsdom
-import {describe, it, expect, beforeEach} from 'vitest';
+import {beforeEach, describe, expect, it} from 'vitest';
+import type {Entity, LineEntity} from '../core/types';
 import {
-  addHorizontalConstraintAction,
-  addVerticalConstraintAction,
-  addLengthConstraintAction,
   addFixedAngleConstraintAction,
+  addHorizontalConstraintAction,
+  addLengthConstraintAction,
+  addVerticalConstraintAction,
   clearSelectedConstraintsAction,
 } from './constraint-actions';
 import {
-  projectSignal,
   activePageSignal,
+  projectSignal,
   updateActivePage,
 } from './project-state';
 import {selectionSignal} from './selection-state';
 import {activePromptSignal} from './ui-state';
-import {Entity, LineEntity} from '../core/types';
 
 describe('Simple Constraint Actions', () => {
   beforeEach(() => {

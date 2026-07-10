@@ -13,5 +13,5 @@ SlopCAD is built as a single-page application using Preact, Vite, and TypeScript
 *   [**State Management**](state-management.md): Details on `@preact/signals` flow, signal inventory, and mutator actions.
 *   [**Rendering Pipeline**](rendering-pipeline.md): Canvas 2D render loop, coordinate system projection, and export handling.
 *   [**Data Models**](data-models.md): Discriminated unions representing points, walls, dimensions, and pages.
-*   [**Contributing & Setup**](contributing.md): Local development requirements, code styling (`gts`), and building documentation.
+*   [**Contributing & Setup**](contributing.md): Local development requirements, code styling (`Biome`), and building documentation.
 *   [**Changelog**](changelog.md): History of optimization passes, audits, and features.

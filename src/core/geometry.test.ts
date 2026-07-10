@@ -1,21 +1,21 @@
-import {describe, it, expect} from 'vitest';
+import {describe, expect, it} from 'vitest';
 import {
   add,
-  sub,
-  scale,
-  len,
-  dist,
-  normalize,
-  dot,
-  cross,
   angle,
-  rotate,
-  projectPointOnLine,
-  closestPointOnSegment,
-  distToSegment,
-  lineIntersection,
-  lerp,
   angleBetween,
+  closestPointOnSegment,
+  cross,
+  dist,
+  distToSegment,
+  dot,
+  len,
+  lerp,
+  lineIntersection,
+  normalize,
+  projectPointOnLine,
+  rotate,
+  scale,
+  sub,
 } from './geometry';
 
 describe('geometry utilities', () => {

@@ -1,6 +1,6 @@
-import {describe, it, expect} from 'vitest';
-import {serializeProject, deserializeProject} from './serialize';
-import {Project} from '../core/types';
+import {describe, expect, it} from 'vitest';
+import type {Project} from '../core/types';
+import {deserializeProject, serializeProject} from './serialize';
 
 describe('Project Serialization', () => {
   const mockProject: Project = {

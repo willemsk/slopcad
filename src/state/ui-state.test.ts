@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
-import {describe, it, expect, beforeEach} from 'vitest';
+import {beforeEach, describe, expect, it} from 'vitest';
 import {
+  activePromptSignal,
+  commandLineMessagesSignal,
+  pushCommandMessage,
+  requestPrompt,
   setUiScale,
   uiScaleSignal,
-  pushCommandMessage,
-  commandLineMessagesSignal,
-  requestPrompt,
-  activePromptSignal,
 } from './ui-state';
 
 describe('UI State', () => {

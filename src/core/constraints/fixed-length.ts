@@ -1,5 +1,5 @@
-import {ConstraintHandlerContext} from './types';
-import {dist, sub, add, scale, normalize, len, lerp} from '../geometry';
+import {add, dist, len, lerp, normalize, scale, sub} from '../geometry';
+import type {ConstraintHandlerContext} from './types';
 
 export function solveFixedLength({
   constraint,

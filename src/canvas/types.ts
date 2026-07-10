@@ -1,4 +1,4 @@
-import {Entity, Layer, UnitSystem, EntityType} from '../core/types';
+import type {Entity, EntityType, Layer, UnitSystem} from '../core/types';
 
 /** Shared rendering context passed to all renderers. */
 export interface RenderContext {
@@ -11,9 +11,8 @@ export interface RenderContext {
 }
 
 /** Per-entity rendering context, extending the shared context. */
-export interface EntityRenderContext<
-  T extends Entity = Entity,
-> extends RenderContext {
+export interface EntityRenderContext<T extends Entity = Entity>
+  extends RenderContext {
   entity: T;
   isSelected: boolean;
   color: string;

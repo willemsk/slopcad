@@ -1,5 +1,5 @@
-import {ConstraintHandlerContext} from './types';
-import {sub, add, scale, angle, len, lerp} from '../geometry';
+import {add, angle, len, lerp, scale, sub} from '../geometry';
+import type {ConstraintHandlerContext} from './types';
 
 export function solveFixedAngle({
   constraint,

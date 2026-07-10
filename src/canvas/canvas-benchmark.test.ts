@@ -1,6 +1,6 @@
-import {describe, it, expect} from 'vitest';
-import {Entity, Layer, Page, Project, LineEntity} from '../core/types';
+import {describe, expect, it} from 'vitest';
 import {getVisibleEntities} from '../core/entity';
+import type {Entity, Layer, LineEntity, Page, Project} from '../core/types';
 
 describe('Canvas Entity Filtering Performance Benchmark', () => {
   it('measures the performance of filtering entities by layer visibility', () => {
@@ -59,7 +59,7 @@ describe('Canvas Entity Filtering Performance Benchmark', () => {
     }
 
     // Benchmark unoptimized N^2 (taking min of 5 runs to avoid GC/scheduling spikes)
-    let unoptimizedTime = Infinity;
+    let unoptimizedTime = Number.POSITIVE_INFINITY;
     let visibleUnoptimizedCount = 0;
     for (let run = 0; run < 5; run++) {
       const start = performance.now();
@@ -74,7 +74,7 @@ describe('Canvas Entity Filtering Performance Benchmark', () => {
     }
 
     // Benchmark optimized (taking min of 5 runs to avoid GC/scheduling spikes)
-    let optimizedTime = Infinity;
+    let optimizedTime = Number.POSITIVE_INFINITY;
     let visibleOptimizedCount = 0;
     for (let run = 0; run < 5; run++) {
       const start = performance.now();

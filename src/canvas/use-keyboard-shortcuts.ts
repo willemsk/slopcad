@@ -1,6 +1,6 @@
-import {RefObject} from 'preact';
+import type {RefObject} from 'preact';
 import {useEffect} from 'preact/hooks';
-import {Tool} from '../tools/tool';
+import type {Tool} from '../tools/tool';
 
 declare global {
   interface Window {
@@ -8,16 +8,16 @@ declare global {
   }
 }
 import {
-  undoAction,
-  redoAction,
   deleteSelectedAction,
+  redoAction,
+  undoAction,
 } from '../state/history-actions';
 import {
-  isLayerModalOpenSignal,
-  pushCommandMessage,
-  previewEntitySignal,
-  triggerRenderSignal,
   activeToolNameSignal,
+  isLayerModalOpenSignal,
+  previewEntitySignal,
+  pushCommandMessage,
+  triggerRenderSignal,
 } from '../state/ui-state';
 import {toolsMap} from '../tools/tool-registry';
 
@@ -86,7 +86,7 @@ export function useKeyboardShortcuts(
       }
 
       // Route to active tool
-      if (activeTool && activeTool.onKeyDown) {
+      if (activeTool?.onKeyDown) {
         activeTool.onKeyDown(e);
         draw();
       }

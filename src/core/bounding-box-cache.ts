@@ -1,17 +1,17 @@
-import {
-  Entity,
-  WallEntity,
-  LineEntity,
-  StairsEntity,
-  RectEntity,
-  CircleEntity,
+import type {
   ArcEntity,
+  CircleEntity,
   DimensionEntity,
-  TextEntity,
   DoorEntity,
+  Entity,
+  LineEntity,
+  RectEntity,
+  StairsEntity,
+  TextEntity,
+  WallEntity,
   WindowEntity,
 } from './types';
-import {ViewportMath} from './viewport-math';
+import type {ViewportMath} from './viewport-math';
 
 export interface AABB {
   minX: number;

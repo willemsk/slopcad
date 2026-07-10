@@ -1,25 +1,31 @@
-import {Tool} from './tool';
-import {Vec2, SnapResult, Entity, PointRef, WallEntity} from '../core/types';
 import {getEntityPoint} from '../core/entity';
-import {ViewportMath} from '../core/viewport-math';
-import {dist, sub, add, lerp, projectPointT} from '../core/geometry';
+import {add, dist, lerp, projectPointT, sub} from '../core/geometry';
 import {findEntityAt} from '../core/hit-test';
 import {solveConstraints} from '../core/solver';
-import {
-  projectSignal,
-  updateActivePage,
-  activePageSignal,
-  runSolverOnActivePage,
-  entityMap,
-} from '../state/project-state';
+import type {
+  Entity,
+  PointRef,
+  SnapResult,
+  Vec2,
+  WallEntity,
+} from '../core/types';
+import type {ViewportMath} from '../core/viewport-math';
 import {snapshotState} from '../state/history-actions';
 import {
-  selectionSignal,
+  activePageSignal,
+  entityMap,
+  projectSignal,
+  runSolverOnActivePage,
+  updateActivePage,
+} from '../state/project-state';
+import {
   clearSelection,
   selectEntity,
+  selectionSignal,
 } from '../state/selection-state';
 import {triggerRenderSignal} from '../state/ui-state';
 import {viewportSignal} from '../state/viewport-state';
+import type {Tool} from './tool';
 
 export class SelectTool implements Tool {
   name = 'select';

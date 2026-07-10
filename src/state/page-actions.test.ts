@@ -1,13 +1,13 @@
 // @vitest-environment jsdom
-import {describe, it, expect, beforeEach, vi} from 'vitest';
-import {projectSignal} from './project-state';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {
-  selectPageAction,
   addPageAction,
-  renamePageAction,
   deletePageAction,
+  renamePageAction,
+  selectPageAction,
   setOverlayPageAction,
 } from './page-actions';
+import {projectSignal} from './project-state';
 import {activePromptSignal, overlayPageIndexSignal} from './ui-state';
 
 describe('Page Actions', () => {

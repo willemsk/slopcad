@@ -1,6 +1,6 @@
-import {setActiveToolByName} from './tool-registry';
 import {deleteSelectedAction} from '../state/history-actions';
 import {pushCommandMessage} from '../state/ui-state';
+import {setActiveToolByName} from './tool-registry';
 
 const commandAliases: Record<string, string> = {
   // Tools

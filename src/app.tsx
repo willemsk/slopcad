@@ -1,25 +1,25 @@
 import {h} from 'preact';
 import {useEffect} from 'preact/hooks';
-import {Menubar} from './ui/menubar';
-import {Toolbar} from './ui/toolbar';
 import {CanvasComponent} from './canvas/canvas-component';
-import {PropertiesPanel} from './ui/properties/PropertiesPanel';
-import {CommandLine} from './ui/command-line';
-import {PageTabs} from './ui/page-tabs';
-import {StatusBar} from './ui/status-bar';
-import {UcsIcon} from './ui/ucs-icon';
-import {NavigationBar} from './ui/navigation-bar';
-import {setActiveToolByName} from './tools/tool-registry';
+import {deleteSelectedAction} from './state/history-actions';
+import {clearSelection} from './state/selection-state';
 import {
-  uiScaleSignal,
-  isPropertiesPanelOpenSignal,
   activePromptSignal,
   isLayerModalOpenSignal,
+  isPropertiesPanelOpenSignal,
+  uiScaleSignal,
 } from './state/ui-state';
-import {clearSelection} from './state/selection-state';
-import {deleteSelectedAction} from './state/history-actions';
+import {setActiveToolByName} from './tools/tool-registry';
+import {CommandLine} from './ui/command-line';
 import {DynamicPrompt} from './ui/dynamic-prompt';
 import {LayerModal} from './ui/layer-modal';
+import {Menubar} from './ui/menubar';
+import {NavigationBar} from './ui/navigation-bar';
+import {PageTabs} from './ui/page-tabs';
+import {PropertiesPanel} from './ui/properties/PropertiesPanel';
+import {StatusBar} from './ui/status-bar';
+import {Toolbar} from './ui/toolbar';
+import {UcsIcon} from './ui/ucs-icon';
 import './app.css';
 
 export function App() {
