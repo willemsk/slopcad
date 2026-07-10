@@ -15,6 +15,7 @@ import {
   WallIcon,
   WindowIcon,
 } from '../icons';
+import {RibbonButton} from '../ribbon-button';
 import {selectTool} from './helpers';
 
 export function HomePanel() {
@@ -25,57 +26,45 @@ export function HomePanel() {
       {/* Draw Panel */}
       <div className="ribbon-panel">
         <div className="ribbon-panel-body">
-          <button
-            className={`ribbon-btn-large ${activeToolName === 'select' ? 'active' : ''}`}
+          <RibbonButton
+            active={activeToolName === 'select'}
             onClick={() => selectTool('select')}
             title="Select & Move (Esc)"
-          >
-            <span className="ribbon-btn-large-icon">
-              <SelectIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Modify</span>
-          </button>
-          <button
-            className={`ribbon-btn-large ${activeToolName === 'wall' ? 'active' : ''}`}
+            label="Modify"
+            icon={<SelectIcon />}
+          />
+          <RibbonButton
+            active={activeToolName === 'wall'}
             onClick={() => selectTool('wall')}
             title="Wall (W)"
-          >
-            <span className="ribbon-btn-large-icon">
-              <WallIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Wall</span>
-          </button>
+            label="Wall"
+            icon={<WallIcon />}
+          />
           <div className="ribbon-btn-group-stacked">
-            <button
-              className={`ribbon-btn-small ${activeToolName === 'line' ? 'active' : ''}`}
+            <RibbonButton
+              size="small"
+              active={activeToolName === 'line'}
               onClick={() => selectTool('line')}
               title="Line (L)"
-            >
-              <span className="ribbon-btn-small-icon">
-                <LineIcon />
-              </span>
-              <span className="ribbon-btn-small-label">Line</span>
-            </button>
-            <button
-              className={`ribbon-btn-small ${activeToolName === 'rect' ? 'active' : ''}`}
+              label="Line"
+              icon={<LineIcon />}
+            />
+            <RibbonButton
+              size="small"
+              active={activeToolName === 'rect'}
               onClick={() => selectTool('rect')}
               title="Rectangle (R)"
-            >
-              <span className="ribbon-btn-small-icon">
-                <RectIcon />
-              </span>
-              <span className="ribbon-btn-small-label">Rectangle</span>
-            </button>
-            <button
-              className={`ribbon-btn-small ${activeToolName === 'circle' ? 'active' : ''}`}
+              label="Rectangle"
+              icon={<RectIcon />}
+            />
+            <RibbonButton
+              size="small"
+              active={activeToolName === 'circle'}
               onClick={() => selectTool('circle')}
               title="Circle (C)"
-            >
-              <span className="ribbon-btn-small-icon">
-                <CircleIcon />
-              </span>
-              <span className="ribbon-btn-small-label">Circle</span>
-            </button>
+              label="Circle"
+              icon={<CircleIcon />}
+            />
           </div>
         </div>
         <div className="ribbon-panel-title">Draw</div>
@@ -84,36 +73,27 @@ export function HomePanel() {
       {/* Architectural Panel */}
       <div className="ribbon-panel">
         <div className="ribbon-panel-body">
-          <button
-            className={`ribbon-btn-large ${activeToolName === 'door' ? 'active' : ''}`}
+          <RibbonButton
+            active={activeToolName === 'door'}
             onClick={() => selectTool('door')}
             title="Door (D)"
-          >
-            <span className="ribbon-btn-large-icon">
-              <DoorIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Door</span>
-          </button>
-          <button
-            className={`ribbon-btn-large ${activeToolName === 'window' ? 'active' : ''}`}
+            label="Door"
+            icon={<DoorIcon />}
+          />
+          <RibbonButton
+            active={activeToolName === 'window'}
             onClick={() => selectTool('window')}
             title="Window (N)"
-          >
-            <span className="ribbon-btn-large-icon">
-              <WindowIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Window</span>
-          </button>
-          <button
-            className={`ribbon-btn-large ${activeToolName === 'stairs' ? 'active' : ''}`}
+            label="Window"
+            icon={<WindowIcon />}
+          />
+          <RibbonButton
+            active={activeToolName === 'stairs'}
             onClick={() => selectTool('stairs')}
             title="Stairs (S)"
-          >
-            <span className="ribbon-btn-large-icon">
-              <StairsIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Stairs</span>
-          </button>
+            label="Stairs"
+            icon={<StairsIcon />}
+          />
         </div>
         <div className="ribbon-panel-title">Architectural</div>
       </div>
@@ -149,13 +129,12 @@ export function HomePanel() {
               </option>
             ))}
           </select>
-          <button
-            className="ribbon-btn-small"
+          <RibbonButton
+            size="small"
             onClick={() => (isLayerModalOpenSignal.value = true)}
+            label="Layer Properties"
             style={{width: '100%', justifyContent: 'center'}}
-          >
-            <span className="ribbon-btn-small-label">Layer Properties</span>
-          </button>
+          />
         </div>
         <div className="ribbon-panel-title">Layers</div>
       </div>

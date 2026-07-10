@@ -6,51 +6,36 @@ import {
   handleOpenProject,
   handleSaveProject,
 } from './menu-actions';
+import {RibbonButton} from './ribbon-button';
 
 export function FilePanel() {
   return (
     <div className="ribbon-panel">
       <div className="ribbon-panel-body">
-        <button
-          className="ribbon-btn-large"
+        <RibbonButton
           onClick={handleNewProject}
           title="New Plan (Ctrl+N)"
-        >
-          <span className="ribbon-btn-large-icon">
-            <NewIcon />
-          </span>
-          <span className="ribbon-btn-large-label">New</span>
-        </button>
-        <button
-          className="ribbon-btn-large"
+          label="New"
+          icon={<NewIcon />}
+        />
+        <RibbonButton
           onClick={handleOpenProject}
           title="Open Plan... (Ctrl+O)"
-        >
-          <span className="ribbon-btn-large-icon">
-            <OpenIcon />
-          </span>
-          <span className="ribbon-btn-large-label">Open</span>
-        </button>
-        <button
-          className="ribbon-btn-large"
+          label="Open"
+          icon={<OpenIcon />}
+        />
+        <RibbonButton
           onClick={handleSaveProject}
           title="Save Plan (Ctrl+S)"
-        >
-          <span className="ribbon-btn-large-icon">
-            <SaveIcon />
-          </span>
-          <span className="ribbon-btn-large-label">Save</span>
-        </button>
-        <button
-          className="ribbon-btn-large"
+          label="Save"
+          icon={<SaveIcon />}
+        />
+        <RibbonButton
           onClick={handleExportSVG}
           title="Export current floor layout to SVG"
-        >
-          <span className="ribbon-btn-large-icon">
-            <ExportIcon />
-          </span>
-          <span className="ribbon-btn-large-label">Export SVG</span>
-        </button>
+          label="Export SVG"
+          icon={<ExportIcon />}
+        />
       </div>
       <div className="ribbon-panel-title">Document</div>
     </div>

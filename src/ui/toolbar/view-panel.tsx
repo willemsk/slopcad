@@ -14,6 +14,7 @@ import {
   ZoomInIcon,
   ZoomOutIcon,
 } from '../icons';
+import {RibbonButton} from '../ribbon-button';
 
 export function ViewPanel() {
   const handleFitScreen = () => {
@@ -33,19 +34,15 @@ export function ViewPanel() {
     <>
       <div className="ribbon-panel">
         <div className="ribbon-panel-body">
-          <button
-            className="ribbon-btn-large"
+          <RibbonButton
             onClick={handleFitScreen}
             title="Fit to screen"
-          >
-            <span className="ribbon-btn-large-icon">
-              <FitScreenIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Zoom Ext</span>
-          </button>
+            label="Zoom Ext"
+            icon={<FitScreenIcon />}
+          />
           <div className="ribbon-btn-group-stacked">
-            <button
-              className="ribbon-btn-small"
+            <RibbonButton
+              size="small"
               onClick={() => {
                 const vp = viewportSignal.value;
                 if (vp) {
@@ -55,14 +52,11 @@ export function ViewPanel() {
                 }
               }}
               title="Zoom In"
-            >
-              <span className="ribbon-btn-small-icon">
-                <ZoomInIcon />
-              </span>
-              <span className="ribbon-btn-small-label">Zoom In</span>
-            </button>
-            <button
-              className="ribbon-btn-small"
+              label="Zoom In"
+              icon={<ZoomInIcon />}
+            />
+            <RibbonButton
+              size="small"
               onClick={() => {
                 const vp = viewportSignal.value;
                 if (vp) {
@@ -72,12 +66,9 @@ export function ViewPanel() {
                 }
               }}
               title="Zoom Out"
-            >
-              <span className="ribbon-btn-small-icon">
-                <ZoomOutIcon />
-              </span>
-              <span className="ribbon-btn-small-label">Zoom Out</span>
-            </button>
+              label="Zoom Out"
+              icon={<ZoomOutIcon />}
+            />
           </div>
         </div>
         <div className="ribbon-panel-title">Navigate</div>
@@ -85,8 +76,8 @@ export function ViewPanel() {
 
       <div className="ribbon-panel">
         <div className="ribbon-panel-body">
-          <button
-            className={`ribbon-btn-large ${gridEnabledSignal.value ? 'active' : ''}`}
+          <RibbonButton
+            active={gridEnabledSignal.value}
             onClick={() => {
               gridEnabledSignal.value = !gridEnabledSignal.value;
               pushCommandMessage(
@@ -94,14 +85,11 @@ export function ViewPanel() {
               );
             }}
             title="Toggle Grid Display"
-          >
-            <span className="ribbon-btn-large-icon">
-              <GridIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Grid</span>
-          </button>
-          <button
-            className={`ribbon-btn-large ${snapEnabledSignal.value ? 'active' : ''}`}
+            label="Grid"
+            icon={<GridIcon />}
+          />
+          <RibbonButton
+            active={snapEnabledSignal.value}
             onClick={() => {
               snapEnabledSignal.value = !snapEnabledSignal.value;
               pushCommandMessage(
@@ -109,12 +97,9 @@ export function ViewPanel() {
               );
             }}
             title="Toggle Snapping"
-          >
-            <span className="ribbon-btn-large-icon">
-              <SnapIcon />
-            </span>
-            <span className="ribbon-btn-large-label">Snap</span>
-          </button>
+            label="Snap"
+            icon={<SnapIcon />}
+          />
         </div>
         <div className="ribbon-panel-title">Aids</div>
       </div>

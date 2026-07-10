@@ -1,6 +1,7 @@
 import {h} from 'preact';
 import {activeToolNameSignal} from '../../state/ui-state';
 import {DimensionIcon, TextIcon} from '../icons';
+import {RibbonButton} from '../ribbon-button';
 import {selectTool} from './helpers';
 
 export function AnnotatePanel() {
@@ -9,26 +10,20 @@ export function AnnotatePanel() {
   return (
     <div className="ribbon-panel">
       <div className="ribbon-panel-body">
-        <button
-          className={`ribbon-btn-large ${activeToolName === 'dimension' ? 'active' : ''}`}
+        <RibbonButton
+          active={activeToolName === 'dimension'}
           onClick={() => selectTool('dimension')}
           title="Dimension (M)"
-        >
-          <span className="ribbon-btn-large-icon">
-            <DimensionIcon />
-          </span>
-          <span className="ribbon-btn-large-label">Dimension</span>
-        </button>
-        <button
-          className={`ribbon-btn-large ${activeToolName === 'text' ? 'active' : ''}`}
+          label="Dimension"
+          icon={<DimensionIcon />}
+        />
+        <RibbonButton
+          active={activeToolName === 'text'}
           onClick={() => selectTool('text')}
           title="Text (T)"
-        >
-          <span className="ribbon-btn-large-icon">
-            <TextIcon />
-          </span>
-          <span className="ribbon-btn-large-label">Text</span>
-        </button>
+          label="Text"
+          icon={<TextIcon />}
+        />
       </div>
       <div className="ribbon-panel-title">Annotation</div>
     </div>
