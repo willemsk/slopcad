@@ -182,6 +182,11 @@ body {
   cursor: not-allowed;
 }
 
+.qat-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
 .qat-separator {
   width: 1px;
   height: 14px;
@@ -226,6 +231,11 @@ body {
 .file-menu-btn:hover, .file-menu-btn.active {
   background-color: var(--accent);
   color: white;
+}
+
+.file-menu-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .file-dropdown-menu {
@@ -298,6 +308,11 @@ body {
 .nav-btn:hover {
   background-color: var(--accent);
   color: white;
+}
+
+.nav-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .nav-btn:last-child {
