@@ -31,7 +31,9 @@ export function ConstraintProperties({activeEntity}: Props) {
         role="button"
         tabIndex={0}
         aria-expanded={constraintsOpen}
-        aria-label={constraintsOpen ? "Collapse Constraints" : "Expand Constraints"}
+        aria-label={
+          constraintsOpen ? 'Collapse Constraints' : 'Expand Constraints'
+        }
       >
         {constraintsOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">Constraints</span>

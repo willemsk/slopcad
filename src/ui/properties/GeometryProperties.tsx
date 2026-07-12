@@ -387,7 +387,7 @@ export function GeometryProperties(props: Props) {
         role="button"
         tabIndex={0}
         aria-expanded={geometryOpen}
-        aria-label={geometryOpen ? "Collapse Geometry" : "Expand Geometry"}
+        aria-label={geometryOpen ? 'Collapse Geometry' : 'Expand Geometry'}
       >
         {geometryOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">Geometry</span>

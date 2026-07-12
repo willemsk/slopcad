@@ -38,7 +38,7 @@ export function GeneralProperties({
         role="button"
         tabIndex={0}
         aria-expanded={generalOpen}
-        aria-label={generalOpen ? "Collapse General" : "Expand General"}
+        aria-label={generalOpen ? 'Collapse General' : 'Expand General'}
       >
         {generalOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">General</span>

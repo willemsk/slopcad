@@ -43,7 +43,9 @@ export function PageProperties() {
         role="button"
         tabIndex={0}
         aria-expanded={pageOpen}
-        aria-label={pageOpen ? "Collapse Page Settings" : "Expand Page Settings"}
+        aria-label={
+          pageOpen ? 'Collapse Page Settings' : 'Expand Page Settings'
+        }
       >
         {pageOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">Page Settings</span>

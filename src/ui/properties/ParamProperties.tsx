@@ -53,7 +53,7 @@ export function ParamProperties({
         role="button"
         tabIndex={0}
         aria-expanded={paramOpen}
-        aria-label={paramOpen ? "Collapse Parameters" : "Expand Parameters"}
+        aria-label={paramOpen ? 'Collapse Parameters' : 'Expand Parameters'}
       >
         {paramOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">Parameters</span>
