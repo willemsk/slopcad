@@ -378,6 +378,16 @@ export function GeometryProperties(props: Props) {
       <div
         className="properties-category-header"
         onClick={() => setGeometryOpen(!geometryOpen)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setGeometryOpen(!geometryOpen);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-expanded={geometryOpen}
+        aria-label={geometryOpen ? "Collapse Geometry" : "Expand Geometry"}
       >
         {geometryOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">Geometry</span>

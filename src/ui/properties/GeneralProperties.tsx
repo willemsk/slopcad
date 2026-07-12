@@ -29,6 +29,16 @@ export function GeneralProperties({
       <div
         className="properties-category-header"
         onClick={() => setGeneralOpen(!generalOpen)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setGeneralOpen(!generalOpen);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-expanded={generalOpen}
+        aria-label={generalOpen ? "Collapse General" : "Expand General"}
       >
         {generalOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">General</span>
