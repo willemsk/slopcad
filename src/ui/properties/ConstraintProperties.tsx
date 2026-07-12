@@ -22,6 +22,18 @@ export function ConstraintProperties({activeEntity}: Props) {
       <div
         className="properties-category-header"
         onClick={() => setConstraintsOpen(!constraintsOpen)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setConstraintsOpen(!constraintsOpen);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-expanded={constraintsOpen}
+        aria-label={
+          constraintsOpen ? 'Collapse Constraints' : 'Expand Constraints'
+        }
       >
         {constraintsOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">Constraints</span>

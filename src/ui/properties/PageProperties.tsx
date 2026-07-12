@@ -34,6 +34,18 @@ export function PageProperties() {
       <div
         className="properties-category-header"
         onClick={() => setPageOpen(!pageOpen)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setPageOpen(!pageOpen);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-expanded={pageOpen}
+        aria-label={
+          pageOpen ? 'Collapse Page Settings' : 'Expand Page Settings'
+        }
       >
         {pageOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">Page Settings</span>
