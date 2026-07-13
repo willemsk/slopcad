@@ -15,6 +15,7 @@ export function FilePanel() {
           className="ribbon-btn-large"
           onClick={handleNewProject}
           title="New Plan (Ctrl+N)"
+          aria-keyshortcuts="Control+N"
         >
           <span className="ribbon-btn-large-icon">
             <NewIcon />
@@ -25,6 +26,7 @@ export function FilePanel() {
           className="ribbon-btn-large"
           onClick={handleOpenProject}
           title="Open Plan... (Ctrl+O)"
+          aria-keyshortcuts="Control+O"
         >
           <span className="ribbon-btn-large-icon">
             <OpenIcon />
@@ -35,6 +37,7 @@ export function FilePanel() {
           className="ribbon-btn-large"
           onClick={handleSaveProject}
           title="Save Plan (Ctrl+S)"
+          aria-keyshortcuts="Control+S"
         >
           <span className="ribbon-btn-large-icon">
             <SaveIcon />
