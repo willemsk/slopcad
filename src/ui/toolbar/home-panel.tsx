@@ -29,6 +29,7 @@ export function HomePanel() {
             className={`ribbon-btn-large ${activeToolName === 'select' ? 'active' : ''}`}
             onClick={() => selectTool('select')}
             title="Select & Move (Esc)"
+            aria-keyshortcuts="Escape"
           >
             <span className="ribbon-btn-large-icon">
               <SelectIcon />
@@ -39,6 +40,7 @@ export function HomePanel() {
             className={`ribbon-btn-large ${activeToolName === 'wall' ? 'active' : ''}`}
             onClick={() => selectTool('wall')}
             title="Wall (W)"
+            aria-keyshortcuts="W"
           >
             <span className="ribbon-btn-large-icon">
               <WallIcon />
@@ -50,6 +52,7 @@ export function HomePanel() {
               className={`ribbon-btn-small ${activeToolName === 'line' ? 'active' : ''}`}
               onClick={() => selectTool('line')}
               title="Line (L)"
+              aria-keyshortcuts="L"
             >
               <span className="ribbon-btn-small-icon">
                 <LineIcon />
@@ -60,6 +63,7 @@ export function HomePanel() {
               className={`ribbon-btn-small ${activeToolName === 'rect' ? 'active' : ''}`}
               onClick={() => selectTool('rect')}
               title="Rectangle (R)"
+              aria-keyshortcuts="R"
             >
               <span className="ribbon-btn-small-icon">
                 <RectIcon />
@@ -70,6 +74,7 @@ export function HomePanel() {
               className={`ribbon-btn-small ${activeToolName === 'circle' ? 'active' : ''}`}
               onClick={() => selectTool('circle')}
               title="Circle (C)"
+              aria-keyshortcuts="C"
             >
               <span className="ribbon-btn-small-icon">
                 <CircleIcon />
@@ -88,6 +93,7 @@ export function HomePanel() {
             className={`ribbon-btn-large ${activeToolName === 'door' ? 'active' : ''}`}
             onClick={() => selectTool('door')}
             title="Door (D)"
+            aria-keyshortcuts="D"
           >
             <span className="ribbon-btn-large-icon">
               <DoorIcon />
@@ -98,6 +104,7 @@ export function HomePanel() {
             className={`ribbon-btn-large ${activeToolName === 'window' ? 'active' : ''}`}
             onClick={() => selectTool('window')}
             title="Window (N)"
+            aria-keyshortcuts="N"
           >
             <span className="ribbon-btn-large-icon">
               <WindowIcon />
@@ -108,6 +115,7 @@ export function HomePanel() {
             className={`ribbon-btn-large ${activeToolName === 'stairs' ? 'active' : ''}`}
             onClick={() => selectTool('stairs')}
             title="Stairs (S)"
+            aria-keyshortcuts="S"
           >
             <span className="ribbon-btn-large-icon">
               <StairsIcon />

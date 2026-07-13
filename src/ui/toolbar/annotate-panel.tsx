@@ -13,6 +13,7 @@ export function AnnotatePanel() {
           className={`ribbon-btn-large ${activeToolName === 'dimension' ? 'active' : ''}`}
           onClick={() => selectTool('dimension')}
           title="Dimension (M)"
+          aria-keyshortcuts="M"
         >
           <span className="ribbon-btn-large-icon">
             <DimensionIcon />
@@ -23,6 +24,7 @@ export function AnnotatePanel() {
           className={`ribbon-btn-large ${activeToolName === 'text' ? 'active' : ''}`}
           onClick={() => selectTool('text')}
           title="Text (T)"
+          aria-keyshortcuts="T"
         >
           <span className="ribbon-btn-large-icon">
             <TextIcon />
