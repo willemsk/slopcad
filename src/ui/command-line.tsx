@@ -103,7 +103,7 @@ export function CommandLine() {
         ))}
       </div>
       <div className="command-prompt-bar">
-        <span className="command-prompt-label">Command:</span>
+        <label htmlFor="command-line-input" className="command-prompt-label">Command:</label>
         <input
           ref={inputRef}
           id="command-line-input"
