@@ -48,6 +48,7 @@ export function QuickAccessToolbar() {
         onClick={handleNewProject}
         title="New Plan (Ctrl+N)"
         aria-label="New Plan"
+        aria-keyshortcuts="Control+N"
       >
         <NewIcon />
       </button>
@@ -56,6 +57,7 @@ export function QuickAccessToolbar() {
         onClick={handleOpenProject}
         title="Open Plan... (Ctrl+O)"
         aria-label="Open Plan"
+        aria-keyshortcuts="Control+O"
       >
         <OpenIcon />
       </button>
@@ -64,6 +66,7 @@ export function QuickAccessToolbar() {
         onClick={handleSaveProject}
         title="Save Plan (Ctrl+S)"
         aria-label="Save Plan"
+        aria-keyshortcuts="Control+S"
       >
         <SaveIcon />
       </button>
@@ -83,6 +86,7 @@ export function QuickAccessToolbar() {
         onClick={handleUndo}
         title="Undo last change (Ctrl+Z)"
         aria-label="Undo"
+        aria-keyshortcuts="Control+Z"
       >
         <UndoIcon />
       </button>
@@ -91,6 +95,7 @@ export function QuickAccessToolbar() {
         onClick={handleRedo}
         title="Redo last change (Ctrl+Y)"
         aria-label="Redo"
+        aria-keyshortcuts="Control+Y"
       >
         <RedoIcon />
       </button>
@@ -100,6 +105,7 @@ export function QuickAccessToolbar() {
         disabled={!hasSelection}
         title="Delete selected (Del)"
         aria-label="Delete selected"
+        aria-keyshortcuts="Delete"
       >
         <DeleteIcon />
       </button>
