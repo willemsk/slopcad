@@ -37,6 +37,7 @@ export function ConstraintsPanel() {
               }}
               disabled={!hasSelection}
               title="Constrain Horizontal"
+              aria-label="Horizontal"
             >
               <span className="ribbon-btn-small-label">Horizontal</span>
             </button>
@@ -50,6 +51,7 @@ export function ConstraintsPanel() {
               }}
               disabled={!hasSelection}
               title="Constrain Vertical"
+              aria-label="Vertical"
             >
               <span className="ribbon-btn-small-label">Vertical</span>
             </button>
@@ -65,6 +67,7 @@ export function ConstraintsPanel() {
                 );
               }}
               title="Constrain Parallel (Select 2)"
+              aria-label="Parallel"
             >
               <span className="ribbon-btn-small-label">Parallel</span>
             </button>
@@ -77,6 +80,7 @@ export function ConstraintsPanel() {
                 );
               }}
               title="Constrain Perpendicular (Select 2)"
+              aria-label="Perpendicular"
             >
               <span className="ribbon-btn-small-label">Perpendicular</span>
             </button>
@@ -93,6 +97,7 @@ export function ConstraintsPanel() {
               }}
               disabled={!hasSelection}
               title="Constrain Collinear"
+              aria-label="Collinear"
             >
               <span className="ribbon-btn-small-label">Collinear</span>
             </button>
@@ -106,6 +111,7 @@ export function ConstraintsPanel() {
               }}
               disabled={!hasSelection}
               title="Constrain Coincident"
+              aria-label="Coincident"
             >
               <span className="ribbon-btn-small-label">Coincident</span>
             </button>
@@ -119,6 +125,7 @@ export function ConstraintsPanel() {
               }}
               disabled={!hasSelection}
               title="Constrain Concentric"
+              aria-label="Concentric"
             >
               <span className="ribbon-btn-small-label">Concentric</span>
             </button>
@@ -140,6 +147,7 @@ export function ConstraintsPanel() {
             }}
             disabled={!hasSelection}
             title="Constrain Fixed Length"
+            aria-label="Fix Length"
           >
             <span className="ribbon-btn-large-icon">
               <DimensionIcon />
@@ -157,6 +165,7 @@ export function ConstraintsPanel() {
             }}
             disabled={!hasSelection}
             title="Constrain Equal Length"
+            aria-label="Equal Length"
           >
             <span className="ribbon-btn-large-icon">
               <DimensionIcon />
@@ -174,6 +183,7 @@ export function ConstraintsPanel() {
             }}
             disabled={!hasSelection}
             title="Constrain Fixed Angle"
+            aria-label="Fix Angle"
           >
             <span className="ribbon-btn-large-icon">
               <DimensionIcon />
@@ -191,6 +201,7 @@ export function ConstraintsPanel() {
             }}
             disabled={!hasSelection}
             title="Remove Selected Entity Constraints"
+            aria-label="Clear Constraints"
           >
             <span className="ribbon-btn-large-icon">
               <TextIcon />

@@ -37,6 +37,7 @@ export function ViewPanel() {
             className="ribbon-btn-large"
             onClick={handleFitScreen}
             title="Fit to screen"
+            aria-label="Fit to screen"
           >
             <span className="ribbon-btn-large-icon">
               <FitScreenIcon />
@@ -55,6 +56,7 @@ export function ViewPanel() {
                 }
               }}
               title="Zoom In"
+              aria-label="Zoom In"
             >
               <span className="ribbon-btn-small-icon">
                 <ZoomInIcon />
@@ -72,6 +74,7 @@ export function ViewPanel() {
                 }
               }}
               title="Zoom Out"
+              aria-label="Zoom Out"
             >
               <span className="ribbon-btn-small-icon">
                 <ZoomOutIcon />
@@ -94,6 +97,7 @@ export function ViewPanel() {
               );
             }}
             title="Toggle Grid Display"
+            aria-label="Toggle Grid Display"
           >
             <span className="ribbon-btn-large-icon">
               <GridIcon />
@@ -109,6 +113,7 @@ export function ViewPanel() {
               );
             }}
             title="Toggle Snapping"
+            aria-label="Toggle Snapping"
           >
             <span className="ribbon-btn-large-icon">
               <SnapIcon />
