@@ -15,6 +15,7 @@ export function FilePanel() {
           className="ribbon-btn-large"
           onClick={handleNewProject}
           title="New Plan (Ctrl+N)"
+          aria-label="New Plan"
         >
           <span className="ribbon-btn-large-icon">
             <NewIcon />
@@ -25,6 +26,7 @@ export function FilePanel() {
           className="ribbon-btn-large"
           onClick={handleOpenProject}
           title="Open Plan... (Ctrl+O)"
+          aria-label="Open Plan"
         >
           <span className="ribbon-btn-large-icon">
             <OpenIcon />
@@ -35,6 +37,7 @@ export function FilePanel() {
           className="ribbon-btn-large"
           onClick={handleSaveProject}
           title="Save Plan (Ctrl+S)"
+          aria-label="Save Plan"
         >
           <span className="ribbon-btn-large-icon">
             <SaveIcon />
@@ -45,6 +48,7 @@ export function FilePanel() {
           className="ribbon-btn-large"
           onClick={handleExportSVG}
           title="Export current floor layout to SVG"
+          aria-label="Export SVG"
         >
           <span className="ribbon-btn-large-icon">
             <ExportIcon />
