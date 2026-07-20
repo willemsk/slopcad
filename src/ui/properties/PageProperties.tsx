@@ -34,13 +34,23 @@ export function PageProperties() {
       <div
         className="properties-category-header"
         onClick={() => setPageOpen(!pageOpen)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setPageOpen(!pageOpen);
+          }
+        }}
+        tabIndex={0}
+        role="button"
+        aria-expanded={pageOpen}
+        aria-controls="page-settings-content"
       >
         {pageOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">Page Settings</span>
       </div>
 
       {pageOpen && (
-        <div className="properties-category-content">
+        <div id="page-settings-content" className="properties-category-content">
           <div className="property-item">
             <span className="property-label">Floor Name</span>
             <div className="property-value">

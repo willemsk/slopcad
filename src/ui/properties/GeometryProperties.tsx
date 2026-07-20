@@ -378,13 +378,23 @@ export function GeometryProperties(props: Props) {
       <div
         className="properties-category-header"
         onClick={() => setGeometryOpen(!geometryOpen)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setGeometryOpen(!geometryOpen);
+          }
+        }}
+        tabIndex={0}
+        role="button"
+        aria-expanded={geometryOpen}
+        aria-controls="geometry-properties-content"
       >
         {geometryOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">Geometry</span>
       </div>
 
       {geometryOpen && (
-        <div className="properties-category-content">
+        <div id="geometry-properties-content" className="properties-category-content">
           {(activeEntity.type === 'wall' || activeEntity.type === 'line') && (
             <WallLineGeometry {...props} />
           )}

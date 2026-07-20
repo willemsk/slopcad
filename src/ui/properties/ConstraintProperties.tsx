@@ -22,13 +22,23 @@ export function ConstraintProperties({activeEntity}: Props) {
       <div
         className="properties-category-header"
         onClick={() => setConstraintsOpen(!constraintsOpen)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setConstraintsOpen(!constraintsOpen);
+          }
+        }}
+        tabIndex={0}
+        role="button"
+        aria-expanded={constraintsOpen}
+        aria-controls="constraint-properties-content"
       >
         {constraintsOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">Constraints</span>
       </div>
 
       {constraintsOpen && (
-        <div className="properties-category-content">
+        <div id="constraint-properties-content" className="properties-category-content">
           {relevantConstraints.map((c) => (
             <div
               key={c.id}
