@@ -64,6 +64,11 @@
   background-color: var(--bg-tertiary);
 }
 
+.properties-category-header:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
 .properties-category-title {
   font-size: 10px;
   font-weight: 700;

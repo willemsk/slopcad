@@ -29,13 +29,26 @@ export function GeneralProperties({
       <div
         className="properties-category-header"
         onClick={() => setGeneralOpen(!generalOpen)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setGeneralOpen(!generalOpen);
+          }
+        }}
+        tabIndex={0}
+        role="button"
+        aria-expanded={generalOpen}
+        aria-controls="general-properties-content"
       >
         {generalOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">General</span>
       </div>
 
       {generalOpen && (
-        <div className="properties-category-content">
+        <div
+          id="general-properties-content"
+          className="properties-category-content"
+        >
           <div className="property-item">
             <span className="property-label">Type</span>
             <div className="property-value">

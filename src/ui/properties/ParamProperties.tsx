@@ -44,13 +44,26 @@ export function ParamProperties({
       <div
         className="properties-category-header"
         onClick={() => setParamOpen(!paramOpen)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setParamOpen(!paramOpen);
+          }
+        }}
+        tabIndex={0}
+        role="button"
+        aria-expanded={paramOpen}
+        aria-controls="param-properties-content"
       >
         {paramOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
         <span className="properties-category-title">Parameters</span>
       </div>
 
       {paramOpen && (
-        <div className="properties-category-content">
+        <div
+          id="param-properties-content"
+          className="properties-category-content"
+        >
           {activeEntity.type === 'door' && (
             <DoorParams
               activeEntity={activeEntity}
