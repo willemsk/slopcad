@@ -60,7 +60,10 @@ export function ParamProperties({
       </div>
 
       {paramOpen && (
-        <div id="param-properties-content" className="properties-category-content">
+        <div
+          id="param-properties-content"
+          className="properties-category-content"
+        >
           {activeEntity.type === 'door' && (
             <DoorParams
               activeEntity={activeEntity}

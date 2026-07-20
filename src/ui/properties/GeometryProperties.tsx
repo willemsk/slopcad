@@ -394,7 +394,10 @@ export function GeometryProperties(props: Props) {
       </div>
 
       {geometryOpen && (
-        <div id="geometry-properties-content" className="properties-category-content">
+        <div
+          id="geometry-properties-content"
+          className="properties-category-content"
+        >
           {(activeEntity.type === 'wall' || activeEntity.type === 'line') && (
             <WallLineGeometry {...props} />
           )}

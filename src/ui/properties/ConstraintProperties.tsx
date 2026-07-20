@@ -38,7 +38,10 @@ export function ConstraintProperties({activeEntity}: Props) {
       </div>
 
       {constraintsOpen && (
-        <div id="constraint-properties-content" className="properties-category-content">
+        <div
+          id="constraint-properties-content"
+          className="properties-category-content"
+        >
           {relevantConstraints.map((c) => (
             <div
               key={c.id}

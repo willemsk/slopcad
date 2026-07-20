@@ -45,7 +45,10 @@ export function GeneralProperties({
       </div>
 
       {generalOpen && (
-        <div id="general-properties-content" className="properties-category-content">
+        <div
+          id="general-properties-content"
+          className="properties-category-content"
+        >
           <div className="property-item">
             <span className="property-label">Type</span>
             <div className="property-value">
