@@ -55,3 +55,6 @@
 ## 2026-07-05 - Missing ARIA Labels on Layer Properties Table Inputs
 **Learning:** Inputs within a data table (like the ones in the Layer Properties modal for layer status, name, visibility, lock, and color) often lack explicit `aria-label`s. Because they are in a table row rather than paired with standard `<label>` elements, screen readers only announce the generic input type (e.g., "radio button", "checkbox") without context of which row/layer it applies to.
 **Action:** When creating tables containing inline inputs, always append dynamic `aria-label` attributes to the inputs that include the identifying context of the row (e.g., `aria-label={"Toggle visibility for layer: " + layer.name}`) to ensure proper accessibility.
+## 2024-07-07 - Semantic labels for Command Line Input
+**Learning:** Presentational elements (like `<span>`) used as visual labels are entirely ignored by screen readers, meaning any adjacent inputs without explicit `aria-label`s will lack context. The command line input was previously accompanied by a `<span>Command:</span>`, rendering it unlabelled for assistive tech.
+**Action:** Always use semantic `<label>` tags with a proper `htmlFor` attribute that maps to the input's `id` instead of presentational elements (or use `aria-label`/`aria-labelledby`) to ensure inputs are properly announced to screen reader users.
