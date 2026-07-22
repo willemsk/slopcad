@@ -138,6 +138,17 @@
   color: var(--text-hover);
 }
 
+.ribbon-btn-large:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.ribbon-btn-large:disabled:hover {
+  background: none;
+  border-color: transparent;
+  color: var(--text-primary);
+}
+
 .ribbon-btn-large-icon {
   display: flex;
   align-items: center;
@@ -190,6 +201,17 @@
   background-color: var(--bg-active);
   border-color: var(--accent);
   color: var(--text-hover);
+}
+
+.ribbon-btn-small:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.ribbon-btn-small:disabled:hover {
+  background: none;
+  border-color: transparent;
+  color: var(--text-primary);
 }
 
 .ribbon-btn-small-icon {
