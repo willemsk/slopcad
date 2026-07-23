@@ -81,6 +81,7 @@ export function StatusBar() {
           title="Grid Display (G / F7)"
           aria-label="Toggle Grid Display"
           aria-pressed={gridEnabledSignal.value}
+          aria-keyshortcuts="G"
         >
           <GridIcon />
         </button>
@@ -90,6 +91,7 @@ export function StatusBar() {
           title="Object Snap (S / F3)"
           aria-label="Toggle Object Snap"
           aria-pressed={snapEnabledSignal.value}
+          aria-keyshortcuts="S"
         >
           <SnapIcon />
         </button>

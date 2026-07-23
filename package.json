@@ -36,5 +36,11 @@
   "allowScripts": {
     "esbuild@0.28.1": true,
     "@biomejs/biome@1.9.4": true
+  },
+  "pnpm": {
+    "approvedBuilds": {
+      "*": true
+    },
+    "neverBuiltDependencies": []
   }
 }
