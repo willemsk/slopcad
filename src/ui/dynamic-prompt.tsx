@@ -56,8 +56,9 @@ export function DynamicPrompt() {
         style={style}
         onClick={(e) => e.stopPropagation()}
       >
-        <span className="prompt-message">{prompt.message}</span>
+        <label htmlFor="dynamic-prompt-input" className="prompt-message">{prompt.message}</label>
         <input
+          id="dynamic-prompt-input"
           ref={inputRef}
           type="text"
           value={val}
