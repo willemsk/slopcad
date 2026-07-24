@@ -130,6 +130,7 @@ export function HomePanel() {
           }}
         >
           <select
+            aria-label="Active Layer"
             style={{
               width: 120,
               padding: 4,
